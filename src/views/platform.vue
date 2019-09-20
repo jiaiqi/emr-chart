@@ -141,7 +141,7 @@ export default {
         this.$router.push({ name: "navs" });
       }
     },
-    init() {},
+    init() { },
     changeTab(num) {
       this.tabsShow = num;
       if (this.tabsShow == 1) {
@@ -217,8 +217,8 @@ export default {
     let user = sessionStorage.getItem("current_login_user");
     this.user = JSON.parse(user);
     // this.user = top.user.user_no;
-    this.getData_userno();
-    this.CurrRegNum();
+    // this.getData_userno();
+    // this.CurrRegNum();
   }
 };
 </script>

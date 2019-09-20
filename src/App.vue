@@ -4,7 +4,24 @@
   </div>
 </template>
 
+<script>
+export default {
+  data() {
+    return {};
+  },
+  components: {},
+  mounted() {
+    window.document.title = "延安市社保医疗一体化服务平台";
+  }
+};
+</script>
+
 <style lang="scss">
+@media screen and (max-width: 1366px) {
+  html {
+    font-size: 12px;
+  }
+}
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -24,14 +41,3 @@
 }
 </style>
 
-<script>
-export default {
-  data() {
-    return {};
-  },
-  components: {},
-  mounted() {
-    window.document.title = "延安市社保医疗一体化服务平台";
-  }
-};
-</script>

@@ -137,33 +137,33 @@ export default {
     swiper, swiperSlide
   },
   data() {
-      this.pieSetting = {},
-      
-    this.chartExtendPie = {
-      grid: {
-        top: '10',
-        bottom: "20",
-        height: "200"
-      },      
-      series: {
-        center: ["50%", "50%"],
-        radius: ["0%", '50%']
+    this.pieSetting = {},
+
+      this.chartExtendPie = {
+        grid: {
+          top: '10',
+          bottom: "20",
+          height: "200"
+        },
+        series: {
+          center: ["50%", "50%"],
+          radius: ["0%", '50%']
+        }
       }
-    }
     return {
-      chartExtendLine:{
+      chartExtendLine: {
         grid: {
           top: '20%',
           bottom: "0",
           height: "auto"
         },
-        yAxis : {
+        yAxis: {
           // min: 0,
           // max: 5000,
           // splitNumber:5
           interval: 200,
         },
-        
+
         // [,
         // {
         //   min: 0,
@@ -174,21 +174,21 @@ export default {
         //   //   formatter: '{value} %'
         //   // }
         // }],
-      series: [{
-        type:'bar',
-        center: ["50%", "55%"]
-      },{
-        type:'line',
-        center: ["50%", "55%"]
-      }]
-    },
-      chartSettings:{
+        series: [{
+          type: 'bar',
+          center: ["50%", "55%"]
+        }, {
+          type: 'line',
+          center: ["50%", "55%"]
+        }]
+      },
+      chartSettings: {
         stack: { '服务': ['服务1', '服务2', '服务3', '服务4', '服务5'] },
         showLine: [],
         axisSite: { right: [] },
         yAxisType: ['normal', 'normal'],
         yAxisName: ['请求次数', '平均时延/ms'],
-        max:[1300,2600]
+        max: [1300, 2600]
       },
       date: null,
       CurrAct: 0,
@@ -198,11 +198,11 @@ export default {
       },
       title: this.$route.params.title,
       askNum: this.$route.params.askNum,
-      appNo:this.$route.params.appNo,
-      runtime:this.$route.params.runtime,
+      appNo: this.$route.params.appNo,
+      runtime: this.$route.params.runtime,
       list_useno: "",
       regNum: "",
-      NewCharData:[],
+      NewCharData: [],
       legend: {
         textStyle: {
           color: '#fff'
@@ -215,18 +215,18 @@ export default {
         // orient: 'vertical',
         top: 30,
       },
-      
-      grand:null,
+
+      grand: null,
       chartData: {
         columns: ['时间'],
         rows: []
       },
-     
+
       RigPieData: {
         columns: ['服务', '请求次数'],
         rows: []
       },
-      oldColums:[],
+      oldColums: [],
       DateDatum:
       {
         day: {
@@ -667,30 +667,30 @@ export default {
       },
       // dateLine: ['近一天', '近一周', '近一月', '近一年', '自定义时间段']
       dateLine: [{
-        key:'day',
-        value:'近24小时'
-      },{
-        key:'week',
-        value:'近一周'
-      },{
-        key:'month',
-        value:'近一月'
-      },{
-        key:'year',
-        value:'近一年'
+        key: 'day',
+        value: '近24小时'
+      }, {
+        key: 'week',
+        value: '近一周'
+      }, {
+        key: 'month',
+        value: '近一月'
+      }, {
+        key: 'year',
+        value: '近一年'
       }],
-      selectedTab:'',
-      srvUrlName:'',
-      srvName:[],
-      srvKeyArr:[]
+      selectedTab: '',
+      srvUrlName: '',
+      srvName: [],
+      srvKeyArr: []
     }
   },
   mounted() {
-    
+
   },
 
   methods: {
-     //转换数字
+    //转换数字
     converts(num) {
       let nums = parseInt(num);
       if (nums > 10000) {
@@ -759,15 +759,15 @@ export default {
         });
     },
     //获取图例
-    getLegend(){
+    getLegend() {
       let self = this
       let req = {
         serviceName: "srvlog_srv_indicator_cfg_select",
         colNames: ["*"],
         condition: [{
-          colName:'application',
-          ruleType:'eq',
-          value:this.appNo
+          colName: 'application',
+          ruleType: 'eq',
+          value: this.appNo
         }]
       };
       let path = this.getServiceUrl("select", "srvlog_srv_indicator_cfg_select", "log");
@@ -778,12 +778,12 @@ export default {
           // this.regNum = res.data.data.length;
           // this.chartData.push(res.data.data.srv_name)
           let NewCharData = res.data.data
-          console.log('NewCharData',this.chartData)
+          console.log('NewCharData', this.chartData)
           let srvUrlName = NewCharData.map(item => item.srv_url)
           self.srvKeyArr = NewCharData.map((item) => {
             let srvKeys = {}
-             srvKeys['keyr'] = item.srv_url
-             srvKeys['text'] = item.srv_name
+            srvKeys['keyr'] = item.srv_url
+            srvKeys['text'] = item.srv_name
             return srvKeys
           })
           // console.error('self.srvKeyArr',self.srvKeyArr)
@@ -796,31 +796,31 @@ export default {
           self.chartData.columns = self.chartData.columns.concat(srvName) // 合并图例的columns  
           self.chartData.columns = self.chartData.columns.concat(srvArgName)  // 合并图例的columns
           // self.chartData.columns = Array.from(new Set(self.chartData.columns))
-          this.chartSettings.showLine =srvName.map(item => item + '-')
+          this.chartSettings.showLine = srvName.map(item => item + '-')
           this.chartSettings.axisSite.right = srvName.map(item => item + '-')
-          self.legendData(self.srvUrlName,self.srvName,self.dateLine[self.CurrAct].key)
+          self.legendData(self.srvUrlName, self.srvName, self.dateLine[self.CurrAct].key)
         })
         .catch(err => {
           console.log(err);
         });
-    },    
+    },
     //获取图例对应的数据
-    legendData(srvName,legendName,type){
+    legendData(srvName, legendName, type) {
       let req = {
         serviceName: "srvlog_call_statistics_select",
         colNames: ["*"],
         condition: [{
-            "colName": "application",
-            "ruleType": "eq",
-            "value": this.appNo
+          "colName": "application",
+          "ruleType": "eq",
+          "value": this.appNo
         },
         {
-            "colName": "service_name",
-            "ruleType": "in",
-            "value": srvName
+          "colName": "service_name",
+          "ruleType": "in",
+          "value": srvName
         }
         ],
-        group: [                  
+        group: [
           {
             "colName": "num_of_calls",
             "type": "sum"
@@ -841,19 +841,19 @@ export default {
       }
       // req -------------------------------------------------------------------------------------------
       if (type === 'day') {
-          req.condition = req.condition.concat([
-            {
-              "colName": "statistics_time",
-              "value": moment().add(1, 'hours').format("YYYY-MM-DD HH"), // 小于当前时间的下一个小时
-              "ruleType": "le"
-            },
-            {
-              "colName": "statistics_time",
-              "value": moment().subtract(23, 'hours').format("YYYY-MM-DD HH"), // 大于当前时间往前推23个小时
-              "ruleType": "ge"
-            }
-          ])
-          req.group = [                  
+        req.condition = req.condition.concat([
+          {
+            "colName": "statistics_time",
+            "value": moment().add(1, 'hours').format("YYYY-MM-DD HH"), // 小于当前时间的下一个小时
+            "ruleType": "le"
+          },
+          {
+            "colName": "statistics_time",
+            "value": moment().subtract(23, 'hours').format("YYYY-MM-DD HH"), // 大于当前时间往前推23个小时
+            "ruleType": "ge"
+          }
+        ])
+        req.group = [
           {
             "colName": "num_of_calls",
             "type": "sum"
@@ -871,65 +871,65 @@ export default {
             "type": "sum"
           }
         ]
-        } else if (type === 'week') {
-          req.condition = req.condition.concat([
-            {
-              "colName": "statistics_time",
-              "value": moment().subtract(6, 'days').format('YYYY-MM-DD'), // 六天前,
-              "ruleType": "ge"
-            },
-            {
-              "colName": "statistics_time",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'), // 今晚0点,
-              "ruleType": "le"
-            }
-          ])        
-        } else if (type === 'month') {
-          req.condition = req.condition.concat([
-            {
-              "colName": "statistics_time",
-              "value": moment().subtract(30, 'days').format('YYYY-MM-DD'), // 30天前
-              "ruleType": "ge"
-            },
-            {
-              "colName": "statistics_time",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'), // 今晚0点,
-              "ruleType": "le"
-            }
-          ])          
-        } else if (type === 'year') {
-          req.condition = req.condition.concat([
-            {
-              "colName": "statistics_time",
-              "value": moment().subtract(11, 'month').format('YYYY-MM-DD'), // 十一个月之前
-              "ruleType": "ge"
-            },
-            {
-              "colName": "statistics_time",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'), // 今晚0点,
-              "ruleType": "le"
-            }
-          ])          
-          req.group = [                  
-            {
-              "colName": "num_of_calls",
-              "type": "sum"
-            },
-            {
-              "colName": "statistics_time",
-              "type": "by_month_of_year"
-            },
-            {
-              "colName": "service_name",
-              "type": "by"
-            },
-            {
+      } else if (type === 'week') {
+        req.condition = req.condition.concat([
+          {
+            "colName": "statistics_time",
+            "value": moment().subtract(6, 'days').format('YYYY-MM-DD'), // 六天前,
+            "ruleType": "ge"
+          },
+          {
+            "colName": "statistics_time",
+            "value": moment().add(1, 'days').format('YYYY-MM-DD'), // 今晚0点,
+            "ruleType": "le"
+          }
+        ])
+      } else if (type === 'month') {
+        req.condition = req.condition.concat([
+          {
+            "colName": "statistics_time",
+            "value": moment().subtract(30, 'days').format('YYYY-MM-DD'), // 30天前
+            "ruleType": "ge"
+          },
+          {
+            "colName": "statistics_time",
+            "value": moment().add(1, 'days').format('YYYY-MM-DD'), // 今晚0点,
+            "ruleType": "le"
+          }
+        ])
+      } else if (type === 'year') {
+        req.condition = req.condition.concat([
+          {
+            "colName": "statistics_time",
+            "value": moment().subtract(11, 'month').format('YYYY-MM-DD'), // 十一个月之前
+            "ruleType": "ge"
+          },
+          {
+            "colName": "statistics_time",
+            "value": moment().add(1, 'days').format('YYYY-MM-DD'), // 今晚0点,
+            "ruleType": "le"
+          }
+        ])
+        req.group = [
+          {
+            "colName": "num_of_calls",
+            "type": "sum"
+          },
+          {
+            "colName": "statistics_time",
+            "type": "by_month_of_year"
+          },
+          {
+            "colName": "service_name",
+            "type": "by"
+          },
+          {
             "colName": "total_duration",
             "type": "sum"
-            }
-          ]       
-        }
-        // req ------------------------------------------------------------------------------end
+          }
+        ]
+      }
+      // req ------------------------------------------------------------------------------end
       let path = this.getServiceUrl(
         "select",
         "srvlog_call_statistics_select",
@@ -940,7 +940,7 @@ export default {
         .then(res1 => {
           let arr = res1.data.data
           let currRow = []
-          this.getCountData(arr,type)
+          this.getCountData(arr, type)
           // console.error('arr',arr)       
         })
         .catch(err => {
@@ -957,24 +957,24 @@ export default {
       }
     },
     getCountData(data, type) {
-      let datas = data || 
-      [
-        {
-          "num_of_calls": 6,
-          "statistics_time": 20,
-          "service_name": "DI_ADI_REGISTER_INFO_select"
-        },
-        {
-          "num_of_calls": 6,
-          "statistics_time": 20,
-          "service_name": "DI_HDI_INRECORD_INFO_select"
-        },
-        {
-          "num_of_calls": 4,
-          "statistics_time": 20,
-          "service_name": "DI_HDI_LAREXA_INFO_select"
-        }
-      ]
+      let datas = data ||
+        [
+          {
+            "num_of_calls": 6,
+            "statistics_time": 20,
+            "service_name": "DI_ADI_REGISTER_INFO_select"
+          },
+          {
+            "num_of_calls": 6,
+            "statistics_time": 20,
+            "service_name": "DI_HDI_INRECORD_INFO_select"
+          },
+          {
+            "num_of_calls": 4,
+            "statistics_time": 20,
+            "service_name": "DI_HDI_LAREXA_INFO_select"
+          }
+        ]
       let xVal = []
       if (type === 'day') {
         let hours = []
@@ -1015,16 +1015,16 @@ export default {
       // ArgTime = Array.from(new Set(ArgTime))
       // console.log("ArgTime",ArgTime)
       let allChartData = []
-      function getDataCount(yljgmcName, time, data,chartType) {
+      function getDataCount(yljgmcName, time, data, chartType) {
         let count = 0
         for (let r = 0; r < data.length; r++) {
           let srvName = data[r]
-          if(chartType === 'pie'){
-            if (srvName.service_name === yljgmcName){
+          if (chartType === 'pie') {
+            if (srvName.service_name === yljgmcName) {
               count += srvName.num_of_calls
             }
-          }else if(chartType === 'line'){
-            if (srvName.service_name === yljgmcName && srvName.statistics_time == time){
+          } else if (chartType === 'line') {
+            if (srvName.service_name === yljgmcName && srvName.statistics_time == time) {
               count += srvName.num_of_calls
 
             }
@@ -1032,126 +1032,126 @@ export default {
         }
         barGraph.push(count)
         return count
-      } 
-      function getTimeCount(yljgmcName, time, data,chartType) {
+      }
+      function getTimeCount(yljgmcName, time, data, chartType) {
         let counts = 0
         for (let r = 0; r < data.length; r++) {
           let srvName = data[r]
-          if(chartType === 'pie'){
-            if (srvName.service_name === yljgmcName){
+          if (chartType === 'pie') {
+            if (srvName.service_name === yljgmcName) {
               counts += srvName.num_of_calls
             }
-          }else if(chartType === 'line'){
-            if (srvName.service_name === yljgmcName && srvName.statistics_time == time){
+          } else if (chartType === 'line') {
+            if (srvName.service_name === yljgmcName && srvName.statistics_time == time) {
               counts += srvName.total_duration
             }
           }
-        }          
+        }
         return counts
-      } 
-        // this.chartSettings['showLine'] = []
-        let barGraph = []
-        let lineGraph = []
+      }
+      // this.chartSettings['showLine'] = []
+      let barGraph = []
+      let lineGraph = []
       for (let j = 0; j < ywfssjTime.length; j++) {
-            
-            let itemData = {}            
-            let srvText = ''
-            for (let q = 0; q < yljgmcName.length; q++) {
-                for(let n = 0;n<srvKeys.length;n++){
-                  if(yljgmcName[q] === srvKeys[n]['keyr']){
-                      itemData[srvKeys[n].text] = getDataCount(yljgmcName[q], ywfssjTime[j], datas,'line')
-                      let ArgNum = getTimeCount(yljgmcName[q], ywfssjTime[j], datas,'line') / getDataCount(yljgmcName[q], ywfssjTime[j], datas,'line')
-                      if(!ArgNum){
-                          ArgNum = 0;
-                      }
-                      lineGraph.push(ArgNum)
 
-                      itemData[srvKeys[n].text + '-'] = ArgNum
-                      
-                      srvText = srvKeys[n].text + '-'
-                      
-                      itemData['时间'] = ywfssjTime[j]    
-                      if(type === 'day'){ 
-                          itemData['时间'] = ywfssjTime[j] + '点'
-                      }                 
-                  }                  
-                }
-                // this.chartSettings['showLine'].push(srvText)
-              }                                                
-              allChartData.push(itemData)
-            // console.log(barGraph.Math(...barGraph))
-            
-            }
-            if(barGraph.length>0 && lineGraph.length>0){
-                let maxNum = Math.max.apply(null, barGraph)
-                let ArgMax = Math.max.apply(null, lineGraph)                           
-                this.getMaxNum(maxNum,ArgMax)
-            }
-            
-        this.chartData.rows = allChartData
-        let pieAllData = []
-            for (let q = 0; q < yljgmcName.length; q++) {
-            let PieData = {}
-                for(let n = 0;n<srvKeys.length;n++){
-                  if(yljgmcName[q] === srvKeys[n]['keyr']){
-                      PieData['请求次数'] = getDataCount(yljgmcName[q], '', datas,'pie')
-                      PieData['服务'] = srvKeys[n].text
-                      console.log("itemData",PieData)
-                  }
-                  
-                }
-            pieAllData.push(PieData) 
+        let itemData = {}
+        let srvText = ''
+        for (let q = 0; q < yljgmcName.length; q++) {
+          for (let n = 0; n < srvKeys.length; n++) {
+            if (yljgmcName[q] === srvKeys[n]['keyr']) {
+              itemData[srvKeys[n].text] = getDataCount(yljgmcName[q], ywfssjTime[j], datas, 'line')
+              let ArgNum = getTimeCount(yljgmcName[q], ywfssjTime[j], datas, 'line') / getDataCount(yljgmcName[q], ywfssjTime[j], datas, 'line')
+              if (!ArgNum) {
+                ArgNum = 0;
               }
-        this.RigPieData.rows = pieAllData
+              lineGraph.push(ArgNum)
+
+              itemData[srvKeys[n].text + '-'] = ArgNum
+
+              srvText = srvKeys[n].text + '-'
+
+              itemData['时间'] = ywfssjTime[j]
+              if (type === 'day') {
+                itemData['时间'] = ywfssjTime[j] + '点'
+              }
+            }
+          }
+          // this.chartSettings['showLine'].push(srvText)
+        }
+        allChartData.push(itemData)
+        // console.log(barGraph.Math(...barGraph))
+
+      }
+      if (barGraph.length > 0 && lineGraph.length > 0) {
+        let maxNum = Math.max.apply(null, barGraph)
+        let ArgMax = Math.max.apply(null, lineGraph)
+        this.getMaxNum(maxNum, ArgMax)
+      }
+
+      this.chartData.rows = allChartData
+      let pieAllData = []
+      for (let q = 0; q < yljgmcName.length; q++) {
+        let PieData = {}
+        for (let n = 0; n < srvKeys.length; n++) {
+          if (yljgmcName[q] === srvKeys[n]['keyr']) {
+            PieData['请求次数'] = getDataCount(yljgmcName[q], '', datas, 'pie')
+            PieData['服务'] = srvKeys[n].text
+            console.log("itemData", PieData)
+          }
+
+        }
+        pieAllData.push(PieData)
+      }
+      this.RigPieData.rows = pieAllData
     },
-    getMaxNum(e,r){
-      let ops = {'maxbar': 0,'maxline':0,'interval':0}
+    getMaxNum(e, r) {
+      let ops = { 'maxbar': 0, 'maxline': 0, 'interval': 0 }
       let n = 1
-      ops.interval = n*100  
-      if((Math.ceil(r / ops.interval) % 2) !== 0){
+      ops.interval = n * 100
+      if ((Math.ceil(r / ops.interval) % 2) !== 0) {
         ops.maxline = Math.ceil(r / ops.interval) + 1
         ops.maxline = ops.maxline * ops.interval
-      }else{
+      } else {
         ops.maxline = Math.ceil(r / ops.interval)
         ops.maxline = ops.maxline * ops.interval
       }
-      if((Math.ceil(e / ops.interval) % 2) !== 0){
+      if ((Math.ceil(e / ops.interval) % 2) !== 0) {
         ops.maxbar = Math.ceil(e / ops.interval) + 1
         ops.maxbar = ops.maxbar * ops.interval
-      }else{
+      } else {
         ops.maxbar = Math.ceil(e / ops.interval)
         ops.maxbar = ops.maxbar * ops.interval
       }
-      if(ops.maxbar>ops.maxline){
+      if (ops.maxbar > ops.maxline) {
         ops.interval = ops.maxline
         ops.maxbar = Math.ceil(ops.maxbar / ops.interval) * ops.interval
-        if((ops.maxbar / ops.interval) < 4) {
+        if ((ops.maxbar / ops.interval) < 4) {
           ops.interval = ops.interval / 2
-        }else if ((ops.maxbar / ops.interval) > 8 ){
-            ops.interval = ops.interval * 2
+        } else if ((ops.maxbar / ops.interval) > 8) {
+          ops.interval = ops.interval * 2
         }
 
-      }else{
+      } else {
         ops.interval = ops.maxbar
         ops.maxline = Math.ceil(ops.maxline / ops.interval) * ops.interval
-        if((ops.maxline / ops.interval) < 4) {
+        if ((ops.maxline / ops.interval) < 4) {
           ops.interval = ops.interval / 2
-        } else if ((ops.maxline / ops.interval) > 8 ){
-            ops.interval = ops.interval * 2
+        } else if ((ops.maxline / ops.interval) > 8) {
+          ops.interval = ops.interval * 2
         }
       }
 
       this.chartExtendLine.yAxis.interval = ops.interval
-      this.chartSettings.max[0] =ops.maxbar
+      this.chartSettings.max[0] = ops.maxbar
       this.chartSettings.max[1] = ops.maxline
 
-      console.log('ops',e,r,ops)
+      console.log('ops', e, r, ops)
       return ops
     },
     timeCycle(e, index = 0) {
       this.CurrAct = index
       console.log(index, this.CurrAct)
-      this.legendData(this.srvUrlName,this.srvName,e)
+      this.legendData(this.srvUrlName, this.srvName, e)
 
     },
     // FilData(All){
@@ -1164,7 +1164,7 @@ export default {
     init() {
 
     },
-  
+
     callback() { },
     toManangerment() {
       let str = window.location.href
@@ -1173,23 +1173,23 @@ export default {
       console.log(str)
       window.location.href = '../../main/index.html?' + str
     },
-    
+
     //累计运行次数
-    sustain(){
+    sustain() {
       let req = {
         serviceName: "srvlog_call_statistics_select",
         colNames: ["*"],
         condition: [{
-        colName:"application",
-        value: "emr",
-        ruleType: "eq"
+          colName: "application",
+          value: "emr",
+          ruleType: "eq"
         }
         ],
         group: [
-        {
+          {
             "colName": "num_of_calls",
             "type": "sum"
-        }
+          }
         ]
       };
       let path = this.getServiceUrl(
@@ -1202,7 +1202,7 @@ export default {
         .then(res => {
           // let operat1 = res.data.data;
           // operat1 = Object.assign(...operat1);
-          if(res.data.data.length>0){
+          if (res.data.data.length > 0) {
             this.grand = res.data.data[0].num_of_calls;
           }
         })
@@ -1210,7 +1210,7 @@ export default {
           console.log(err);
         });
     },
-    
+
   },
 
   computed: {
@@ -1224,7 +1224,7 @@ export default {
     setInterval(() => {
       this.date = moment().format('YYYY-MM-DD  HH:mm:ss');
     }, 1000);
-    
+
     let date = "2018-8-31"
     let today = moment().format('YYYY-MM-DD') // moment获取本日日期
     let day_of_week = moment(today, 'YYYY-MM-DD').format('E'); // 计算指定日期是这周第几天
@@ -1249,19 +1249,19 @@ export default {
       year_start: year_start
     }
     // this.timeCycle('近一天')
-    
-    this.getLegend()
-    this.CurrRegNum()
-    this.getData_userno()
+
+    // this.getLegend()
+    // this.CurrRegNum()
+    // this.getData_userno()
     // this.sustain()
     // this.accRun()
   },
-  mounted(){
-    setInterval(()=>{
-      this.CurrRegNum()
-      this.getLegend()
-      this.sustain()
-    },30000)
+  mounted() {
+    setInterval(() => {
+      // this.CurrRegNum()
+      // this.getLegend()
+      // this.sustain()
+    }, 30000)
   }
 }
 </script>

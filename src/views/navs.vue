@@ -147,15 +147,6 @@ export default {
           class_no: "platform",
           class_name: "协同平台"
         },
-        // {
-        //   "app_name": "数据中心",
-        //   "app_icon": "images/appicon/xd-icon.png",
-        //   "app_seq": 8,
-        //   "guide_page": "/emr/#/datacenter",
-        //   "app_no": "datacenter",
-        //   "class_no": "datacenter",
-        //   "class_name": "数据中心"
-        // },
         {
           app_name: "应用开发",
           app_icon: "images/appicon/xd-icon.png",
@@ -239,7 +230,7 @@ export default {
         } else {
           // this.getMenuData(this.menuData)
           alert("无权限访问");
-
+          this.$router.push({ name: 'login' })
         }
       });
       // 	TODO: 添加 bx_auth_ticket header

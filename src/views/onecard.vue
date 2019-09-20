@@ -1,21 +1,18 @@
 <template>
   <div class="wrap">
-    <div class="title">
-      <!-- <div class="title_left">累计服务次数</div> -->
+    <view-title :titleViewData="titleViewData"></view-title>
+    <!-- <div class="title">
       <div class="title_left"></div>
       <div class="title_title">社保医疗一卡通融合平台</div>
       <div class="title_right">
         <div class="nowdate">{{ date }}</div>
-        <!-- <div class="title_right"> -->
-        <!-- <span class="btn">退出</span> -->
         <div class="accountInfo">
           当前帐号:
           <span>{{user.user_no}}</span>
         </div>
         <span class="btn_logout" @click="toManangerment">管理入口</span>
         <span class="btn_logout" @click="loginOut">注销</span>
-        <span class="btn_logout" @click="toLogin">返回</span>
-        <!-- </div> -->
+        <span class="btn_logout" @click="toNav">返回</span>
       </div>
     </div>
     <div class="main">
@@ -56,47 +53,22 @@
             @click="checkTimeHorizon('year')"
             :class="{ active: checkDataType === 'year' }"
           >近一年</div>
-          <!-- <div class="time_horizon_item btn">自定义时间段</div> -->
         </div>
       </header>
-      <component
-        :is="showComponent"
-        :swiperOptionTop="swiperOptionTop"
-        :chartSetting1="chartSetting1"
-        :chartData01="chartData01"
-        :hospital="pieData1.hospital"
-        :card="pieData1.card"
-        :checkDataType="checkDataType"
-        :hospitaldata="hospitaldata"
-        :hosData="hosData"
-        :card1="card1"
-        :pieData="pieData"
-        :countData="countData"
-        :shareBar1Data="shareBar1Data"
-        :shareBar2Data="shareBar2Data"
-        :sharePie1Data="sharePie1Data"
-        :sharePie2Data="sharePie2Data"
-        :shareAllCount="shareAllCount"
-        :collectBar1Data="collectBar1Data"
-        :collectBar2Data="collectBar2Data"
-        :collectPie1Data="collectPie1Data"
-        :collectPie2Data="collectPie2Data"
-        :collectPie3Data="collectPie3Data"
-        :collectMz="collectMz"
-        :collectZy="collectZy"
-      ></component>
-    </div>
+      <component :is="showComponent"></component>
+    </div>-->
   </div>
 </template>
 
 <script>
 let moment = require('moment');
+import ViewTitle from '@/components/ViewTitle'
 import EmrCollect from '@/components/EmrCollect' // 电子病历采集
 import EmrShare from '@/components/EmrShare' // 电子病历共享
 import InTreatment from '@/components/InTreatment' // 一卡通就诊
 import InTreatmentVue from '../components/InTreatment.vue';
 export default {
-  components: { EmrCollect, EmrShare, InTreatment },
+  components: { EmrCollect, EmrShare, InTreatment, ViewTitle },
   methods: {
     loginOut() {
       sessionStorage.clear();
@@ -115,17 +87,8 @@ export default {
         this.getAllData('day', this.tabsShow)
       }
     },
-
-    toLogin() {
-      // sessionStorage.clear()
-      this.$router.push(
-        {
-          name: "navs",
-          query: {
-            from: "onecard"
-          }
-        }
-      )
+    toNav() {
+      this.$router.push({ name: "navs", query: { from: "onecard" } })
     },
     getRunTime() {
       /**
@@ -1325,6 +1288,7 @@ export default {
       }
     },
     toManangerment() {
+      // 跳转到后台管理页面
       let str = window.location.href
       let num = str.indexOf("?");
       str = str.substr(num + 1);
@@ -1345,6 +1309,7 @@ export default {
       }
     },
     autoChangeTab(interval) {
+      // 自动切换tab
       setInterval(() => {
         if (this.tabsShow > 3) {
           this.tabsShow = 1
@@ -1354,11 +1319,15 @@ export default {
         }
         this.changeTab(this.tabsShow)
       }, interval);
-    }
+    },
+    getChartData(type = "day", tabsShow = this.tabsShow) {
+      if (tabsShow == 1) {
+
+      }
+    },
   },
   data() {
     return {
-      intreatmentNum: 23146,
       tabsShow: 1,
       runTime: {
         cvs: "",
@@ -1368,59 +1337,17 @@ export default {
       user: {
         user_no: ""
       },
+      titleViewData: {
+        title: "",
+        date: ""
+      },
       date: null,
-      timeHorizon: {},
       today: '',
       checkDataType: 'day',
-      hospitaldata: {
-        columns: ["时间", '延大附院', '市人民医院', '市中医医院', '博爱医院', '市妇幼保健院', '宝塔区医院'],
-        rows: []
-      },
-      hosData: {},
       chartSetting1: {
         stack: {          用户: ['市人民医院', '中医医院', '博爱医院', '妇幼医院', "市中医医院", "市妇幼医院", "门诊", "住院", "DI_ADI_REGISTER_INFO_select", "门诊诊疗挂号记录"
             , "门急诊诊疗医嘱", "门急诊诊疗检查报告", "住院诊疗入院记录", "住院诊疗医嘱信息", "住院诊疗检验报告"]        }
-      },
-      swiperOptionTop: {
-        watchSlidesProgress: true,
-        watchSlidesVisibility: true,
-        loopedSlides: 5,
-        autoplay: {
-          delay: 5000,
-          disableOnInteraction: false
-        },
-        pagination: {
-          el: '.swiper-pagination',
-          clickable: true,
-          renderBullet(index, className) {
-            let hospital_name = ['博爱医院', '市中医医院', '市人民医院', '市妇幼医院'];
-            return `<span class="${className} swiper-pagination-bullet-custom">${hospital_name[index]}</span>`;
-          }
-        }
-      },
-      chartData01: {},
-      pieData1: {
-        hospital: {},
-        card: {}
-      },
-      card1: {},
-      pieData: {},
-      pie3Data: {},
-      countData: {},
-      bar2Data: {},
-      shareBar1Data: {},
-      shareBar2Data: {},
-      sharePie1Data: {},
-      sharePie2Data: {},
-      sharePie3Data: {},
-      shareAllCount: 0,
-      collectBar1Data: {},
-      collectBar2Data: [],
-      collectPie1Data: {},
-      collectPie2Data: {},
-      collectPie3Data: {},
-      collectMz: 0,
-      collectZy: 0
+      }
     };
   },
   computed: {
@@ -1441,17 +1368,6 @@ export default {
     let month_end = moment(today).endOf('month').format('YYYY-MM-DD'); // 本月最后一天
     let day_count = parseInt(moment(today).endOf('month').format('DD')); // 本月天数
     let year_start = moment(today).subtract(11, 'month').format('YYYY-MM-DD') // 11个月之前
-    this.timeHorizon = {
-      date: date,
-      today: today,
-      day_count: day_count,
-      day_of_week: day_of_week,
-      week_start: week_start,
-      week_end: week_end,
-      month_start: month_start,
-      month_end: month_end,
-      year_start: year_start
-    }
     let user = sessionStorage.getItem('current_login_user')
     top.user = JSON.parse(user)
     this.user = top.user
@@ -1459,9 +1375,10 @@ export default {
   mounted() {
     setInterval(() => {
       this.date = moment().format('YYYY-MM-DD  HH:mm:ss');
+      this.titleViewData.date = moment().format('YYYY-MM-DD  HH:mm:ss');
     }, 1000);
-    this.getRunTime()
-    this.getAllData('day', this.tabsShow)
+    // this.getRunTime()
+    // this.getAllData('day', this.tabsShow)
     // this.autoChangeTab(10000) // 自动切换Tab
   }
 };
@@ -1546,7 +1463,7 @@ body {
         }
       }
       &:hover {
-        background-color: rgba(255, 0, 0, 0.5);
+        background-color: rgba(0, 119, 255, 0.986);
       }
     }
     .btn_logout {
@@ -1557,7 +1474,7 @@ body {
       min-width: 50px;
       margin-left: 10px;
       &:hover {
-        background-color: rgba(255, 0, 0, 0.5);
+        background-color: rgba(0, 119, 255, 0.986);
       }
     }
   }
@@ -1777,17 +1694,13 @@ body {
     display: flex;
     height: calc(100% - 140px);
     justify-content: space-between;
-    // height: 790px;
-    // height: 85vh;
     margin: 20px 0;
     box-sizing: border-box;
-    // padding-bottom: 50px;
     .item_title {
       height: 40px;
       line-height: 40px;
       text-align: left;
       text-indent: 1rem;
-      // margin: 0.5rem 0.5rem 0 0;
     }
     .content_left {
       height: 100%;
@@ -1801,9 +1714,7 @@ body {
         text-indent: 1rem;
         margin: 0.5rem 0.5rem 0 0;
       }
-      // padding: 20px;
       .content_left_left {
-        // padding-top: 3vh;
         height: 100%;
         box-sizing: border-box;
         float: left;
@@ -1832,8 +1743,6 @@ body {
         display: flex;
         flex-direction: column;
         .content_left_right_item {
-          // height: 30%;
-          // overflow: hidden;
           &:first-child {
             margin-bottom: 10px;
           }
@@ -1843,8 +1752,6 @@ body {
     .content_right {
       position: relative;
       height: 100%;
-      // overflow-y: ;
-      // margin: 10px;
       box-sizing: border-box;
       display: flex;
       justify-content: space-between;
@@ -1876,8 +1783,6 @@ body {
             padding: 0 13px;
             cursor: pointer;
             font-size: 15px;
-            // border-top-right-radius: 5px;
-            // border-top-left-radius: 5px;
             border-bottom: 1px solid #007aff;
             &.activity {
               color: #fff;
@@ -1914,7 +1819,6 @@ body {
         .content_right_bottom_item {
           width: 49%;
           font-size: 14px;
-          // height: 100%;
           &:first-child {
             box-sizing: border-box;
             background-image: url("../assets/images/panel-l-b.png");
@@ -1964,11 +1868,9 @@ body {
             flex-direction: column;
             justify-content: space-around;
             align-items: center;
-            // overflow: hidden;
             div {
               display: flex;
               flex-direction: column;
-              // justify-content: space-around;
               height: 35%;
               .text-val {
                 font-size: 2rem;

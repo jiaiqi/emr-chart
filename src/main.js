@@ -9,7 +9,6 @@ import VueInit from '@/assets/dev_config/vue_init';
 import VueUtil from '@/assets/dev_config/vue_util';
 import elementUI from 'element-ui';
 import dataV from '@jiaminghi/data-view'
-import 'swiper/dist/css/swiper.css';
 import 'font-awesome/css/font-awesome.css'
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.config.productionTip = false;
@@ -22,7 +21,6 @@ VueInit();
 VueUtil();
 
 Vue.prototype.axios = axios; // 挂载axios到vue.proto对象上原型属性
-Vue.prototype.$http = axios; // 挂载axios到vue.proto对象上原型属性
 axios.interceptors.request.use((config) => {
   // 在发送请求之前做些什么
   let bx_auth_ticket = sessionStorage.getItem("bx_auth_ticket");

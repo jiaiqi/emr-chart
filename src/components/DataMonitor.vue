@@ -108,7 +108,7 @@ export default {
     }
   },
   mounted() {
-    this.getDataBase();
+    // this.getDataBase();
   }
 };
 </script>
