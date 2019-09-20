@@ -10,6 +10,7 @@ import VueUtil from '@/assets/dev_config/vue_util';
 import {vChartInfo} from '@/assets/common/common';
 import elementUI from 'element-ui';
 import dataV from '@jiaminghi/data-view'
+import 'swiper/dist/css/swiper.css';
 import 'font-awesome/css/font-awesome.css'
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.config.productionTip = false;
@@ -18,11 +19,13 @@ Vue.use(VueAwesomeSwiper);
 Vue.use(elementUI)
 Vue.use(VCharts);
 Vue.use(dataV)
+// Vue.use(vChartInfo)
 VueInit();
 VueUtil();
 
-Vue.prototype.vChartInfo = vChartInfo; // 挂载 vChartInfo 到vue.proto对象上原型属性
 Vue.prototype.axios = axios; // 挂载axios到vue.proto对象上原型属性
+Vue.prototype.vChartInfo = vChartInfo; // 挂载 vChartInfo 到vue.proto对象上原型属性
+Vue.prototype.$http = axios; // 挂载axios到vue.proto对象上原型属性
 axios.interceptors.request.use((config) => {
   // 在发送请求之前做些什么
   let bx_auth_ticket = sessionStorage.getItem("bx_auth_ticket");

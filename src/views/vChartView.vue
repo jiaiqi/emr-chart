@@ -1,28 +1,27 @@
 <template>
   <div class="wrap">
-    <view-title :titleViewData="titleViewData"></view-title>
-    <div class="main">
-      <view-tabs :tabsData="tabsData"></view-tabs>
-      <time-type></time-type>
-      <onecard-content :contentData="contentData"></onecard-content>
-    </div>
-    <!-- <div class="title">
+    <div class="title">
+      <!-- <div class="title_left">累计服务次数</div> -->
       <div class="title_left"></div>
       <div class="title_title">社保医疗一卡通融合平台</div>
       <div class="title_right">
         <div class="nowdate">{{ date }}</div>
+        <!-- <div class="title_right"> -->
+        <!-- <span class="btn">退出</span> -->
         <div class="accountInfo">
           当前帐号:
           <span>{{user.user_no}}</span>
         </div>
         <span class="btn_logout" @click="toManangerment">管理入口</span>
         <span class="btn_logout" @click="loginOut">注销</span>
-        <span class="btn_logout" @click="toNav">返回</span>
+        <span class="btn_logout" @click="toLogin">返回</span>
+        <!-- </div> -->
       </div>
     </div>
     <div class="main">
       <header class="header">
         <div class="top">
+          <!-- 页面内容table -->
           <div class="top_left">
             <div class="page_name" :class="{tabactive:tabsShow==1}" @click="changeTab(1)">一卡通就诊</div>
             <div class="page_name" :class="{tabactive:tabsShow==2}" @click="changeTab(2)">电子病历共享</div>
@@ -37,7 +36,8 @@
             </div>
           </div>
         </div>
-        <div class="time_horizon">
+        <!-- <times ref="timesType"></times> -->
+        <div class="time_horizon" ref>
           <div
             class="time_horizon_item btn"
             @click="checkTimeHorizon('day')"
@@ -58,21 +58,47 @@
             @click="checkTimeHorizon('year')"
             :class="{ active: checkDataType === 'year' }"
           >近一年</div>
+          <!-- <div class="time_horizon_item btn">自定义时间段</div> -->
         </div>
       </header>
-      <component :is="showComponent"></component>
-    </div>-->
+      <component
+        :is="showComponent"
+        :swiperOptionTop="swiperOptionTop"
+        :chartSetting1="chartSetting1"
+        :chartData01="chartData01"
+        :hospital="pieData1.hospital"
+        :card="pieData1.card"
+        :checkDataType="checkDataType"
+        :hospitaldata="hospitaldata"
+        :hosData="hosData"
+        :card1="card1"
+        :pieData="pieData"
+        :countData="countData"
+        :shareBar1Data="shareBar1Data"
+        :shareBar2Data="shareBar2Data"
+        :sharePie1Data="sharePie1Data"
+        :sharePie2Data="sharePie2Data"
+        :shareAllCount="shareAllCount"
+        :collectBar1Data="collectBar1Data"
+        :collectBar2Data="collectBar2Data"
+        :collectPie1Data="collectPie1Data"
+        :collectPie2Data="collectPie2Data"
+        :collectPie3Data="collectPie3Data"
+        :collectMz="collectMz"
+        :collectZy="collectZy"
+      ></component>
+    </div>
   </div>
 </template>
 
 <script>
 let moment = require('moment');
-import ViewTitle from '@/components/ViewTitle'
-import ViewTabs from '@/components/ViewTabs'
-import TimeType from "@/components/TimeType";
-import OnecardContent from '@/components/OnecardContent'
+import EmrCollect from '@/components/EmrCollect' // 电子病历采集
+import EmrShare from '@/components/EmrShare' // 电子病历共享
+import InTreatment from '@/components/InTreatment' // 一卡通就诊
+import InTreatmentVue from '../components/InTreatment.vue';
 export default {
-  components: { ViewTitle, ViewTabs, TimeType, OnecardContent },
+  components: { EmrCollect, EmrShare, InTreatment },
   methods: {
     loginOut() {
       sessionStorage.clear();
@@ -91,7 +117,8 @@ export default {
         this.getAllData('day', this.tabsShow)
       }
     },
-    toNav() {
+
+    toLogin() {
       this.$router.push({ name: "navs", query: { from: "onecard" } })
     },
     getRunTime() {
@@ -224,7 +251,15 @@ export default {
         this.axios({ method: "POST", url: url, data: req })
           .then(res => {
             data = res.data.data
-            console.log("aaaaaaadddddddd", data)
+            // 构造数据方法使用
+            let vcInfo = new this.vChartInfo()
+            let vcInfob = new this.vChartInfo()
+            let col = ['ywfssj','cmd']
+            let columns = vcInfo.getChartColumns(data,col)
+            let columnData = vcInfo.getChart(col,'create_time','line')
+            console.log("vcInfo ============ Data", data,columns,vcInfo,vcInfob)
+            // 构造数据方法使用------------end
+
             this.getCountData(data, type, tabsShow)
             // this.handleAllData(data, type, tabsShow)
           }).catch(err => {
@@ -677,6 +712,7 @@ export default {
           let data = res.data.data
           console.log("tabsShow-703:", data)
           this.getCountData(data, type, tabsShow)
+          
 
         }).catch(err => {
           console.log(err);
@@ -1113,7 +1149,8 @@ export default {
           }
         })
         let bra1Data = {
-          columns: ["时间", "门诊诊疗挂号记录", "门急诊诊疗医嘱", "门急诊诊疗检查报告", "住院诊疗入院记录", "住院诊疗医嘱信息", "住院诊疗检验报告",],
+          // columns: ["时间", "门诊诊疗挂号记录", "门急诊诊疗医嘱", "门急诊诊疗检查报告", "住院诊疗入院记录", "住院诊疗检验报告", "住院诊疗医嘱信息"],
+          columns: ["时间"].concat(types),
           rows: rows
         }
         this.collectBar1Data = bra1Data
@@ -1229,8 +1266,9 @@ export default {
           }
         } else if (type === 'week' || type === 'month' || type === 'year') {
           for (let i = 0; i < hospitalName.length; i++) {
-            allChartData[hospitalName[i]] = {}
-            allChartData[hospitalName[i]].columns = ["时间", "门诊诊疗挂号记录", "门急诊诊疗医嘱", "门急诊诊疗检查报告", "住院诊疗入院记录", "住院诊疗医嘱信息", "住院诊疗检验报告",]
+            allChartData[(hospitalName[i] === 'fyyy' ? '市妇幼保健院' : hospitalName[i] === 'rmyy' ? '市人民医院' : hospitalName[i] === 'zyy' ? '市中医医院' : hospitalName[i] === 'bayy' ? '博爱医院' : '-')] = {}
+            allChartData[(hospitalName[i] === 'fyyy' ? '市妇幼保健院' : hospitalName[i] === 'rmyy' ? '市人民医院' : hospitalName[i] === 'zyy' ? '市中医医院' : hospitalName[i] === 'bayy' ? '博爱医院' : '-')].columns = ["时间", "门诊诊疗挂号记录", "门急诊诊疗医嘱", "门急诊诊疗检查报告", "住院诊疗入院记录", "住院诊疗医嘱信息", "住院诊疗检验报告",]
+            allChartData[(hospitalName[i] === 'fyyy' ? '市妇幼保健院' : hospitalName[i] === 'rmyy' ? '市人民医院' : hospitalName[i] === 'zyy' ? '市中医医院' : hospitalName[i] === 'bayy' ? '博爱医院' : '-')].rows = []
             console.log(allChartData)
             //  if (hospitalName[i] == "bayy") {
             //     allChartData["博爱医院"].rows = []
@@ -1277,7 +1315,7 @@ export default {
           mz: 0,
           zy: 0
         }
-        console.error("zzz", datas)
+        console.log("datas", datas)
         datas.map(data => {
           if (data.record_type.indexOf("门急诊") != -1 || data.record_type.indexOf("门诊") != -1) {
             console.log(data.record_type, data.amount)
@@ -1292,7 +1330,6 @@ export default {
       }
     },
     toManangerment() {
-      // 跳转到后台管理页面
       let str = window.location.href
       let num = str.indexOf("?");
       str = str.substr(num + 1);
@@ -1313,7 +1350,6 @@ export default {
       }
     },
     autoChangeTab(interval) {
-      // 自动切换tab
       setInterval(() => {
         if (this.tabsShow > 3) {
           this.tabsShow = 1
@@ -1323,65 +1359,74 @@ export default {
         }
         this.changeTab(this.tabsShow)
       }, interval);
-    },
-    getChartData(type = "day", tabsShow = this.tabsShow) {
-      if (tabsShow == 1) {
-
-      }
-    },
+    }
   },
   data() {
     return {
+      vChart:Object,
+      intreatmentNum: 23146,
       tabsShow: 1,
       runTime: {
         cvs: "",
         emr: ""
       },
+      showComponent: InTreatment,
       user: {
         user_no: ""
       },
-      titleViewData: {
-        title: "",
-        date: "",
-        currentPage: ""
-      },
-      tabsData: {
-        tabs: ["一卡通就诊", "电子病历共享", "电子病历采集"],
-        runTime: ""
-      },
-      contentData: {
-        currentPage: "onecard",
-        firstBar: {
-          title: "一卡通就诊次数",
-          data: {
-            columns: [],
-            rows: []
-          }
-        },
-        secondBar: {
-          tabCheckItem: ["延大附院", "市人民医院", "市中医医院", "博爱医院", "市妇幼保健院", "宝塔区医院"],
-          data: [] //各个医院的data
-        },
-        firstPie: {
-          title: "各医院就诊分布",
-          data: {}
-        },
-        secondPie: {
-          title: "就诊刷卡类型分布",
-          data: {}
-        },
-        thirdPie: {
-          title: "各医院就诊刷卡类型分布",
-          data: {}
-        },
-        countData: {}
-      },
+      date: null,
+      timeHorizon: {},
       today: '',
       checkDataType: 'day',
+      hospitaldata: {
+        columns: ["时间", '延大附院', '市人民医院', '市中医医院', '博爱医院', '市妇幼保健院', '宝塔区医院'],
+        rows: []
+      },
+      hosData: {},
       chartSetting1: {
         stack: {          用户: ['市人民医院', '中医医院', '博爱医院', '妇幼医院', "市中医医院", "市妇幼医院", "门诊", "住院", "DI_ADI_REGISTER_INFO_select", "门诊诊疗挂号记录"
             , "门急诊诊疗医嘱", "门急诊诊疗检查报告", "住院诊疗入院记录", "住院诊疗医嘱信息", "住院诊疗检验报告"]        }
-      }
+      },
+      swiperOptionTop: {
+        watchSlidesProgress: true,
+        watchSlidesVisibility: true,
+        loopedSlides: 5,
+        autoplay: {
+          delay: 5000,
+          disableOnInteraction: false
+        },
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+          renderBullet(index, className) {
+            let hospital_name = ['博爱医院', '市中医医院', '市人民医院', '市妇幼医院'];
+            return `<span class="${className} swiper-pagination-bullet-custom">${hospital_name[index]}</span>`;
+          }
+        }
+      },
+      chartData01: {},
+      pieData1: {
+        hospital: {},
+        card: {}
+      },
+      card1: {},
+      pieData: {},
+      pie3Data: {},
+      countData: {},
+      bar2Data: {},
+      shareBar1Data: {},
+      shareBar2Data: {},
+      sharePie1Data: {},
+      sharePie2Data: {},
+      sharePie3Data: {},
+      shareAllCount: 0,
+      collectBar1Data: {},
+      collectBar2Data: [],
+      collectPie1Data: {},
+      collectPie2Data: {},
+      collectPie3Data: {},
+      collectMz: 0,
+      collectZy: 0
     };
   },
   computed: {
@@ -1390,27 +1435,174 @@ export default {
     }
   },
   created() {
+    // let vCharts = this.vChartInfo
+    // this.vChart = vCharts
+    // console.log('vChart22======:',vCharts,this.vChart)
+    let date = "2018-8-31"
+    let today = moment().format('YYYY-MM-DD') // moment获取本日日期
+    let day_of_week = moment(today, 'YYYY-MM-DD').format('E'); // 计算指定日期是这周第几天
+    // let week_start = moment(today).subtract(day_of_week - 1, 'days').format('YYYY-MM-DD'); // 周一日期
+    let week_start = moment(today).subtract(6, 'days').format('YYYY-MM-DD'); // 六天前
+    let week_end = today // 今天
+    // let week_end = moment(today).add(7 - day_of_week, 'days').format('YYYY-MM-DD'); // 周日日期
+    let month_start = moment(today).subtract(30, 'days').format('YYYY-MM-DD') // 30天前
+    // let month_start = moment(today).startOf('month').format('YYYY-MM-DD'); // 本月第一天
+    let month_end = moment(today).endOf('month').format('YYYY-MM-DD'); // 本月最后一天
+    let day_count = parseInt(moment(today).endOf('month').format('DD')); // 本月天数
+    let year_start = moment(today).subtract(11, 'month').format('YYYY-MM-DD') // 11个月之前
+    this.timeHorizon = {
+      date: date,
+      today: today,
+      day_count: day_count,
+      day_of_week: day_of_week,
+      week_start: week_start,
+      week_end: week_end,
+      month_start: month_start,
+      month_end: month_end,
+      year_start: year_start
+    }
     let user = sessionStorage.getItem('current_login_user')
     top.user = JSON.parse(user)
     this.user = top.user
   },
   mounted() {
     setInterval(() => {
-      this.titleViewData.date = moment().format('YYYY-MM-DD  HH:mm:ss');
+      this.date = moment().format('YYYY-MM-DD  HH:mm:ss');
     }, 1000);
-    // this.getRunTime()
-    // this.getAllData('day', this.tabsShow)
+    this.getRunTime()
+    this.getAllData('day', this.tabsShow)
     // this.autoChangeTab(10000) // 自动切换Tab
   }
 };
 </script>
 
 <style lang="scss">
+* {
+  color: rgba(255, 255, 255, 1);
+}
+html,
+body {
+  height: 100vh;
+  zoom: 1;
+  background: #0b0f34;
+  // overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+.active {
+  line-height: 1.4rem;
+  background-color: rgba(0, 119, 255, 0.986);
+}
+
+.title {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 40px;
+  height: 40px;
+  .title_left {
+    flex: 1;
+    text-align: left;
+  }
+
+  .title_title {
+    font-size: 25px;
+    text-align: center;
+    color: #007aff;
+    flex: 1;
+  }
+
+  .title_right {
+    justify-content: flex-end;
+    display: flex;
+    height: 20px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    .nowdate {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 1.2rem;
+      padding-right: 20px;
+      // color: #d13d2a;
+      font-weight: 600;
+    }
+    .accountInfo {
+      display: inline-block;
+      // height: 50px;
+      min-width: 130px;
+      span {
+        font-weight: 600;
+      }
+    }
+    .btn {
+      cursor: pointer;
+      text-align: center;
+      display: inline-block;
+      // height: 30px;
+      min-width: 80px;
+      // line-height: 30px;
+      margin: 0 20px;
+      &:nth-child(2) {
+        text-align: left;
+        &:hover {
+          background-color: transparent;
+        }
+      }
+      &:hover {
+        background-color: rgba(255, 0, 0, 0.5);
+      }
+    }
+    .btn_logout {
+      cursor: pointer;
+      // line-height: 30px;
+      // height: 30px;
+      text-align: center;
+      min-width: 50px;
+      margin-left: 10px;
+      &:hover {
+        background-color: rgba(255, 0, 0, 0.5);
+      }
+    }
+  }
+  @media screen and (max-width: 1366px) {
+    html,
+    body {
+      font-size: 14px !important;
+    }
+    .title_title {
+      font-size: 20px;
+    }
+    .title_right {
+      font-size: 14px;
+      .nowdate {
+        font-size: 14px;
+        padding-right: 5px;
+      }
+      .accountInfo {
+        min-width: 80px;
+      }
+      .btn_logout {
+        min-width: 30px;
+      }
+    }
+  }
+}
+
 .wrap {
   background: #0b0f34;
   width: 100vw;
+  // height: 100%;
   height: 100vh;
   box-sizing: border-box;
+  // zoom: 1;
+  // min-width: 1500px;
+  // overflow-y: scroll;
   .main {
     box-sizing: border-box;
     margin: 0 auto;
@@ -1419,7 +1611,438 @@ export default {
     height: calc(100% - 40px);
     background: url("../assets/images/wrapper-bg.png") no-repeat;
     background-size: 100% 100%;
+    // overflow: hidden;
     zoom: 1;
   }
+  @media screen and(max-width: 1366px) {
+    .main {
+      height: calc(100% - 25px);
+    }
+  }
+  .header {
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
+      margin: 0 0 0 30px;
+      // height: 50px;
+      // line-height: 50px;
+      .top_left {
+        display: flex;
+        width: 23%;
+        height: 40px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        justify-content: space-around;
+        line-height: 50px;
+        .page_name {
+          font-size: 1.2rem;
+          line-height: 40px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          color: #0084ff;
+          &.tabactive {
+            border-bottom: 3px solid #007aff;
+          }
+        }
+        @media screen and (max-width: 1366px) {
+          .page_name {
+            font-size: 1rem;
+          }
+        }
+      }
+      .top_right {
+        display: flex;
+        align-items: center;
+        .accountInfo {
+          display: inline-block;
+          // height: 50px;
+          min-width: 130px;
+          span {
+            font-weight: 600;
+          }
+        }
+        .btn {
+          cursor: pointer;
+          text-align: center;
+          display: inline-block;
+          height: 30px;
+          min-width: 80px;
+          line-height: 30px;
+          margin-right: 20px;
+          &:nth-child(2) {
+            text-align: left;
+            &:hover {
+              background-color: transparent;
+            }
+          }
+          &:hover {
+            background-color: rgba(0, 119, 255, 0.986);
+          }
+        }
+        .btn_logout {
+          cursor: pointer;
+          line-height: 30px;
+          height: 30px;
+          text-align: center;
+          min-width: 50px;
+          &:hover {
+            background-color: rgba(0, 119, 255, 0.986);
+          }
+        }
+      }
+    }
+    .top_header {
+      display: flex;
+      // height: 30px;
+      justify-content: space-between;
+      box-sizing: border-box;
+      width: 28%;
+      .top_header_item {
+        height: 40px;
+        line-height: 40px;
+        box-sizing: border-box;
+        text-align: left;
+        text-indent: 20px;
+        flex: 1;
+        .all_number {
+          text-indent: 1rem;
+          color: #0084ff;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+      @media screen and (max-width: 1366px) {
+        .top_header_item {
+          font-size: 0.8rem;
+          &:first-child {
+            flex: 1;
+            // margin-right: 20px;
+          }
+          &:last-child {
+            flex: 0.8;
+          }
+        }
+      }
+      .tabbtn {
+        cursor: pointer;
+        &:hover {
+          background-color: rgba(0, 119, 255, 0.986);
+        }
+      }
+    }
+    @media screen and(max-width: 1366px) {
+      .top_header {
+        width: 31%;
+      }
+    }
+    .time_horizon {
+      display: flex;
+      box-sizing: border-box;
+      margin: 5px 50px;
+      .time_horizon_item {
+        cursor: pointer;
+        width: 70px;
+        line-height: 1rem;
+        font-size: 1rem;
+        margin: 0.4rem 0;
+        text-align: center;
+        border-right: 1px solid rgba(27, 40, 228, 0.322);
+        &.active {
+          line-height: 1.8rem;
+          padding: 0 0.2rem;
+          background-color: rgba(0, 119, 255, 0.986);
+          margin: 0;
+        }
+        &:hover {
+          line-height: 1.8rem;
+          margin: 0;
+          background-color: rgba(27, 40, 228, 0.322);
+        }
+      }
+      @media screen and (max-width: 1366px) {
+        .time_horizon_item {
+          font-size: 0.8rem;
+          line-height: 0.8rem;
+          &.active {
+            line-height: 1.4rem;
+            padding: 0 0.2rem;
+            background-color: rgba(0, 119, 255, 0.986);
+            margin: 0;
+          }
+          &:hover {
+            line-height: 1.2rem;
+            margin: 0;
+            background-color: rgba(27, 40, 228, 0.322);
+          }
+        }
+      }
+    }
+  }
+  .content {
+    display: flex;
+    height: calc(100% - 140px);
+    justify-content: space-between;
+    // height: 790px;
+    // height: 85vh;
+    margin: 20px 0;
+    box-sizing: border-box;
+    // padding-bottom: 50px;
+    .item_title {
+      height: 40px;
+      line-height: 40px;
+      text-align: left;
+      text-indent: 1rem;
+      // margin: 0.5rem 0.5rem 0 0;
+    }
+    .content_left {
+      height: 100%;
+      box-sizing: border-box;
+      margin-right: 1rem;
+      display: flex;
+      .item_title {
+        height: 40px;
+        line-height: 40px;
+        text-align: left;
+        text-indent: 1rem;
+        margin: 0.5rem 0.5rem 0 0;
+      }
+      // padding: 20px;
+      .content_left_left {
+        // padding-top: 3vh;
+        height: 100%;
+        box-sizing: border-box;
+        float: left;
+        width: 70%;
+        padding: 1rem;
+        padding-left: 1vw;
+        .big-title {
+          padding: 0 20px;
+          text-align: center;
+          line-height: 50px;
+          font-size: 1.2rem;
+        }
+        @media screen and (max-width: 1366px) {
+          .big-title {
+            padding: 0 10px;
+            text-align: center;
+            font-size: 1rem;
+          }
+        }
+      }
+      .content_left_right {
+        padding-top: 1vh;
+        height: 100%;
+        margin: 0px 0px 0px 10px;
+        width: 30%;
+        display: flex;
+        flex-direction: column;
+        .content_left_right_item {
+          // height: 30%;
+          // overflow: hidden;
+          &:first-child {
+            margin-bottom: 10px;
+          }
+        }
+      }
+    }
+    .content_right {
+      position: relative;
+      height: 100%;
+      // overflow-y: ;
+      // margin: 10px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+      padding: 0px;
+      .content_right_top {
+        height: 30px;
+        line-height: 30px;
+        margin-bottom: 5px;
+        text-align: left;
+        text-indent: 20px;
+        .swiper-slide {
+          height: 100%;
+          opacity: 0.4;
+        }
+        .swiper-slide-active {
+          opacity: 1;
+        }
+      }
+      .content_right_content {
+        height: calc(50% - 10px);
+        box-sizing: border-box;
+        .tab_check {
+          display: flex;
+          margin: 20px auto;
+          line-height: 30px;
+          justify-content: center;
+          .check_item {
+            padding: 0 13px;
+            cursor: pointer;
+            font-size: 15px;
+            // border-top-right-radius: 5px;
+            // border-top-left-radius: 5px;
+            border-bottom: 1px solid #007aff;
+            &.activity {
+              color: #fff;
+              border-top-right-radius: 5px;
+              border-top-left-radius: 5px;
+              border: 1px solid #024994;
+              background-color: #007aff;
+              border-bottom: none;
+            }
+          }
+          @media screen and (max-width: 1366px) {
+            .check_item {
+              font-size: 0.6rem;
+              padding: 0 5px;
+            }
+          }
+        }
+        @media screen and (max-width: 1366px) {
+          .tab_check {
+            margin: 10px auto;
+          }
+        }
+        .swiper-container {
+          padding-top: 50px;
+          height: 100%;
+          position: relative;
+        }
+      }
+      .content_right_bottom {
+        height: calc(50% - 50px);
+        margin: 10px;
+        display: flex;
+        justify-content: space-between;
+        .content_right_bottom_item {
+          width: 49%;
+          font-size: 14px;
+          // height: 100%;
+          &:first-child {
+            box-sizing: border-box;
+            background-image: url("../assets/images/panel-l-b.png");
+            background-size: 100% 100%;
+            width: 45%;
+            height: 100%;
+            margin: auto;
+            font-size: 14px;
+            // min-height: 6rem;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-direction: column;
+            div {
+              .text-val {
+                font-size: 2rem;
+                overflow: hidden;
+                text-align: center;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                color: #007aff;
+              }
+              .label {
+                font-size: 1rem;
+                text-align: center;
+              }
+              @media screen and (max-width: 1680px) {
+                .text-val {
+                  font-size: 1.2rem;
+                }
+                .label {
+                  font-size: 1rem;
+                }
+              }
+              @media screen and (max-width: 1366px) {
+                .label {
+                  font-size: 0.8rem;
+                }
+                .text-val {
+                  font-size: 1rem;
+                }
+              }
+            }
+          }
+          .border-box-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            // overflow: hidden;
+            div {
+              display: flex;
+              flex-direction: column;
+              // justify-content: space-around;
+              height: 35%;
+              .text-val {
+                font-size: 2rem;
+                color: #007aff;
+                line-height: 3rem;
+              }
+              .label {
+                font-size: 1rem;
+                text-align: center;
+              }
+            }
+          }
+        }
+      }
+      @media screen and(max-width:1366px) {
+        .content_right_bottom {
+          height: calc(50% - 30px);
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 1366px) {
+  .title {
+    height: 25px;
+  }
+  .wrap {
+    height: calc(100vh-25px);
+  }
+}
+.dv-border-box-8 {
+  @media screen and (max-width: 1366px) {
+    .border-box-content {
+      font-size: 0.8rem;
+    }
+  }
+}
+.carousel-demo4 {
+  position: relative;
+  .h-carousel-pagination {
+    margin-top: 10px;
+    height: 100px;
+    .h-carousel-pagination-item {
+      float: left;
+      width: 25%;
+      cursor: pointer;
+      > img {
+        width: 100%;
+        height: 100px;
+        opacity: 0.5;
+        transition: 0.3s;
+      }
+      &.active,
+      &:hover {
+        > img {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+.col-65 {
+  width: 65%;
+}
+.col-35 {
+  width: 35%;
 }
 </style>

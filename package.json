@@ -14,6 +14,7 @@
     "element-ui": "^2.12.0",
     "font-awesome": "^4.7.0",
     "jquery": "^2.1.4",
+    "mockjs": "^1.0.1-beta3",
     "moment": "^2.24.0",
     "v-charts": "^1.19.0",
     "vue": "^2.6.10",

@@ -35,8 +35,9 @@ export default {
     },
   },
   watch: {
-    data: {
+    titleViewData: {
       handler: function (newValue, oldValue) {
+        // console.log("TitleData:", newValue)
         return newValue
       },
       deep: true//对象内部的属性监听，即深度监听
@@ -59,6 +60,7 @@ export default {
   .title_center {
     flex: 1;
     text-align: center;
+    color: #007aff;
     font-size: 1.5rem; /* 24/16 */
     line-height: 2.5rem; /* 40/16 */
   }
@@ -78,12 +80,9 @@ export default {
       }
     }
     .btn_logout {
-      min-width: 3.75rem /* 60/16 */;
-      padding: 0 1rem; /* 20/16 */
+      // min-width: 3.75rem /* 60/16 */;
+      padding: 0 0.625rem; /* 10/16 */
       text-align: center;
-      &.long_btn {
-        min-width: 5rem; /* 80/16 */
-      }
       &:hover {
         background-color: #0063b1;
       }

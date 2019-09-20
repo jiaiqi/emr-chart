@@ -1,105 +1,25 @@
 <template>
   <div class="wrap-data">
-    <div class="title">
-      <div class="title_left"></div>
-      <div class="title_title">数据中心</div>
-      <div class="title_right">
-        <div class="nowdate">{{ date }}</div>
-        <div class="accountInfo">
-          当前帐号:
-          <span>{{user !== null && user.user_no !== null ? user.user_no:'-'}}</span>
-        </div>
-        <span class="btn_logout" @click="toManangerment">管理入口</span>
-        <span class="btn_logout" @click="toIndex('1')">注销</span>
-        <span class="btn_logout" @click="toIndex('2')">返回</span>
-        <!-- </div> -->
-      </div>
-    </div>
+    <view-title :titleViewData="titleViewData"></view-title>
     <div class="main">
-      <header class="header">
-        <div class="top">
-          <div class="top_left">
-            <div class="page_name" :class="{tabactive:tabsShow==1}" @click="changeTab(1)">数据资源</div>
-            <div class="page_name" :class="{tabactive:tabsShow==2}" @click="changeTab(2)">ETL</div>
-            <div class="page_name" :class="{tabactive:tabsShow==3}" @click="changeTab(3)">数据库监控</div>
-          </div>
-          <div class="top_header"></div>
-        </div>
-
-        <div class="content_cen1">
-          <div class="content_cen_left">
-            <p>
-              <span>累计运行时间：</span>
-              <span>{{runtime?period(runtime.DATACENTER):0}}</span>
-            </p>
-            <p>
-              <span>数据量(表/记录)：</span>
-              <span>{{headerFirst?convert(headerFirst.table_name):0}}/{{headerFirst?convert(headerFirst.row_count):0}}</span>
-            </p>
-            <p>
-              <span>共享数据量(表/记录)：</span>
-              <span>{{headerSecond.sheetNum?convert(headerSecond.sheetNum):0}}/{{dataShare?convert(dataShare.share_row_count):0}}</span>
-            </p>
-            <p>
-              <span>数据共享次数：</span>
-              <span>{{dataShare?convert(dataShare.invoke_success_count):0}}</span>
-            </p>
-            <p>
-              <span>ETL数据量(表/记录)：</span>
-              <span>29/6892.3万</span>
-            </p>
-          </div>
-        </div>
-        <div v-if="tabsShow != 3" class="time_horizon">
-          <div
-            class="time_horizon_item btn"
-            @click="timeCycle('day')"
-            :class="{ active: checkDataType === 'day' }"
-          >近24小时</div>
-          <div
-            class="time_horizon_item btn"
-            @click="timeCycle('week')"
-            :class="{ active: checkDataType === 'week' }"
-          >近一周</div>
-          <div
-            class="time_horizon_item btn"
-            @click="timeCycle('month')"
-            :class="{ active: checkDataType === 'month' }"
-          >近一月</div>
-          <div
-            class="time_horizon_item btn"
-            @click="timeCycle('year')"
-            :class="{ active: checkDataType === 'year' }"
-          >近一年</div>
-          <!-- <div class="time_horizon_item btn">自定义时间段</div> -->
-        </div>
-      </header>
-      <component
-        :is="showComponent"
-        :swiperOptionTop="swiperOptionTop"
-        :chartData01="chartData01"
-        :pieData="pieData"
-        :pieUser="pieUser"
-        :rightData="rightData"
-        :hospital="pieData1.hospital"
-        :card="pieData1.card"
-        :checkDataType="checkDataType"
-      ></component>
+      <view-tabs :tabsData="tabsData"></view-tabs>
+      <time-type></time-type>
+      <onecard-content :contentData="contentData"></onecard-content>
     </div>
   </div>
 </template>
 
 <script>
 let moment = require("moment");
-// import EmrCollect from '@/components/EmrCollect' // 电子病历采集
-// import EmrShare from '@/components/EmrShare' // 电子病历共享
-// import InTreatment from '@/components/InTreatment' // 一卡通就诊
-// import InTreatmentVue from '../components/InTreatment.vue';
+import ViewTitle from '@/components/ViewTitle'
+import ViewTabs from '@/components/ViewTabs'
+import TimeType from "@/components/TimeType";
+import OnecardContent from '@/components/OnecardContent'
 import DataShare from "../components/DataShare";
 import EtlTask from "../components/EtlTask";
 import DataMonitor from "../components/DataMonitor";
 export default {
-  components: { DataShare, EtlTask },
+  components: { DataShare, EtlTask, ViewTitle, ViewTabs, TimeType, OnecardContent },
   methods: {
     onTabs() {
       let servName = ""
@@ -575,6 +495,60 @@ export default {
   },
   name: 'datacenter',
   data() {
+    return {
+      titleViewData: {
+        title: "",
+        date: "",
+        currentPage: ""
+      },
+      tabsData: {
+        tabs: ["数据资源", "ETL", "数据库监控"],
+        runTime: ""
+      },
+      contentData: {
+        currentPage: "datacenter",
+        firstBar: {
+          title: "数据共享",
+          data: {
+            columns: [],
+            rows: []
+          }
+        },
+        secondBar: {
+          title: "数据资源",
+          data: {}
+        },
+        firstPie: {
+          title: "数据共享比例",
+          data: {}
+        },
+        secondPie: {
+          title: "数据共享用户资源"
+        }
+      },
+      countData: [
+        {
+          "key": "累计运行时间",
+          "val": "3天"
+        },
+        {
+          "key": "数据量(表/记录)",
+          "val": "3682/225万"
+        },
+        {
+          "key": "共享数据量(表/记录)",
+          "val": "3/560"
+        },
+        {
+          "key": "数据共享次数",
+          "val": "3"
+        },
+        {
+          "key": "ETL数据量(表/记录)",
+          "val": "321.5万"
+        }
+      ],
+    }
     // title: '',
     //   tabsData: [{
     //     key: '',
