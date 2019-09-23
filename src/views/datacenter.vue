@@ -2,125 +2,139 @@
   <div class="wrap-data">
     <view-title :titleViewData="titleViewData"></view-title>
     <div class="main">
-      <view-tabs :tabsData="tabsData"></view-tabs>
-      <time-type></time-type>
-      <onecard-content :contentData="contentData"></onecard-content>
+      <view-tabs v-on:adopt="Padopt" :tabsData="tabsData"></view-tabs>
+      <top-indicator :current="titleViewData.currentPage"></top-indicator>
+      <time-type v-if="contentData.currentPage !== 'DataMonitor'"></time-type>
+      <data-monitor v-if="contentData.currentPage === 'DataMonitor'"></data-monitor>
+      <onecard-content v-else :contentData="contentData"></onecard-content>
     </div>
   </div>
 </template>
 
 <script>
 let moment = require("moment");
-import ViewTitle from '@/components/ViewTitle'
-import ViewTabs from '@/components/ViewTabs'
+import ViewTitle from "@/components/ViewTitle";
+import ViewTabs from "@/components/ViewTabs";
 import TimeType from "@/components/TimeType";
-import OnecardContent from '@/components/OnecardContent'
+import OnecardContent from "@/components/OnecardContent";
 import DataShare from "../components/DataShare";
 import EtlTask from "../components/EtlTask";
+import TopIndicator from "../components/TopIndicator";
 import DataMonitor from "../components/DataMonitor";
 export default {
-  components: { DataShare, EtlTask, ViewTitle, ViewTabs, TimeType, OnecardContent },
+  components: {
+    DataShare,
+    EtlTask,
+    ViewTitle,
+    ViewTabs,
+    TimeType,
+    OnecardContent,
+    DataMonitor,
+    TopIndicator
+  },
   methods: {
     onTabs() {
-      let servName = ""
-      let cond = ""
+      let servName = "";
+      let cond = "";
       let dataConfig = {
-        'linea': {
+        linea: {
           columns: [key],
-          rows: [{
-            '住院': "",
-            '门诊': "",
-            '时间': ""
-          }]
+          rows: [
+            {
+              住院: "",
+              门诊: "",
+              时间: ""
+            }
+          ]
         }
-      }
+      };
     },
     getResData(req) {
-
-      req = []
-
+      req = [];
     },
     getCahrData(data, dataConfig) {
-
       return {
         linea: {
           columns: [],
           row: []
-        },
-      }
-    },
-
-    toIndex(num) {
-      if (num === "1") {
-        sessionStorage.clear();
-        window.location.href = "/main/login_pages/login-fw.html";
-        // this.$router.push({ name: "login" });
-      }
-      if (num === "2") {
-        this.$router.push({ name: "navs" });
-      }
-    },
-    changeTab(num) {
-      this.tabsShow = num;
-      if (this.tabsShow == 1) {
-        this.showComponent = DataShare;
-      } else if (this.tabsShow == 2) {
-        this.showComponent = EtlTask;
-      } else if (this.tabsShow == 3) {
-        this.showComponent = DataMonitor;
-      }
-    },
-    timeCycle(e, index = 0) {
-      // this.CurrAct = index
-      // console.log(index, this.CurrAct)
-      let self = this
-      self.checkDataType = e
-      let currtTimes = []
-      let rows = []
-      if (e === "day") {
-        for (let i = 1; i <= 24; i++) {
-          currtTimes.push(moment().subtract(24 - i, 'hours').format('HH'))
         }
-        currtTimes.forEach((item, i) => {
-          this.data01.day.rows[i].时间 = item + '点'
-        })
-        console.log('+++++++++++++++', this.chartData01)
-      } else if (e === 'week') {
-        for (let i = 1; i <= 7; i++) {
-          currtTimes.push(moment().subtract(7 - i, 'weeks').format('YYYY-MM-DD'))
-        }
-        currtTimes.forEach((item, i) => {
-          this.data01.week.rows[i].时间 = item
-        })
-
-      }
-      else if (e === 'month') {
-        for (let i = 1; i <= 30; i++) {
-          currtTimes.push(moment().subtract(30 - i, 'days').format('MM-DD'))
-        }
-        currtTimes.forEach((item, i) => {
-          this.data01.month.rows[i].时间 = item
-        })
-
-      }
-      else if (e === 'year') {
-        for (let i = 1; i <= 12; i++) {
-          currtTimes.push(moment().subtract(12 - i, 'month').format('YYYY-MM'))
-        }
-        currtTimes.forEach((item, i) => {
-          this.data01.year.rows[i].时间 = item
-        })
-
-      } else {
-        console.error('false')
-      }
-      self.chartData01 = self.data01[e]
-      self.pieData = self.data02[e]
-      self.pieUser = self.data03[e]
-      self.rightData = self.data04[e]
-      // this.DateDatum.day.moreColg
-
+      };
     },
+    Padopt(pageName) {
+      this.contentData.currentPage = pageName;
+    }
+
+    // toIndex(num) {
+    //   if (num === "1") {
+    //     sessionStorage.clear();
+    //     window.location.href = "/main/login_pages/login-fw.html";
+    //     // this.$router.push({ name: "login" });
+    //   }
+    //   if (num === "2") {
+    //     this.$router.push({ name: "navs" });
+    //   }
+    // },
+    // changeTab(num) {
+    //   this.tabsShow = num;
+    //   if (this.tabsShow == 1) {
+    //     this.showComponent = DataShare;
+    //   } else if (this.tabsShow == 2) {
+    //     this.showComponent = EtlTask;
+    //   } else if (this.tabsShow == 3) {
+    //     this.showComponent = DataMonitor;
+    //   }
+    // },
+    // timeCycle(e, index = 0) {
+    //   // this.CurrAct = index
+    //   // console.log(index, this.CurrAct)
+    //   let self = this
+    //   self.checkDataType = e
+    //   let currtTimes = []
+    //   let rows = []
+    //   if (e === "day") {
+    //     for (let i = 1; i <= 24; i++) {
+    //       currtTimes.push(moment().subtract(24 - i, 'hours').format('HH'))
+    //     }
+    //     currtTimes.forEach((item, i) => {
+    //       this.data01.day.rows[i].时间 = item + '点'
+    //     })
+    //     console.log('+++++++++++++++', this.chartData01)
+    //   } else if (e === 'week') {
+    //     for (let i = 1; i <= 7; i++) {
+    //       currtTimes.push(moment().subtract(7 - i, 'weeks').format('YYYY-MM-DD'))
+    //     }
+    //     currtTimes.forEach((item, i) => {
+    //       this.data01.week.rows[i].时间 = item
+    //     })
+
+    //   }
+    //   else if (e === 'month') {
+    //     for (let i = 1; i <= 30; i++) {
+    //       currtTimes.push(moment().subtract(30 - i, 'days').format('MM-DD'))
+    //     }
+    //     currtTimes.forEach((item, i) => {
+    //       this.data01.month.rows[i].时间 = item
+    //     })
+
+    //   }
+    //   else if (e === 'year') {
+    //     for (let i = 1; i <= 12; i++) {
+    //       currtTimes.push(moment().subtract(12 - i, 'month').format('YYYY-MM'))
+    //     }
+    //     currtTimes.forEach((item, i) => {
+    //       this.data01.year.rows[i].时间 = item
+    //     })
+
+    //   } else {
+    //     console.error('false')
+    //   }
+    //   self.chartData01 = self.data01[e]
+    //   self.pieData = self.data02[e]
+    //   self.pieUser = self.data03[e]
+    //   self.rightData = self.data04[e]
+    //   // this.DateDatum.day.moreColg
+
+    // },
     // getData(groupBy) {
     //   let req = {
     //     serviceName: "srvemr_record_count_by_hour_select",
@@ -277,14 +291,14 @@ export default {
     //       console.log(err);
     //     });
     // },
-    requestData() { },
-    toManangerment() {
-      let str = window.location.href;
-      let num = str.indexOf("?");
-      str = str.substr(num + 1);
-      console.log(str);
-      window.location.href = "../../main/index.html?" + str;
-    },
+    // requestData() { },
+    // toManangerment() {
+    //   let str = window.location.href;
+    //   let num = str.indexOf("?");
+    //   str = str.substr(num + 1);
+    //   console.log(str);
+    //   window.location.href = "../../main/index.html?" + str;
+    // },
     // autoChangeTab(interval) {
     //   setInterval(() => {
     //     if (this.tabsShow >= 3) {
@@ -296,217 +310,228 @@ export default {
     //     this.changeTab(this.tabsShow);
     //   }, interval);
     // },
-    getRunTime() {
-      let req = {
-        serviceName: "srvlog_apps_onlie_time_select",
-        colNames: ["*"],
-        condition: [],
-        // group: [
-        //   {
-        //     colName: "num_of_calls",
-        //     type: "sum"
-        //   }
-        // ]
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvlog_apps_onlie_time_select",
-        "monitor"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          let run = res.data.data
-          run = Object.assign(...run)
-          this.runtime = run
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    getDataSize() {
-      let params = {
-        "serviceName": "srvdc_rc_db_table_select",
-        "colNames": ["*"],
-        "condition": [],
-        "group": [
-          {
-            "colName": "table_name",
-            "type": "count"
-          },
-          {
-            "colName": "row_count",
-            "type": "sum"
-          }
-        ]
-      }
-      let url = this.getServiceUrl("select", params.serviceName, "datacenter")
-      this.axios({
-        method: "POST", url: url, data: params
-      }
-      )
-        .then(res => {
-          console.log('re123s', res.data.data);
-          if (res.data.data.length > 0) {
-            this.headerFirst = res.data.data[0]
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    getDataShareSize() {
-      let params = {
-        "serviceName": "srvdc_share_shared_table_select",
-        "colNames": ["*"],
-        "condition": [
-        ],
-        "group": [
-          {
-            "colName": "table_name",
-            "type": "count"
-          }
-        ]
+    // getRunTime() {
+    //   let req = {
+    //     serviceName: "srvlog_apps_onlie_time_select",
+    //     colNames: ["*"],
+    //     condition: [],
+    //     // group: [
+    //     //   {
+    //     //     colName: "num_of_calls",
+    //     //     type: "sum"
+    //     //   }
+    //     // ]
+    //   };
+    //   let path = this.getServiceUrl(
+    //     "select",
+    //     "srvlog_apps_onlie_time_select",
+    //     "monitor"
+    //   );
+    //   this.axios
+    //     .post(path, req)
+    //     .then(res => {
+    //       let run = res.data.data
+    //       run = Object.assign(...run)
+    //       this.runtime = run
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // },
+    // getDataSize() {
+    //   let params = {
+    //     "serviceName": "srvdc_rc_db_table_select",
+    //     "colNames": ["*"],
+    //     "condition": [],
+    //     "group": [
+    //       {
+    //         "colName": "table_name",
+    //         "type": "count"
+    //       },
+    //       {
+    //         "colName": "row_count",
+    //         "type": "sum"
+    //       }
+    //     ]
+    //   }
+    //   let url = this.getServiceUrl("select", params.serviceName, "datacenter")
+    //   this.axios({
+    //     method: "POST", url: url, data: params
+    //   }
+    //   )
+    //     .then(res => {
+    //       console.log('re123s', res.data.data);
+    //       if (res.data.data.length > 0) {
+    //         this.headerFirst = res.data.data[0]
+    //       }
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // },
+    // getDataShareSize() {
+    //   let params = {
+    //     "serviceName": "srvdc_share_shared_table_select",
+    //     "colNames": ["*"],
+    //     "condition": [
+    //     ],
+    //     "group": [
+    //       {
+    //         "colName": "table_name",
+    //         "type": "count"
+    //       }
+    //     ]
 
-      }
-      let url = this.getServiceUrl("select", 'srvdc_share_shared_table_select', "datashare")
-      this.axios.post(
-        url, params
-      )
-        .then(res => {
-          this.headerSecond.sheetNum = res.data.data[0].table_name
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    getDataShareRecod() {
-      let params = {
-        "serviceName": "srvdc_share_serve_summary_select",
-        "colNames": ["*"],
-        "condition": [
-        ],
-        "group": [
-          {
-            "colName": "share_row_count",
-            "type": "sum"
-          },
-          {
-            "colName": "invoke_success_count",
-            "type": "sum"
-          }
-        ]
+    //   }
+    //   let url = this.getServiceUrl("select", 'srvdc_share_shared_table_select', "datashare")
+    //   this.axios.post(
+    //     url, params
+    //   )
+    //     .then(res => {
+    //       this.headerSecond.sheetNum = res.data.data[0].table_name
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // },
+    // getDataShareRecod() {
+    //   let params = {
+    //     "serviceName": "srvdc_share_serve_summary_select",
+    //     "colNames": ["*"],
+    //     "condition": [
+    //     ],
+    //     "group": [
+    //       {
+    //         "colName": "share_row_count",
+    //         "type": "sum"
+    //       },
+    //       {
+    //         "colName": "invoke_success_count",
+    //         "type": "sum"
+    //       }
+    //     ]
 
-      }
-      let url = this.getServiceUrl("select", 'srvdc_share_serve_summary_select', "datashare")
-      this.axios.post(
-        url, params
-      )
-        .then(res => {
-          // this.headerSecond.sheetLog = res.data.data[0].share_row_count
-          this.dataShare = res.data.data[0]
-          console.log('res.data.data', res.data.data)
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    //获取图例
-    getleftChartLegend() {
-      let req = {
-        serviceName: "srvdc_rc_db_table_uiconf_select",
-        colNames: ["table_no", "table_name", "table_label"],
-        condition: [],
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvdc_rc_db_table_uiconf_select",
-        "datacenter"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.deploy = res.data.data
-          let Odeploy = res.data.data
-          Odeploy.map(item => {
-            this.chartData01.columns.push(item.table_label)
-          })
-          let tabeNum = this.deploy.map(item => item.table_no)
-          tabeNum = tabeNum.join(',')
-          this.getLegend(tabeNum)
-          console.log('deploy', tabeNum)
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    //获取图例对应的数据
-    getLegend(tabe) {
-      let req = {
-        "serviceName": "srvdc_rc_db_table_select",
-        "condition": [{ "colName": "table_no", "ruleType": "in", "value": tabe }],
-        "colNames": ["row_count", "storage_size", "table_no", "table_label"],
-        // 'group':[
-        //   {
-        //     colName:'table_no',
-        //     type:'by'
-        //   },
-        //   {
-        //     colName:'table_label',
-        //     type:'by'
-        //   }
-        // ]   
-      }
-      let path = this.getServiceUrl('select', 'srvdc_rc_db_table_select', 'datacenter');
-      this.axios.post(path, req).then(res => {
-        console.log('res.data.data', res.data.data)
-      })
-    },
-    //转换数字
-    convert(num) {
-      let nums = parseInt(num);
-      if (nums > 10000) {
-        if (nums % 10000 == 0) {
-          nums = num / 10000 + "万";
-        } else {
-          nums = Math.round((num / 10000) * 10) / 10 + "万";
-        }
-      } else {
-        nums = num;
-      }
-      return nums;
-    },
-    // 持续运行时长转换
-    period(num) {
-      let nums = parseInt(num) / 60 / 60;
-      if (nums < 24) {
-        if (nums % parseInt(nums) == 0) {
-          nums = nums;
-        } else {
-          nums = Math.round(nums * 10) / 10 + "h";
-        }
-      } else {
-        nums = Math.round((nums / 24) * 10) / 10 + "天";
-      }
-      return nums;
-    },
-
-
+    //   }
+    //   let url = this.getServiceUrl("select", 'srvdc_share_serve_summary_select', "datashare")
+    //   this.axios.post(
+    //     url, params
+    //   )
+    //     .then(res => {
+    //       // this.headerSecond.sheetLog = res.data.data[0].share_row_count
+    //       this.dataShare = res.data.data[0]
+    //       console.log('res.data.data', res.data.data)
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // },
+    // //获取图例
+    // getleftChartLegend() {
+    //   let req = {
+    //     serviceName: "srvdc_rc_db_table_uiconf_select",
+    //     colNames: ["table_no", "table_name", "table_label"],
+    //     condition: [],
+    //   };
+    //   let path = this.getServiceUrl(
+    //     "select",
+    //     "srvdc_rc_db_table_uiconf_select",
+    //     "datacenter"
+    //   );
+    //   this.axios
+    //     .post(path, req)
+    //     .then(res => {
+    //       this.deploy = res.data.data
+    //       let Odeploy = res.data.data
+    //       Odeploy.map(item => {
+    //         this.chartData01.columns.push(item.table_label)
+    //       })
+    //       let tabeNum = this.deploy.map(item => item.table_no)
+    //       tabeNum = tabeNum.join(',')
+    //       this.getLegend(tabeNum)
+    //       console.log('deploy', tabeNum)
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // },
+    // //获取图例对应的数据
+    // getLegend(tabe) {
+    //   let req = {
+    //     "serviceName": "srvdc_rc_db_table_select",
+    //     "condition": [{ "colName": "table_no", "ruleType": "in", "value": tabe }],
+    //     "colNames": ["row_count", "storage_size", "table_no", "table_label"],
+    //     // 'group':[
+    //     //   {
+    //     //     colName:'table_no',
+    //     //     type:'by'
+    //     //   },
+    //     //   {
+    //     //     colName:'table_label',
+    //     //     type:'by'
+    //     //   }
+    //     // ]
+    //   }
+    //   let path = this.getServiceUrl('select', 'srvdc_rc_db_table_select', 'datacenter');
+    //   this.axios.post(path, req).then(res => {
+    //     console.log('res.data.data', res.data.data)
+    //   })
+    // },
+    // //转换数字
+    // convert(num) {
+    //   let nums = parseInt(num);
+    //   if (nums > 10000) {
+    //     if (nums % 10000 == 0) {
+    //       nums = num / 10000 + "万";
+    //     } else {
+    //       nums = Math.round((num / 10000) * 10) / 10 + "万";
+    //     }
+    //   } else {
+    //     nums = num;
+    //   }
+    //   return nums;
+    // },
+    // // 持续运行时长转换
+    // period(num) {
+    //   let nums = parseInt(num) / 60 / 60;
+    //   if (nums < 24) {
+    //     if (nums % parseInt(nums) == 0) {
+    //       nums = nums;
+    //     } else {
+    //       nums = Math.round(nums * 10) / 10 + "h";
+    //     }
+    //   } else {
+    //     nums = Math.round((nums / 24) * 10) / 10 + "天";
+    //   }
+    //   return nums;
+    // },
   },
-  name: 'datacenter',
+  name: "datacenter",
   data() {
     return {
       titleViewData: {
         title: "",
         date: "",
-        currentPage: ""
+        currentPage: "datacenter"
       },
       tabsData: {
-        tabs: ["数据资源", "ETL", "数据库监控"],
+        tabs: [
+          {
+            key: "dataShare",
+            value: "数据资源"
+          },
+          {
+            key: "ETL",
+            value: "ETL"
+          },
+          {
+            key: "DataMonitor",
+            value: "数据库监控"
+          }
+        ],
         runTime: ""
       },
       contentData: {
-        currentPage: "datacenter",
+        currentPage: "DataMonitor",
         firstBar: {
           title: "数据共享",
           data: {
@@ -528,27 +553,27 @@ export default {
       },
       countData: [
         {
-          "key": "累计运行时间",
-          "val": "3天"
+          key: "累计运行时间",
+          val: "3天"
         },
         {
-          "key": "数据量(表/记录)",
-          "val": "3682/225万"
+          key: "数据量(表/记录)",
+          val: "3682/225万"
         },
         {
-          "key": "共享数据量(表/记录)",
-          "val": "3/560"
+          key: "共享数据量(表/记录)",
+          val: "3/560"
         },
         {
-          "key": "数据共享次数",
-          "val": "3"
+          key: "数据共享次数",
+          val: "3"
         },
         {
-          "key": "ETL数据量(表/记录)",
-          "val": "321.5万"
+          key: "ETL数据量(表/记录)",
+          val: "321.5万"
         }
-      ],
-    }
+      ]
+    };
     // title: '',
     //   tabsData: [{
     //     key: '',
@@ -909,11 +934,11 @@ export default {
     }
   },
   created() {
-    this.getRunTime()
-    this.getDataSize();
-    this.getDataShareSize()
-    this.getDataShareRecod()
-    this.getleftChartLegend()
+    // this.getRunTime();
+    // this.getDataSize();
+    // this.getDataShareSize();
+    // this.getDataShareRecod();
+    // this.getleftChartLegend();
     let date = "2018-8-31";
     let today = moment().format("YYYY-MM-DD"); // moment获取本日日期
     let day_of_week = moment(today, "YYYY-MM-DD").format("E"); // 计算指定日期是这周第几天
@@ -957,7 +982,7 @@ export default {
     setInterval(() => {
       this.date = moment().format("YYYY-MM-DD  HH:mm:ss");
     }, 1000);
-    this.timeCycle('day')
+    this.timeCycle("day");
   }
 };
 </script>

@@ -7,6 +7,7 @@ import router from './router';
 import store from './store';
 import VueInit from '@/assets/dev_config/vue_init';
 import VueUtil from '@/assets/dev_config/vue_util';
+import DataUtil from '@/assets/common/data_util'
 import {vChartInfo} from '@/assets/common/common';
 import elementUI from 'element-ui';
 import dataV from '@jiaminghi/data-view'
@@ -20,6 +21,7 @@ Vue.use(VCharts);
 Vue.use(dataV)
 VueInit();
 VueUtil();
+DataUtil()
 
 Vue.prototype.vChartInfo = vChartInfo; // 挂载 vChartInfo 到vue.proto对象上原型属性
 Vue.prototype.axios = axios; // 挂载axios到vue.proto对象上原型属性

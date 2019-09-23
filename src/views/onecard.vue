@@ -1,67 +1,11 @@
 <template>
   <div class="wrap">
-    <view-title :titleViewData="titleViewData"></view-title>
+    <view-title :titleViewData="titleViewData" :user="user"></view-title>
     <div class="main">
       <view-tabs :tabsData="tabsData"></view-tabs>
-      <time-type></time-type>
+      <time-type @showTimeType="getTimeType"></time-type>
       <onecard-content :contentData="contentData"></onecard-content>
     </div>
-    <!-- <div class="title">
-      <div class="title_left"></div>
-      <div class="title_title">社保医疗一卡通融合平台</div>
-      <div class="title_right">
-        <div class="nowdate">{{ date }}</div>
-        <div class="accountInfo">
-          当前帐号:
-          <span>{{user.user_no}}</span>
-        </div>
-        <span class="btn_logout" @click="toManangerment">管理入口</span>
-        <span class="btn_logout" @click="loginOut">注销</span>
-        <span class="btn_logout" @click="toNav">返回</span>
-      </div>
-    </div>
-    <div class="main">
-      <header class="header">
-        <div class="top">
-          <div class="top_left">
-            <div class="page_name" :class="{tabactive:tabsShow==1}" @click="changeTab(1)">一卡通就诊</div>
-            <div class="page_name" :class="{tabactive:tabsShow==2}" @click="changeTab(2)">电子病历共享</div>
-            <div class="page_name" :class="{tabactive:tabsShow==3}" @click="changeTab(3)">电子病历采集</div>
-          </div>
-          <div class="top_header">
-            <div class="top_header_item"></div>
-            <div class="top_header_item">
-              <span>累计运行时间：</span>
-              <span class="all_number" v-if="showComponent == 'InTreatment' ">{{runTime.cvs}}</span>
-              <span class="all_number" v-else>{{runTime.emr}}</span>
-            </div>
-          </div>
-        </div>
-        <div class="time_horizon">
-          <div
-            class="time_horizon_item btn"
-            @click="checkTimeHorizon('day')"
-            :class="{ active: checkDataType === 'day' }"
-          >近24小时</div>
-          <div
-            class="time_horizon_item btn"
-            @click="checkTimeHorizon('week')"
-            :class="{ active: checkDataType === 'week' }"
-          >近一周</div>
-          <div
-            class="time_horizon_item btn"
-            @click="checkTimeHorizon('month')"
-            :class="{ active: checkDataType === 'month' }"
-          >近一月</div>
-          <div
-            class="time_horizon_item btn"
-            @click="checkTimeHorizon('year')"
-            :class="{ active: checkDataType === 'year' }"
-          >近一年</div>
-        </div>
-      </header>
-      <component :is="showComponent"></component>
-    </div>-->
   </div>
 </template>
 
@@ -72,32 +16,23 @@ import ViewTabs from '@/components/ViewTabs'
 import TimeType from "@/components/TimeType";
 import OnecardContent from '@/components/OnecardContent'
 export default {
+  name: "onecard",
   components: { ViewTitle, ViewTabs, TimeType, OnecardContent },
   methods: {
     loginOut() {
       sessionStorage.clear();
       window.location.href = "/main/login_pages/login-fw.html"
     },
-    changeTab(num) {
-      this.tabsShow = num;
-      if (this.tabsShow == 1) {
-        this.showComponent = InTreatment
-        this.getAllData('day', this.tabsShow)
-      } else if (this.tabsShow == 2) {
-        this.showComponent = EmrShare
-        this.getAllData('day', this.tabsShow)
-      } else if (this.tabsShow == 3) {
-        this.showComponent = EmrCollect
-        this.getAllData('day', this.tabsShow)
-      }
-    },
     toNav() {
       this.$router.push({ name: "navs", query: { from: "onecard" } })
     },
+    getTimeType(TimeType) {
+      // 获取时间区间类型
+      this.checkDataType = TimeType
+      console.log("timeType", TimeType);
+    },
     getRunTime() {
-      /**
-       *  获取累计运行时间
-       */
+      // 获取累计运行时间
       let runTime = {}
       let req = { serviceName: "srvlog_apps_onlie_time_select" }
       let url = this.getServiceUrl("select", req.serviceName, "monitor")
@@ -106,31 +41,127 @@ export default {
           let data = res.data.data
           runTime = Object.assign(...data)
           this.runTime = runTime
-          this.runTime.cvs = this.secondToTime(runTime.CVS)
-          this.runTime.emr = this.secondToTime(runTime.EMR)
+          if (this.contentData.currentPage === 'oneCard') {
+            this.tabsData.runTime = runTime.CVS
+          } else if (this.contentData.currentPage === 'emrShare' || this.contentData.currentPage === "emrCollect") {
+            this.tabsData.runTime = runTime.EMR
+          }
         })
         .catch(err => {
           console.error(err);
         })
     },
-    getAllData(type = "day", tabsShow = this.tabsShow) {
-      let data = {}
-      if (tabsShow == 1) {
-        let req = {
-          "serviceName": "srvcvs_medical_records_select",
+    getTimeSection(type = 'day') {
+      // 获取时间区间
+      let start = ""
+      let end = ""
+      if (type === 'day') {
+        start = moment().subtract(23, 'hours').format("YYYY-MM-DD HH") //大于当前时间往前推23个小时
+        end = moment().add(1, 'hours').format("YYYY-MM-DD HH") //小于当前时间的下一个整点
+      } else if (type === 'week') {
+        start = moment().subtract(6, 'days').format('YYYY-MM-DD') // 六天前,
+        end = moment().add(1, 'days').format('YYYY-MM-DD') // 今晚0点
+      } else if (type === 'month') {
+        start = moment().subtract(30, 'days').format('YYYY-MM-DD') // 30天前
+        end = moment().add(1, 'days').format('YYYY-MM-DD') // 今晚0点,
+      } else if (type === 'year') {
+        start = moment().subtract(11, 'month').format('YYYY-MM-DD')
+        end = moment().add(1, 'days').format('YYYY-MM-DD')
+      }
+      this.timeSection = {
+        start: start,
+        end: end
+      }
+    },
+    getAllCondition(type = "day", currentPage = "oneCard") {
+      let reqs = []
+      let condition = []
+      let timeGroupType = "by_hour"
+      if (currentPage === 'oneCard') {
+        let serviceName = "srvcvs_medical_records_select"
+        this.getTimeSection(type)
+        condition = [
+          {
+            "colName": "ywfssj",
+            "value": this.timeSection.start,
+            "ruleType": "ge"
+          },
+          {
+            "colName": "ywfssj",
+            "value": this.timeSection.end, // 大于当前时间往前推23个小时
+            "ruleType": "le"
+          }
+        ]
+        if (type === 'week' || type === 'month') {
+          timeGroupType = "by_date"
+        } else if (type === 'year') {
+          timeGroupType = "by_month_of_year"
+        }
+        let url = this.getServiceUrl("select", serviceName, "cvs")
+        let reqa = {
+          "serviceName": serviceName,
           "colNames": ["*"],
+          "condition": condition,
           "group": [
             {
-              "colName": "yljgmc", // 医院名
+              "colName": "ywfssj", // 业务发生时间
+              "type": timeGroupType
+            },
+            {
+              "colName": "cmd", // 就诊类型
               "type": "by"
             },
+            {
+              "colName": "create_time",
+              "type": "count"
+            }
+          ]
+        }
+        reqs.push(reqa)
+        let reqb = {
+          "serviceName": serviceName,
+          "colNames": ["*"],
+          "condition": condition,
+          "group": [
+            {
+              "colName": "yljgmc", // 医疗机构名称
+              "type": "by"
+            },
+            {
+              "colName": "create_time",
+              "type": "count"
+            }
+          ]
+        }
+        reqs.push(reqb)
+        let reqc = {
+          "serviceName": serviceName,
+          "colNames": ["*"],
+          "condition": condition,
+          "group": [
             {
               "colName": "card_type", // 卡类型
               "type": "by"
             },
             {
+              "colName": "create_time",
+              "type": "count"
+            }
+          ]
+        }
+        reqs.push(reqc)
+        let reqd = {
+          "serviceName": serviceName,
+          "colNames": ["*"],
+          "condition": condition,
+          "group": [
+            {
               "colName": "ywfssj", // 业务发生时间
-              "type": "by_date"
+              "type": timeGroupType
+            },
+            {
+              "colName": "yljgmc", // 医疗机构名称
+              "type": "by"
             },
             {
               "colName": "cmd", // 就诊类型
@@ -142,95 +173,99 @@ export default {
             }
           ]
         }
-        let url = this.getServiceUrl("select", req.serviceName, "cvs")
-        if (type === 'day') {
-          req.condition = [
+        reqs.push(reqd)
+        let reqe = {
+          "serviceName": serviceName,
+          "colNames": ["*"],
+          "condition": condition,
+          "group": [
             {
-              "colName": "ywfssj",
-              "value": moment().add(1, 'hours').format("YYYY-MM-DD HH"), // 小于当前时间的下一个小时
-              "ruleType": "le"
-            },
-            {
-              "colName": "ywfssj",
-              "value": moment().subtract(23, 'hours').format("YYYY-MM-DD HH"), // 大于当前时间往前推23个小时
-              "ruleType": "ge"
-            }
-          ]
-          req.group[2] = {
-            "colName": "ywfssj", // 业务发生时间
-            "type": "by_hour"
-          }
-
-        } else if (type === 'week') {
-          req.condition = [
-            {
-              "colName": "ywfssj",
-              "value": moment().subtract(6, 'days').format('YYYY-MM-DD'), // 六天前,
-              "ruleType": "ge"
-            },
-            {
-              "colName": "ywfssj",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'), // 今晚0点,
-              "ruleType": "le"
-            }
-          ]
-        } else if (type === 'month') {
-          req.condition = [
-            {
-              "colName": "ywfssj",
-              "value": moment().subtract(30, 'days').format('YYYY-MM-DD'), // 30天前
-              "ruleType": "ge"
-            },
-            {
-              "colName": "ywfssj",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'), // 今晚0点,
-              "ruleType": "le"
-            }
-          ]
-        } else if (type === 'year') {
-          req.condition = [
-            {
-              "colName": "ywfssj",
-              "value": moment().subtract(11, 'month').format('YYYY-MM-DD'), // 十一个月之前
-              "ruleType": "ge"
-            },
-            {
-              "colName": "ywfssj",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'), // 今晚0点,
-              "ruleType": "le"
-            }
-          ]
-          req.group = [
-            {
-              "colName": "yljgmc",
-              "type": "by"
-            }, {
-              "colName": "ywfssj",
-              "type": "by_month_of_year"
-            }, {
-              "colName": "create_time",
-              "type": "count"
-            },
-            {
-              "colName": "card_type",
+              "colName": "yljgmc", // 医疗机构名称
               "type": "by"
             },
             {
               "colName": "cmd", // 就诊类型
               "type": "by"
             },
+            {
+              "colName": "create_time",
+              "type": "count"
+            }
           ]
         }
-        this.axios({ method: "POST", url: url, data: req })
+        reqs.push(reqe)
+        let reqf = {
+          "serviceName": serviceName,
+          "colNames": ["*"],
+          "condition": condition,
+          "group": [
+            {
+              "colName": "yljgmc", // 医疗机构名称
+              "type": "by"
+            },
+            {
+              "colName": "card_type", // 就诊类型
+              "type": "by"
+            },
+            {
+              "colName": "create_time",
+              "type": "count"
+            }
+          ]
+        }
+        reqs.push(reqf)
+        console.log(reqs)
+        let allData = {}
+        this.axios({ method: "POST", url: url, data: reqa })
           .then(res => {
-            data = res.data.data
-            console.log("aaaaaaadddddddd", data)
-            this.getCountData(data, type, tabsShow)
-            // this.handleAllData(data, type, tabsShow)
+            allData.Bar1 = res.data.data
+            this.contentData.firstBar.loading = false
+            this.axios({ method: "POST", url: url, data: reqb })
+              .then(res => {
+                allData.Pie1 = res.data.data
+                this.contentData.firstPie.loading = false
+                this.axios({ method: "POST", url: url, data: reqc })
+                  .then(res => {
+                    allData.Pie2 = res.data.data
+                    this.contentData.secondPie.loading = false
+                    this.axios({ method: "POST", url: url, data: reqd })
+                      .then(res => {
+                        allData.Bar2 = res.data.data
+                        this.contentData.secondBar.loading = false
+                        this.axios({ method: "POST", url: url, data: reqe })
+                          .then(res => {
+                            allData.countData = res.data.data
+                            this.axios({ method: "POST", url: url, data: reqf })
+                              .then(res => {
+                                allData.Pie3 = res.data.data
+                                this.contentData.thirdPie.loading = false
+                                console.log("allData::::", allData)
+                                this.contentData.firstBar.data = allData.Bar1
+                                this.contentData.secondBar.data = allData.Bar2
+                                this.contentData.firstPie.data = allData.Pie1
+                                this.contentData.secondPie.data = allData.Pie2
+                                this.contentData.thirdPie.data = allData.Pie3
+                                this.contentData.countData = allData.countData
+                                console.log("contentData", this.contentData)
+                              }).catch(err => {
+                                console.error(err)
+                              })
+                          }).catch(err => {
+                            console.error(err)
+                          })
+                      }).catch(err => {
+                        console.error(err)
+                      })
+                  }).catch(err => {
+                    console.error(err)
+                  })
+              }).catch(err => {
+                console.error(err)
+              })
           }).catch(err => {
-            console.log(err)
+            console.error(err)
           })
-      } else if (tabsShow == 2) {
+      } else if (currentPage === 'emrShare') {
         let serviceNames = [
           "DI_ADI_REGISTER_INFO_select",//门诊诊疗挂号记录
           "DI_ADI_DRUREC_INFO_select",//门急诊诊疗医嘱
@@ -500,12 +535,12 @@ export default {
             this.getCountData(data, type, tabsShow)
           }).catch(err => { console.log(err) })
         let url2 = this.getServiceUrl("select", req2.serviceName, "emr")
-        this.axios({ method: "POST", url: url2, data: req2 }).then(res => {
-          let data = res.data.data
-          console.log("验证次数：", res.data.data)
-          this.getCountData(data, type, tabsShow, "verify_count")
-        }).catch(err => { console.log(err) })
-      } else if (tabsShow == 3) { // 电子病历采集电子病历采集
+        // this.axios({ method: "POST", url: url2, data: req2 }).then(res => {
+        //   let data = res.data.data
+        //   console.log("验证次数：", res.data.data)
+        //   this.getCountData(data, type, tabsShow, "verify_count")
+        // }).catch(err => { console.log(err) })
+      } else if (currentPage === 'emrCollect') { // 电子病历采集电子病历采集
         let cond = [
           {
             "colName": "record_type",
@@ -673,14 +708,14 @@ export default {
             ]
           }
         }
-        this.axios({ method: "POST", url: url, data: req }).then(res => {
-          let data = res.data.data
-          console.log("tabsShow-703:", data)
-          this.getCountData(data, type, tabsShow)
+        // this.axios({ method: "POST", url: url, data: req }).then(res => {
+        //   let data = res.data.data
+        //   console.log("tabsShow-703:", data)
+        //   this.getCountData(data, type, tabsShow)
 
-        }).catch(err => {
-          console.log(err);
-        })
+        // }).catch(err => {
+        //   console.log(err);
+        // })
       }
     },
     getCountData(data, type, tabsShow, dataType) {
@@ -765,7 +800,7 @@ export default {
         this.chartData01 = bra1Data
         /**
          *  各医院就诊分布
-         * 
+         *
          */
         let pieHos = ["延大附院", "市人民医院", "市中医医院", "博爱医院", "市妇幼保健院", "宝塔区医院"]
         let pie1Data = {
@@ -814,7 +849,7 @@ export default {
         })
         console.log('aaaaaaa', pie2Data)
         this.card1 = pie2Data
-        /** 
+        /**
          *  右侧柱状图分医院
          */
         let yljgmcName = datas.map(item => item.yljgmc)
@@ -1291,6 +1326,24 @@ export default {
         this.collectZy = treatmentCount.zy
       }
     },
+    getBar1Request(serviceName, condition) {
+
+    },
+    getBar2Request(serviceName, condition) {
+
+    },
+    getPie1Request(serviceName, condition) {
+
+    },
+    getPie2Request(serviceName, condition) {
+
+    },
+    getPie3Request(serviceName, condition) {
+
+    },
+    getCountRequest(serviceName, condition) {
+
+    },
     toManangerment() {
       // 跳转到后台管理页面
       let str = window.location.href
@@ -1329,65 +1382,79 @@ export default {
 
       }
     },
+    getBar1Data() {
+
+    },
   },
   data() {
     return {
       tabsShow: 1,
-      runTime: {
-        cvs: "",
-        emr: ""
-      },
       user: {
         user_no: ""
       },
       titleViewData: {
         title: "",
         date: "",
-        currentPage: ""
+        currentPage: "onecard" // oneCard、emrShare、emrCollect
       },
       tabsData: {
-        tabs: ["一卡通就诊", "电子病历共享", "电子病历采集"],
+        tabs: [{
+          key: 'oneCard',
+          value: '一卡通就诊'
+        },
+        {
+          key: 'emrShare',
+          value: '电子病历共享'
+        },
+        {
+          key: 'emrCollect',
+          value: '电子病历采集'
+        }
+        ],
         runTime: ""
       },
       contentData: {
-        currentPage: "onecard",
+        currentPage: "oneCard",
         firstBar: {
           title: "一卡通就诊次数",
-          data: {
-            columns: [],
-            rows: []
-          }
+          data: [],
+          loading: true // 状态- 是否加载中
         },
         secondBar: {
           tabCheckItem: ["延大附院", "市人民医院", "市中医医院", "博爱医院", "市妇幼保健院", "宝塔区医院"],
-          data: [] //各个医院的data
+          data: [], //各个医院的data
+          loading: true // 状态- 是否加载中
         },
         firstPie: {
           title: "各医院就诊分布",
-          data: {}
+          data: [],
+          loading: true // 状态- 是否加载中
         },
         secondPie: {
           title: "就诊刷卡类型分布",
-          data: {}
+          data: [],
+          loading: true // 状态- 是否加载中
         },
         thirdPie: {
           title: "各医院就诊刷卡类型分布",
-          data: {}
+          data: [],
+          loading: true // 状态- 是否加载中
         },
-        countData: {}
+        countData: []
       },
       today: '',
+      timeSection: {
+        start: "",
+        end: ""
+      },
       checkDataType: 'day',
       chartSetting1: {
-        stack: {          用户: ['市人民医院', '中医医院', '博爱医院', '妇幼医院', "市中医医院", "市妇幼医院", "门诊", "住院", "DI_ADI_REGISTER_INFO_select", "门诊诊疗挂号记录"
-            , "门急诊诊疗医嘱", "门急诊诊疗检查报告", "住院诊疗入院记录", "住院诊疗医嘱信息", "住院诊疗检验报告"]        }
+        stack: {
+          用户: ['市人民医院', '中医医院', '博爱医院', '妇幼医院', "市中医医院", "市妇幼医院", "门诊", "住院", "门诊诊疗挂号记录"
+            , "门急诊诊疗医嘱", "门急诊诊疗检查报告", "住院诊疗入院记录", "住院诊疗医嘱信息", "住院诊疗检验报告"]
+        }
       }
     };
-  },
-  computed: {
-    swiperTop() {
-      return this.$refs.swiperTop.swiper;
-    }
   },
   created() {
     let user = sessionStorage.getItem('current_login_user')
@@ -1398,6 +1465,9 @@ export default {
     setInterval(() => {
       this.titleViewData.date = moment().format('YYYY-MM-DD  HH:mm:ss');
     }, 1000);
+    this.getAllCondition("year")
+    // this.getTimeSection('day')
+    // console.log(this.getTimeSection)
     // this.getRunTime()
     // this.getAllData('day', this.tabsShow)
     // this.autoChangeTab(10000) // 自动切换Tab

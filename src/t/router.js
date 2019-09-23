@@ -70,7 +70,7 @@ const router = new Router({
       path: '/vChartView',
       name: 'vChartView',
       component: () =>
-      import( /* webpackChunkName: "debugging" */ "./views/vChartView.vue")
+      import( /* webpackChunkName: "vChartView" */ "./views/vChartView.vue")
     }
   ]
 });

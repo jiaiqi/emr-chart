@@ -11,13 +11,13 @@
         <div class="main_top_p">
           <div class="plan-view">
             <span>持续运行时长</span>
-            <span>{{operat? periods(operat.GATEWAY):0}}</span>
+            <span>0</span>
           </div>
 
           <div>API网关</div>
           <div class="plan-view">
             <span>请求次数</span>
-            <span>{{listwg ? converts(listwg):0}}</span>
+            <span>0</span>
           </div>
         </div>
       </div>
@@ -29,22 +29,22 @@
                 <div>用户中心</div>
                 <div>
                   <span>持续运行时长:</span>
-                  <span>{{operat ? periods(operat.SSO):0}}</span>
+                  <span>0</span>
                 </div>
                 <div>
                   <span>用户总数:</span>
-                  <span>{{list_userno ?list_userno:0}}</span>
+                  <span>0</span>
                 </div>
               </li>
               <li>
                 <div>授权中心</div>
                 <div>
                   <span>持续运行时长:</span>
-                  <span>{{operat?periods(operat.AUTH):0}}</span>
+                  <span>0</span>
                 </div>
                 <div>
                   <span>请求次数:</span>
-                  <span>{{regNum[0].num_of_calls?converts(regNum[0].num_of_calls):0}}</span>
+                  <span>0</span>
                 </div>
               </li>
 
@@ -52,11 +52,11 @@
                 <div>注册中心</div>
                 <div>
                   <span>持续运行时长:</span>
-                  <span>{{operat ? periods(operat.SSO):0}}</span>
+                  <span>0</span>
                 </div>
                 <div>
                   <span>应用总数量:</span>
-                  <span>{{list_zcyy?list_zcyy:0}}</span>
+                  <span>0</span>
                 </div>
               </li>
 
@@ -64,11 +64,11 @@
                 <div>配置中心</div>
                 <div>
                   <span>持续运行时长:</span>
-                  <span>{{operat ? periods(operat.CONFIG):0}}</span>
+                  <span>0</span>
                 </div>
                 <div>
                   <span>请求次数:</span>
-                  <span>{{regNum[1].num_of_calls ? converts(regNum[1].num_of_calls):0}}</span>
+                  <span>0</span>
                 </div>
               </li>
             </ul>
@@ -77,15 +77,17 @@
         <div class="main_cen_cen">
           <div class="main_cen_cen_top">
             <ul>
-              <li @click="toSecplat(item)" v-for="(item,index) in microSer" :key="index">
-                <p class="title">{{item ? item.app_name:0 }}</p>
+              <!-- <li @click="toSecplat(item)" v-for="(item,index) in microSer" :key="index">
+              <p class="title">{{item ? item.app_name:0 }}</p>-->
+              <li @click="toSecplat">
+                <p class="title">电子病历</p>
                 <div>
                   <span>持续运行时长</span>
-                  <span>{{ item.running ? periods(item.running):0}}</span>
+                  <span>0</span>
                 </div>
                 <div>
                   <span>请求次数</span>
-                  <span>{{item.ask_num ? converts(item.ask_num):0}}</span>
+                  <span>0</span>
                 </div>
               </li>
             </ul>
@@ -100,11 +102,11 @@
                   <div>
                     <div>
                       <span>持续运行时长</span>
-                      <span>{{operat ? periods(operat.TASK):0}}</span>
+                      <span>0</span>
                     </div>
                     <div>
                       <span>总任务个数</span>
-                      <span>{{list_rw ? list_rw:0}}</span>
+                      <span>0</span>
                     </div>
                   </div>
                 </li>
@@ -115,11 +117,11 @@
                   <div>
                     <div>
                       <span>持续运行时长</span>
-                      <span>{{operat ? periods(operat.EVENT):0}}</span>
+                      <span>0</span>
                     </div>
                     <div>
                       <span>事件总数量</span>
-                      <span>{{list_sj !== false ? list_sj:0}}</span>
+                      <span>0</span>
                     </div>
                   </div>
                 </li>
@@ -131,11 +133,11 @@
                   <div>
                     <div>
                       <span>持续运行时长</span>
-                      <span>{{operat ? periods(operat.FILE):0}}</span>
+                      <span>0</span>
                     </div>
                     <div>
                       <span>文档总数量</span>
-                      <span>{{listpz ? listpz:0}}</span>
+                      <span>0</span>
                     </div>
                   </div>
                 </li>
@@ -167,22 +169,22 @@
                 <div>监控中心</div>
                 <div>
                   <span>持续运行时长:</span>
-                  <span>{{operat ? periods(operat.CONFIG):0}}</span>
+                  <span>0</span>
                 </div>
                 <div>
                   <span>监控应用个数:</span>
-                  <span>{{list_jkyygs ? list_jkyygs:0}}</span>
+                  <span>0</span>
                 </div>
               </li>
               <li>
                 <div>开发中心</div>
                 <div>
                   <span>工单个数:</span>
-                  <span>{{list_kfgd ? list_kfgd:0}}</span>
+                  <span>0</span>
                 </div>
                 <div>
                   <span>处理工单数量:</span>
-                  <span>{{list_kfcl ?list_kfcl:0}}</span>
+                  <span>0</span>
                 </div>
               </li>
 
@@ -190,11 +192,11 @@
                 <div>测试中心</div>
                 <div>
                   <span>测试应用数量:</span>
-                  <span>{{list_cs ? list_cs : 0}}</span>
+                  <span>0</span>
                 </div>
                 <div>
                   <span>上线应用数量:</span>
-                  <span>{{list_cssx ? list_cssx : 0}}</span>
+                  <span>0</span>
                 </div>
               </li>
 
@@ -202,11 +204,11 @@
                 <div>日志中心</div>
                 <div>
                   <span>持续运行时长:</span>
-                  <span>{{operat ? periods(operat.LOG):0}}</span>
+                  <span>0</span>
                 </div>
                 <div>
                   <span>日志记录数:</span>
-                  <span>{{logNum ? converts(logNum):0}}</span>
+                  <span>0</span>
                 </div>
               </li>
               <!--  -->
@@ -223,25 +225,25 @@ import { setInterval } from "timers";
 export default {
   data() {
     return {
-      microSer: [],
-      listwg: "",
-      listpz: "",
-      list_userno: "",
-      list_rw: "",
-      list_sj: "",
-      list_cs: "",
-      list_cssx: "",
-      list_kfgd: "",
-      list_kfcl: "",
-      list_zcyy: "",
-      list_jkyygs: "",
-      list_pzqq: "",
-      list_rzzx: "",
-      list_sqzx: "",
-      logNum: "",
-      operat: {},
-      regNum: [],
-      ApiNum: null
+      // microSer: [],
+      // listwg: "",
+      // listpz: "",
+      // list_userno: "",
+      // list_rw: "",
+      // list_sj: "",
+      // list_cs: "",
+      // list_cssx: "",
+      // list_kfgd: "",
+      // list_kfcl: "",
+      // list_zcyy: "",
+      // list_jkyygs: "",
+      // list_pzqq: "",
+      // list_rzzx: "",
+      // list_sqzx: "",
+      // logNum: "",
+      // operat: {},
+      // regNum: [],
+      // ApiNum: null
       // list_ykt:'',
       // list_dzbl:'',
       // list_sjgl:'',
@@ -255,15 +257,15 @@ export default {
     getdata(method = "post", app, condition, operate) {
       const path = this.getServiceUrl("operate", bxReq.serviceName, "sso");
     },
-    toSecplat(item) {
+    toSecplat() {
       this.$router.push({
-        name: "secplat",
-        params: {
-          title: item.app_name,
-          askNum: item.ask_num,
-          appNo: item.app_no,
-          runtime: item.running
-        }
+        name: "secplat"
+        // params: {
+        //   title: item.app_name,
+        //   askNum: item.ask_num,
+        //   appNo: item.app_no,
+        //   runtime: item.running
+        // }
       });
     },
     //api网关 请求次数
@@ -700,40 +702,40 @@ export default {
     }
   },
   created() {
-    this.getRegNum();
-    this.getLog();
-    this.getData_one();
-    this.getData_two();
-    this.getData_three();
-    this.getData_four();
-    this.getData_five();
-    this.getData_six();
-    this.getData_seven();
-    this.getData_eight();
-    this.getData_nine();
-    this.getData_ten();
-    this.getData_eleven();
-    this.operation();
-    this.CenTiny();
+    // this.getRegNum();
+    // this.getLog();
+    // this.getData_one();
+    // this.getData_two();
+    // this.getData_three();
+    // this.getData_four();
+    // this.getData_five();
+    // this.getData_six();
+    // this.getData_seven();
+    // this.getData_eight();
+    // this.getData_nine();
+    // this.getData_ten();
+    // this.getData_eleven();
+    // this.operation();
+    // this.CenTiny();
   },
   mounted() {
-    setInterval(() => {
-      this.getRegNum();
-      this.getLog();
-      this.getData_one();
-      this.getData_two();
-      this.getData_three();
-      this.getData_four();
-      this.getData_five();
-      this.getData_six();
-      this.getData_seven();
-      this.getData_eight();
-      this.getData_nine();
-      this.getData_ten();
-      this.getData_eleven();
-      this.operation();
-      this.CenTiny();
-    }, 30000);
+    // setInterval(() => {
+    //   this.getRegNum();
+    //   this.getLog();
+    //   this.getData_one();
+    //   this.getData_two();
+    //   this.getData_three();
+    //   this.getData_four();
+    //   this.getData_five();
+    //   this.getData_six();
+    //   this.getData_seven();
+    //   this.getData_eight();
+    //   this.getData_nine();
+    //   this.getData_ten();
+    //   this.getData_eleven();
+    //   this.operation();
+    //   this.CenTiny();
+    // }, 30000);
   }
 };
 </script>

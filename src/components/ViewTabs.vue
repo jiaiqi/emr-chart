@@ -3,13 +3,17 @@
     <div class="top">
       <!-- 页面内容table -->
       <div class="top_left">
-        <div class="page_name">一卡通就诊</div>
-        <div class="page_name">电子病历共享</div>
-        <div class="page_name">电子病历采集</div>
+        <div
+          class="page_name"
+          @click="CheckPage(item)"
+          :class="{CurrClass:CurrPage === item.key}"
+          v-for="(item,index) in tabsData.tabs"
+          :key="index"
+        >{{item.value}}</div>
       </div>
       <div class="top_header">
         <div class="top_header_item"></div>
-        <div class="top_header_item">
+        <div v-if="isShow" class="top_header_item">
           <span>累计运行时间：</span>
           <span class="all_number">{{tabsData.runTime}}</span>
         </div>
@@ -22,31 +26,56 @@
 <script>
 export default {
   name: "ViewTabs",
-  data() {
-    return {
-      key: "value"
+  props: {
+    tabsData: {
+      type: Object,
+      default: null
     }
   },
+  data() {
+    return {
+      key: "value",
+      isShow: false,
+      CurrPage: this.tabsData.tabs[0].key
+    };
+  },
   methods: {
-    name() {
+    name() {},
+    CheckPage(item) {
+      this.CurrPage = item.key;
+      this.$emit("viewtabs", item);
+    },
+    BackCurrPage() {
+      let Curr = {};
 
+      Curr.key = this.CurrPage;
+      this.tabsData.tabs.forEach(online => {
+        if (online.key === Curr.key) {
+          Curr.value = online.value;
+        }
+      });
+      return Curr;
     }
   },
   props: {
     tabsData: {
       type: Object,
       default: {}
-    },
+    }
+  },
+  mounted() {
+    let first = this.tabsData.tabs[0];
+    this.CheckPage(first);
   },
   watch: {
     tabsData: {
-      handler: function (newValue, oldValue) {
-        return newValue
+      handler: function(newValue, oldValue) {
+        return newValue;
       },
-      deep: true//对象内部的属性监听，即深度监听
-    },
-  },
-}
+      deep: true //对象内部的属性监听，即深度监听
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -80,6 +109,9 @@ export default {
         &:hover {
           background-color: rgba(27, 40, 228, 0.322);
         }
+      }
+      .CurrClass {
+        border-bottom: 3px solid #007aff;
       }
     }
     .top_right {

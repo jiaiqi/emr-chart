@@ -1,7 +1,7 @@
 /* eslint-disable */
 <template>
   <div class="wrap_view">
-    <div class="header">
+    <!-- <div class="header">
       <div class="header_left">
         <div>
           <span>当前用户数:</span>
@@ -34,9 +34,11 @@
           <span @click="toIndex('2')">返回</span>
         </div>
       </div>
-    </div>
+    </div>-->
+    <view-title :titleViewData="titleViewData" :currpage="titleViewData"></view-title>
     <div class="main">
-      <div class="main_top">
+      <view-tabs v-on:adopt="Padopt" :tabsData="tabsData"></view-tabs>
+      <!-- <div class="main_top">
         <div
           class="top_header_item tabbtn"
           :class="{tabactive:tabsShow==1}"
@@ -47,31 +49,71 @@
           :class="{tabactive:tabsShow==2}"
           @click="changeTab(2)"
         >服务器资源</div>
-      </div>
-      <component :is="showComponent"></component>
-      <!-- <plat-mirc></plat-mirc> -->
-      <!-- <plat-serve></plat-serve> -->
+      </div>-->
+
+      <plat-mirc v-if="contentData.currentPage === 'platMirc'"></plat-mirc>
+      <plat-serve v-if="contentData.currentPage === 'platService'"></plat-serve>
     </div>
   </div>
 </template>
 <script>
 let moment = require("moment");
-
+import ViewTitle from "@/components/ViewTitle";
+import ViewTabs from "@/components/ViewTabs";
 import platMirc from "../components/platformMirc";
 import platServe from "../components/platformServe";
 export default {
   name: "platform",
-  components: { platMirc, platServe },
+  components: { platMirc, platServe, ViewTitle, ViewTabs },
   data() {
     return {
-      date: null,
-      showComponent: platMirc,
-      tabsShow: 1,
-      user: {
-        user_no: ""
+      // date: null,
+      // showComponent: platMirc,
+      // tabsShow: 1,
+      // user: {
+      //   user_no: ""
+      // },
+      // list_useno: "",
+      // regNum: "",
+      titleViewData: {
+        title: "业务协同标准化服务平台",
+        date: "",
+        currentPage: "platform"
       },
-      list_useno: "",
-      regNum: ""
+      tabsData: {
+        tabs: [
+          {
+            key: "platMirc",
+            value: "微服务"
+          },
+          {
+            key: "platService",
+            value: "服务器资源"
+          }
+        ],
+        runTime: ""
+      },
+      contentData: {
+        currentPage: "platMirc",
+        firstBar: {
+          title: "",
+          data: {
+            columns: [],
+            rows: []
+          }
+        },
+        secondBar: {
+          title: "",
+          data: {}
+        },
+        firstPie: {
+          title: "",
+          data: {}
+        },
+        secondPie: {
+          title: ""
+        }
+      }
 
       // microSer: [
       //   {
@@ -95,6 +137,13 @@ export default {
       // ]
     };
   },
+  created() {
+    let str = window.location.href;
+    let num = str.indexOf("=");
+    str = str.substr(num + 1);
+    this.titleViewData.currentPage = str;
+    this.contentData.currentPage = str;
+  },
   mounted() {
     this.init(),
       // this.autoChangeTab(10000)
@@ -103,122 +152,124 @@ export default {
       }, 1000);
   },
   methods: {
-    //转换数字
-    convert(num) {
-      let nums = parseInt(num);
-      if (nums > 10000) {
-        if (nums % 10000 == 0) {
-          nums = num / 10000 + "万";
-        } else {
-          nums = Math.round((num / 10000) * 10) / 10 + "万";
-        }
-      } else {
-        nums = num;
-      }
-      return nums;
-    },
-    // 持续运行时长转换
-    period(num) {
-      let nums = parseInt(num) / 60 / 60;
-      if (nums < 24) {
-        if (nums % parseInt(nums) == 0) {
-          nums = nums;
-        } else {
-          nums = Math.round(nums * 10) / 10 + "h";
-        }
-      } else {
-        nums = Math.round((nums / 24) * 10) / 10 + "天";
-      }
-      return nums;
-    },
-    toIndex(num) {
-      if (num === "1") {
-        sessionStorage.clear();
-        window.location.href = "/main/login_pages/login-fw.html";
-        // this.$router.push({ name: "login" });
-      }
-      if (num === "2") {
-        this.$router.push({ name: "navs" });
-      }
-    },
-    init() { },
-    changeTab(num) {
-      this.tabsShow = num;
-      if (this.tabsShow == 1) {
-        this.showComponent = platMirc;
-      } else if (this.tabsShow == 2) {
-        this.showComponent = platServe;
-      }
-    },
-    autoChangeTab(interval) {
-      setInterval(() => {
-        if (this.tabsShow >= 2) {
-          this.tabsShow = 1;
-          this.tabsShow++;
-        } else {
-          this.tabsShow++;
-        }
-        this.changeTab(this.tabsShow);
-      }, interval);
-    },
-    toManangerment() {
-      let str = window.location.href;
-      let num = str.indexOf("?");
-      str = str.substr(num + 1);
-      // console.log(str);
-      window.location.href = "../../main/index.html?" + str;
-    },
-    // toSecplat() {
-    //   this.$router.push("/secplat");
-    // }
-
-    //当前用户数
-    getData_userno() {
-      let req = {
-        serviceName: "srvsso_online_user_select",
-        colNames: ["*"],
-        condition: []
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvsso_online_user_select",
-        "sso"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.list_useno = res.data.data[0].number_of_online_users;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    //注册用户数
-    CurrRegNum() {
-      let req = {
-        serviceName: "srvsso_user_select",
-        colNames: ["*"],
-        condition: []
-      };
-      let path = this.getServiceUrl("select", "srvsso_user_select", "sso");
-      this.axios
-        .post(path, req)
-        .then(res => {
-          // this.list_useno = res.data.data[0].number_of_online_users;
-          this.regNum = res.data.data.length;
-        })
-        .catch(err => {
-          console.log(err);
-        });
+    Padopt(pageName) {
+      this.contentData.currentPage = pageName;
     }
-  },
-  computed: {},
-  created() {
-    let user = sessionStorage.getItem("current_login_user");
-    this.user = JSON.parse(user);
-    // this.user = top.user.user_no;
-    // this.getData_userno();
-    // this.CurrRegNum();
+    //   //转换数字
+    //   convert(num) {
+    //     let nums = parseInt(num);
+    //     if (nums > 10000) {
+    //       if (nums % 10000 == 0) {
+    //         nums = num / 10000 + "万";
+    //       } else {
+    //         nums = Math.round((num / 10000) * 10) / 10 + "万";
+    //       }
+    //     } else {
+    //       nums = num;
+    //     }
+    //     return nums;
+    //   },
+    //   // 持续运行时长转换
+    //   period(num) {
+    //     let nums = parseInt(num) / 60 / 60;
+    //     if (nums < 24) {
+    //       if (nums % parseInt(nums) == 0) {
+    //         nums = nums;
+    //       } else {
+    //         nums = Math.round(nums * 10) / 10 + "h";
+    //       }
+    //     } else {
+    //       nums = Math.round((nums / 24) * 10) / 10 + "天";
+    //     }
+    //     return nums;
+    //   },
+    //   toIndex(num) {
+    //     if (num === "1") {
+    //       sessionStorage.clear();
+    //       window.location.href = "/main/login_pages/login-fw.html";
+    //       // this.$router.push({ name: "login" });
+    //     }
+    //     if (num === "2") {
+    //       this.$router.push({ name: "navs" });
+    //     }
+    //   },
+    //   init() { },
+    //   changeTab(num) {
+    //     this.tabsShow = num;
+    //     if (this.tabsShow == 1) {
+    //       this.showComponent = platMirc;
+    //     } else if (this.tabsShow == 2) {
+    //       this.showComponent = platServe;
+    //     }
+    //   },
+    //   autoChangeTab(interval) {
+    //     setInterval(() => {
+    //       if (this.tabsShow >= 2) {
+    //         this.tabsShow = 1;
+    //         this.tabsShow++;
+    //       } else {
+    //         this.tabsShow++;
+    //       }
+    //       this.changeTab(this.tabsShow);
+    //     }, interval);
+    //   },
+    //   toManangerment() {
+    //     let str = window.location.href;
+    //     let num = str.indexOf("?");
+    //     str = str.substr(num + 1);
+    //     // console.log(str);
+    //     window.location.href = "../../main/index.html?" + str;
+    //   },
+    //   // toSecplat() {
+    //   //   this.$router.push("/secplat");
+    //   // }
+    //   //当前用户数
+    //   getData_userno() {
+    //     let req = {
+    //       serviceName: "srvsso_online_user_select",
+    //       colNames: ["*"],
+    //       condition: []
+    //     };
+    //     let path = this.getServiceUrl(
+    //       "select",
+    //       "srvsso_online_user_select",
+    //       "sso"
+    //     );
+    //     this.axios
+    //       .post(path, req)
+    //       .then(res => {
+    //         this.list_useno = res.data.data[0].number_of_online_users;
+    //       })
+    //       .catch(err => {
+    //         console.log(err);
+    //       });
+    //   },
+    //   //注册用户数
+    //   CurrRegNum() {
+    //     let req = {
+    //       serviceName: "srvsso_user_select",
+    //       colNames: ["*"],
+    //       condition: []
+    //     };
+    //     let path = this.getServiceUrl("select", "srvsso_user_select", "sso");
+    //     this.axios
+    //       .post(path, req)
+    //       .then(res => {
+    //         // this.list_useno = res.data.data[0].number_of_online_users;
+    //         this.regNum = res.data.data.length;
+    //       })
+    //       .catch(err => {
+    //         console.log(err);
+    //       });
+    //   }
+    // },
+    // computed: {},
+    // created() {
+    //   let user = sessionStorage.getItem("current_login_user");
+    //   this.user = JSON.parse(user);
+    //   // this.user = top.user.user_no;
+    //   // this.getData_userno();
+    //   // this.CurrRegNum();
   }
 };
 </script>

@@ -81,7 +81,7 @@ function init_util() {
    * @param app
    * @returns {string}
    */
-  Vue.prototype.getServiceUrl = function (operate_type, service, app,url) {
+  Vue.prototype.getServiceUrl = function (operate_type, service, app, url) {
     app = app || this.resolveDefaultSrvApp();
     let backendIpAddr = null;
     let pathConfig = sessionStorage.getItem('pathConfig')
@@ -94,22 +94,22 @@ function init_util() {
       } else {
         backendIpAddr = parentServerPath
       }
-    }else if(pathConfig !== null){
+    } else if (pathConfig !== null) {
       let parentServerPath = pathConfig.gateway;
       if (parentServerPath.endsWith("/")) {
         backendIpAddr = parentServerPath.substring(0, parentServerPath.length - 1)
       } else {
         backendIpAddr = parentServerPath
       }
-    }else{
+    } else {
       backendIpAddr = top.backendIpAddr
     }
-    if(url){
-      return url + "/" + app + "/" + (operate_type !== '' ?operate_type + '/':'')   + service;
-    }else{
-      return backendIpAddr + "/" + app + "/" +  (operate_type !== '' ?operate_type + '/':'') + service;
+    if (url) {
+      return url + "/" + app + "/" + (operate_type !== '' ? operate_type + '/' : '') + service;
+    } else {
+      return backendIpAddr + "/" + app + "/" + (operate_type !== '' ? operate_type + '/' : '') + service;
     }
-    
+
   }
 
 
@@ -253,8 +253,7 @@ function init_util() {
     return {
       serviceName: 'srvsys_service_columnex_v2_select',
       colNames: ['*'],
-      condition: [
-        {
+      condition: [{
           colName: 'service_name',
           value: service_name,
           ruleType: 'eq'
@@ -265,12 +264,10 @@ function init_util() {
           ruleType: 'eq'
         }
       ],
-      order: [
-        {
-          colName: "seq",
-          orderType: "asc"
-        }
-      ]
+      order: [{
+        colName: "seq",
+        orderType: "asc"
+      }]
     };
   }
 
@@ -300,8 +297,7 @@ function init_util() {
         //       "          }"
         //   }]
         // }
-      } catch (e) {
-      }
+      } catch (e) {}
 
 
       //endregion
@@ -379,8 +375,7 @@ function init_util() {
   Vue.prototype.selectFileList = function (file_no) {
     let serviceName = 'srvfile_attachment_select';
     var url = this.getServiceUrl("select", serviceName, "file");
-    let condition = [
-      {
+    let condition = [{
         "colName": "file_no",
         "value": file_no,
         "ruleType": "eq"
@@ -672,7 +667,9 @@ function init_util() {
       // create dialog
       let ComponentClass = Vue.extend(Dialog)
       let dialog = new ComponentClass({
-        propsData: {type: 'primary'},
+        propsData: {
+          type: 'primary'
+        },
         store: this.$store,
       })
       this.dialog = dialog;
@@ -711,7 +708,9 @@ function init_util() {
       // create dialog
       let ComponentClass = Vue.extend(Dialog)
       let dialog = new ComponentClass({
-        propsData: { type: 'primary' },
+        propsData: {
+          type: 'primary'
+        },
         store: this.$store
       })
       this.dialog = dialog;
@@ -1037,67 +1036,89 @@ function init_util() {
     return service_api;
   }
 
-   /**
-     *  格式化日期
-     *  @params date: 时间字符串或数字  仅支持String和Number类型
-     *  @params type: return的时间格式，默认为0 输出 "YYYY-MM-DD" ，1 输出 "YYYY-MM-DD hh:mm:ss"，2 输出 "hh:mm:ss"
-     *  @params operator: 年月日间隔符 默认"YYYY-MM-DD"
-     */
-  Vue.prototype.format_date = function(date,type,operator) {  // 20180808T082630
-    if(date){
-      if(!type){
+  /**
+   *  格式化日期
+   *  @params date: 时间字符串或数字  仅支持String和Number类型
+   *  @params type: return的时间格式，默认为0 输出 "YYYY-MM-DD" ，1 输出 "YYYY-MM-DD hh:mm:ss"，2 输出 "hh:mm:ss"
+   *  @params operator: 年月日间隔符 默认"YYYY-MM-DD"
+   */
+  Vue.prototype.format_date = function (date, type, operator) { // 20180808T082630
+    if (date) {
+      if (!type) {
         type = 0
       }
-      if(!operator){
+      if (!operator) {
         operator = "-"
       }
-      if(typeof date == "string"&&type==0){
-        date = date.slice(0,4)+operator+date.slice(4,6)+operator+date.slice(6,8)
-      }else if(typeof date == "string" && type == 1 &&date.length==15){ // 2019-09-04 12:22:22
-        date = date.slice(0,4)+operator+date.slice(4,6)+operator+date.slice(6,8)+" "+date.slice(9,11)+":"+date.slice(11,13)+":"+date.slice(13,15)
-      }else if(typeof date == "number" && type == 0 &&date.length==14){ // 2019-09-04 12:22:22
-        date = date.slice(0,4)+operator+date.slice(4,6)+operator+date.slice(6,8)
-      }else if(typeof date == "number" && type == 1 &&date.length==14){ // 2019-09-04 12:22:22
-        date = date.slice(0,4)+operator+date.slice(4,6)+operator+date.slice(6,8)+" "+date.slice(8,10)+":"+date.slice(10,12)+":"+date.slice(12,14)
-      }else if(typeof date == "string" && type == 2 &&date.length==15){ // 2019-09-04 12:22:22
-        date.slice(9,11)+":"+date.slice(11,13)+":"+date.slice(13,15)
-      }else if(typeof date == "number"){
+      if (typeof date == "string" && type == 0) {
+        date = date.slice(0, 4) + operator + date.slice(4, 6) + operator + date.slice(6, 8)
+      } else if (typeof date == "string" && type == 1 && date.length == 15) { // 2019-09-04 12:22:22
+        date = date.slice(0, 4) + operator + date.slice(4, 6) + operator + date.slice(6, 8) + " " + date.slice(9, 11) + ":" + date.slice(11, 13) + ":" + date.slice(13, 15)
+      } else if (typeof date == "number" && type == 0 && date.length == 14) { // 2019-09-04 12:22:22
+        date = date.slice(0, 4) + operator + date.slice(4, 6) + operator + date.slice(6, 8)
+      } else if (typeof date == "number" && type == 1 && date.length == 14) { // 2019-09-04 12:22:22
+        date = date.slice(0, 4) + operator + date.slice(4, 6) + operator + date.slice(6, 8) + " " + date.slice(8, 10) + ":" + date.slice(10, 12) + ":" + date.slice(12, 14)
+      } else if (typeof date == "string" && type == 2 && date.length == 15) { // 2019-09-04 12:22:22
+        date.slice(9, 11) + ":" + date.slice(11, 13) + ":" + date.slice(13, 15)
+      } else if (typeof date == "number") {
         let dateTime = date.toString()
-        dateTime = dateTime.slice(0,4)+operator+dateTime.slice(4,6)+operator+dateTime.slice(6,8)
+        dateTime = dateTime.slice(0, 4) + operator + dateTime.slice(4, 6) + operator + dateTime.slice(6, 8)
         return dateTime
-      }else{
+      } else {
         return "数据不规范,无法转化成标准时间"
       }
-      return date      
+      return date
     }
   }
 }
 
-  /**
-   *  秒数转化为n天n小时
-   *  @param val: 秒数
-   * @returns {string}
-   */
-  Vue.prototype.secondToTime=function(val) {
-    let s = parseInt(val) // 秒
-    let h = 0 // 时
-    let d = 0 // 天
-    if (s >= 60) { // 运行时间大于一分钟
-      h = Math.round(s / 3600)
-      if (h >= 24) {
-        d = parseInt(h / 24)
-        h = Math.round((h % 24).toFixed(1)) // 四舍五入计算小时
-      }
+/**
+ *  秒数转化为n天n小时
+ *  @param val: 秒数
+ * @returns {string}
+ */
+Vue.prototype.secondToTime = function (val) {
+  let s = parseInt(val) // 秒
+  let h = 0 // 时
+  let d = 0 // 天
+  if (s >= 60) { // 运行时间大于一分钟
+    h = Math.round(s / 3600)
+    if (h >= 24) {
+      d = parseInt(h / 24)
+      h = Math.round((h % 24).toFixed(1)) // 四舍五入计算小时
     }
-    let time = ""
-    if (d < 1) {
-      time = "" + h + "小时"  // 若天数小于一，则输出n小时
-    } else if (h%24===0) {
-      time = "" + d + "天"  // 若天数是一个整数，则输出n天
-    } else {
-      time = "" + d + "天" + h + "小时" // 若天数大于一且不是一个整数，则输出n天n小时
-    }
-    return time
   }
+  let time = ""
+  if (d < 1) {
+    time = "" + h + "小时" // 若天数小于一，则输出n小时
+  } else if (h % 24 === 0) {
+    time = "" + d + "天" // 若天数是一个整数，则输出n天
+  } else {
+    // time = "" + d + "天" + h + "小时" // 若天数大于一且不是一个整数，则输出n天n小时
+    time = "" + d + parseFloat(h / 24).toFixed(1) + "天" // 若天数大于一且不是一个整数，则输出n.x天
+  }
+  return time
+}
+
+//转换数字
+/**
+ *
+ *大于一万的转化为x.x万
+ * @param {*} num：数字
+ * @returns {string}
+ */
+Vue.prototype.convert = function (num) {
+  let nums = parseInt(num);
+  if (nums > 10000) {
+    if (nums % 10000 == 0) {
+      nums = num / 10000 + "万";
+    } else {
+      nums = Math.round((num / 10000) * 10) / 10 + "万";
+    }
+  } else {
+    nums = num;
+  }
+  return nums;
+}
 
 export default init_util;

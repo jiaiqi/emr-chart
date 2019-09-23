@@ -1,17 +1,50 @@
 <template>
-  <div class="time_horizon" ref>
-    <div class="time_horizon_item btn">近24小时</div>
-    <div class="time_horizon_item btn">近一周</div>
-    <div class="time_horizon_item btn">近一月</div>
-    <div class="time_horizon_item btn">近一年</div>
+  <div class="time_horizon">
+    <div
+      class="time_horizon_item btn"
+      @click="selectTimeType('day')"
+      :class="{ active: checkDataType === 'day' }"
+    >近24小时</div>
+    <div
+      class="time_horizon_item btn"
+      @click="selectTimeType('week')"
+      :class="{ active: checkDataType === 'week' }"
+    >近一周</div>
+    <div
+      class="time_horizon_item btn"
+      @click="selectTimeType('month')"
+      :class="{ active: checkDataType === 'month' }"
+    >近一月</div>
+    <div
+      class="time_horizon_item btn"
+      @click="selectTimeType('year')"
+      :class="{ active: checkDataType === 'year' }"
+    >近一年</div>
     <!-- <div class="time_horizon_item btn">自定义时间段</div> -->
   </div>
 </template>
 
 <script>
 export default {
-
-}
+  name: "TimeType",
+  data() {
+    return {
+      checkDataType: "day"
+    };
+  },
+  methods: {
+    selectTimeType(TimeType) {
+      this.checkDataType = TimeType;
+      this.$emit("showTimeType", TimeType);
+    }
+  },
+  props: {
+    // propName: {
+    //   type: Number,
+    //   default: ""
+    // },
+  }
+};
 </script>
 
 <style lang="scss" scoped>
