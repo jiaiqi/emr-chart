@@ -72,12 +72,11 @@ export default {
 
       } else if (currentPage === 'emrCollect') { }
       this.contentData.firstBar.data = bar1Data
-
     },
     getPie1Data(currentPage) {
       let data = this.allData.Pie1
       let timeType = this.checkDataType
-      if (data) {
+      if (data && currentPage == 'oneCard') {
         // 获取指标
         // let types = this.getCols(data, "yljgmc")
         let hospital = ["延大附院", "市人民医院", "市中医医院", "博爱医院", "市妇幼医院", "宝塔区医院"]
@@ -106,7 +105,7 @@ export default {
     getPie2Data(currentPage) {
       let datas = this.allData.Pie2
       // let cardType = this.getCols(datas, "card_type")
-      let cardType = ["社保卡","就诊卡","身份证"]
+      let cardType = ["社保卡", "就诊卡", "身份证"]
       let pie2Data = {
         columns: ['卡类型', '就诊次数'],
         rows: []
@@ -116,7 +115,7 @@ export default {
           "卡类型": '',
           "就诊次数": 0
         }
-        pieDataItem.卡类型=ct
+        pieDataItem.卡类型 = ct
         let pie2Count = 0
         for (let i = 0; i < datas.length; i++) {
           if (ct === datas[i].card_type) {
@@ -200,7 +199,7 @@ export default {
       this.contentData.tabCheckItem = hospital
       if (hospital && hospital.length > 0) {
         // let cardType = this.getCols(data, "card_type")
-        let cardType =  ["社保卡","就诊卡","身份证"]
+        let cardType = ["社保卡", "就诊卡", "身份证"]
         hospital.map((hos, i) => {
           let obj = {
             columns: ['卡类型', '就诊次数'],
@@ -243,10 +242,9 @@ export default {
               obj["住院"] += data.create_time
             }
           })
-          console.log("aaaaaaaaaa:", hos, obj)
-
         })
-        console.log("cccccccc:", countArr)
+        console.log("countArr:", countArr)
+        this.contentData.countData = countArr
       }
     },
     getAllChartData(currentPage) {

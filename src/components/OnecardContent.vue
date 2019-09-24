@@ -69,11 +69,11 @@
           <div class="content_right_bottom_item">
             <div class="count">
               <div class="label">门诊次数</div>
-              <div class="text-val"></div>
+              <div class="text-val" v-if="countData.length>0">{{countData[currentHospital].门诊}}</div>
             </div>
             <div class="count">
               <div class="label">住院次数</div>
-              <div class="text-val"></div>
+              <div class="text-val" v-if="countData.length>0">{{countData[currentHospital].住院}}</div>
             </div>
           </div>
           <div class="content_right_bottom_item">
@@ -180,10 +180,7 @@ export default {
         title: "",
         data: {}
       },
-      countData: {
-        title: "",
-        data: {}
-      },
+      countData: [],
       CurrPage: "datacenter",
       tabCheckItem: [],
       chartSettings: {},
@@ -261,6 +258,7 @@ export default {
       deep: true,
       handler(newValue, oldValue) {
         this.chartExtendLine.series.type = newValue.firstBar.type
+        this.countData = newValue.countData
         return newValue;
       }
     }
