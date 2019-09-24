@@ -40,7 +40,7 @@ export default {
     };
   },
   methods: {
-    name() {},
+    name() { },
     CheckPage(item) {
       this.CurrPage = item.key;
       this.$emit("viewtabs", item);
@@ -66,13 +66,22 @@ export default {
   mounted() {
     let first = this.tabsData.tabs[0];
     this.CheckPage(first);
+    if (this.CurrPage === ("oneCard" || "emrShare" || "emrCollect")) {
+      this.isShow = true
+    }
   },
   watch: {
     tabsData: {
-      handler: function(newValue, oldValue) {
+      handler: function (newValue, oldValue) {
         return newValue;
       },
       deep: true //对象内部的属性监听，即深度监听
+    },
+    isShow: {
+      deep: true,
+      handler(newValue, oldValue) {
+
+      }
     }
   }
 };

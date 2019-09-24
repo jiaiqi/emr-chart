@@ -16,34 +16,34 @@
         <div class="content_cen_left">
           <p>
             <span>服务器数量：</span>
-            <span>0</span>
+            <span>{{severNum}}</span>
           </p>
           <p>
             <span>CPU占用率：</span>
-            <span>0</span>
+            <span>{{(cpuData==NaN)?(0+"%"):cpuData}}</span>
           </p>
           <p>
             <span>内存占用率：</span>
-            <span>0</span>
+            <span>{{RamData}}</span>
           </p>
           <p>
             <span>硬盘：</span>
-            <span>0</span>
+            <span>{{HDDdata}}</span>
           </p>
           <p>
             <span>入网速度：</span>
-            <span>0</span>
+            <span>{{netIndata}}</span>
           </p>
           <p>
             <span>出网速度：</span>
-            <span></span>
+            <span>{{netOutdata}}</span>
           </p>
         </div>
       </div>
     </div>
     <div class="content_bot">
       <ul>
-        <li @click="toDetail" v-for="(item,index) in testData" :key="index">
+        <li @click="toDetail" v-for="(item,index) in SerEsources" :key="index">
           <dv-border-box-9 style="width:100%;padding:0.4rem;">
             <div class="bot-card-item bot-card-item-header">
               <span>{{'IP : '+(item.ip==''||item.ip==undefined ? "暂无数据":item.ip)}}</span>
@@ -242,163 +242,163 @@ export default {
     };
   },
   methods: {
-    // petition() {
-    //   this.axios({
-    //     method: "get",
-    //     url: this.getServiceUrl(
-    //       "",
-    //       "srvmonitor_apps_servernape_select",
-    //       "monitor"
-    //     )
-    //   }).then(res => {
-    //     this.timer();
-    //     let severdata = res.data.data;
-    //     this.SerResData = res.data.data;
-    //     let cpuCum = 0, //总cpu
-    //       memoryUse = 0, //总内存占用
-    //       memoryCum = 0, //总内存
-    //       HDDsumUse = 0, //总硬盘占用
-    //       HDDsum = 0, //总硬盘
-    //       netInNum = 0, //入网总值
-    //       netOutNum = 0; //出网总值
-    //     this.SerEsources = this.SerResData.map(item => {
-    //       let itemData = {
-    //         ip: "",
-    //         cupLoad: "",
-    //         memory: "",
-    //         disk: "",
-    //         networkIn: "",
-    //         networkOut: "",
-    //         data: {}
-    //       };
-    //       let itemDatas = item.itemsVos;
-    //       let resItemData = {};
-    //       for (let i = 0; i < itemDatas.length; i++) {
-    //         resItemData[itemDatas[i].itemsName] = itemDatas[i].val;
-    //       }
-    //       cpuCum +=
-    //         resItemData.cupLoad == null ? 0 : Number(resItemData.cupLoad);
-    //       console.log("resItemData.cupLoad", resItemData.cupLoad);
-    //       memoryUse +=
-    //         resItemData.memoryAvailable == null
-    //           ? 0
-    //           : Number(resItemData.memoryAvailable);
-    //       memoryCum +=
-    //         resItemData.memoryTotal == null
-    //           ? 0
-    //           : Number(resItemData.memoryTotal);
-    //       HDDsumUse +=
-    //         resItemData.diskUsed == null ? 0 : Number(resItemData.diskUsed);
-    //       HDDsum +=
-    //         resItemData.diskTotal == null ? 0 : Number(resItemData.diskTotal);
-    //       netInNum +=
-    //         (resItemData.networkIn == null
-    //           ? 0
-    //           : Number(resItemData.networkIn)) / 1000;
-    //       netOutNum +=
-    //         (resItemData.networkOut == null
-    //           ? 0
-    //           : Number(resItemData.networkOut)) / 1000;
-    //       itemData.ip = item.ip == "127.0.0.1" ? "10.120.119.30" : item.ip;
-    //       itemData.memorySize =
-    //         (resItemData.memoryAvailable / 1024 / 1024 / 1024).toFixed(1) + "G";
-    //       itemData.diskSize =
-    //         (resItemData.diskUsed / 1024 / 1024 / 1024).toFixed(1) + "G";
-    //       itemData.cupLoad = (resItemData.cupLoad * 1).toFixed(2) + "%";
-    //       itemData.memory =
-    //         (
-    //           ((resItemData.memoryTotal - resItemData.memoryAvailable) /
-    //             resItemData.memoryTotal) *
-    //           100
-    //         ).toFixed(1) == "NaN"
-    //           ? " - "
-    //           : (
-    //               ((resItemData.memoryTotal - resItemData.memoryAvailable) /
-    //                 resItemData.memoryTotal) *
-    //               100
-    //             ).toFixed(1) + "%";
-    //       itemData.disk =
-    //         (
-    //           ((resItemData.diskTotal - resItemData.diskUsed) /
-    //             resItemData.diskTotal) *
-    //           100
-    //         ).toFixed(1) == "NaN"
-    //           ? " - "
-    //           : (
-    //               ((resItemData.diskTotal - resItemData.diskUsed) /
-    //                 resItemData.diskTotal) *
-    //               100
-    //             ).toFixed(1) + "%";
-    //       itemData.networkIn =
-    //         (resItemData.networkIn / 1000).toFixed(1) + "bps";
-    //       itemData.networkOut =
-    //         (resItemData.networkOut / 1000).toFixed(1) + "bps";
-    //       return itemData;
-    //     });
-    //     this.severNum = res.data.data.length; //服务器数量
-    //     // console.log('========================',cpuCum,this.severNum)
-    //     this.cpuData = (cpuCum / this.severNum).toFixed(1) + "%"; //cpu总占用率
-    //     this.RamData = ((memoryUse / memoryCum) * 100).toFixed(1) + "%"; //内存
-    //     this.HDDdata = ((HDDsumUse / HDDsum) * 100).toFixed(1) + "%"; //硬盘
-    //     console.log(HDDsumUse, HDDsum);
-    //     this.netIndata = (netInNum / this.severNum).toFixed(1) + "bps"; ////入网
-    //     this.netOutdata = (netOutNum / this.severNum).toFixed(1) + "bps"; ////出网
-    //   });
-    // },
-    // toDetail() {
-    //   let url = "http://10.120.119.30/zabbix";
-    //   window.open(url);
-    // },
-    // timer() {
-    //   setInterval(() => {
-    //     this.petition();
-    //   }, 300000);
-    // },
-    // diskdatanum() {
-    //   //计算当前时间与2019.9.1之间的间隔
-    //   var dateSpan, tempDate, iDays, sDate1, sDate2;
-    //   sDate1 = Date.parse(this.sDate1);
-    //   sDate2 = Date.parse(this.sDate2);
-    //   dateSpan = sDate2 - sDate1;
-    //   dateSpan = Math.abs(dateSpan);
-    //   iDays = Math.floor(dateSpan / (24 * 3600 * 1000));
-    //   this.dsikDefaules = parseInt(32.28 + iDays * 0.07);
-    //   console.log(iDays, this.dsikDefaules);
-    // },
-    // currtenTime() {
-    //   //获取当前时间
-    //   this.sDate2 = this.currentTime = //修改数据date
-    //     new Date().getFullYear() +
-    //     "-" +
-    //     (new Date().getMonth() + 1) +
-    //     "-" +
-    //     new Date().getDate();
-    // },
-    // cpuDataNums() {
-    //   this.cpuDataNumDefa = (5 * (1 + Math.random(1))).toFixed(1) + "%";
-    // },
-    // memoryDataNums() {
-    //   this.diskDataNumDefa = (8 * (1 + Math.random())).toFixed(1);
-    //   this.diskmemoryDefa =
-    //     ((this.diskDataNumDefa / 32) * 100).toFixed(1) + "%";
-    // },
-    // diskMemoryData() {
-    //   this.diskMemoryDataDefa = this.dsikDefaules;
-    //   this.diskMemoryNumDefa =
-    //     ((this.dsikDefaules / 128) * 100).toFixed(1) + "%";
-    // }
+    petition() {
+      this.axios({
+        method: "get",
+        url: this.getServiceUrl(
+          "",
+          "srvmonitor_apps_servernape_select",
+          "monitor"
+        )
+      }).then(res => {
+        this.timer();
+        let severdata = res.data.data;
+        this.SerResData = res.data.data;
+        let cpuCum = 0, //总cpu
+          memoryUse = 0, //总内存占用
+          memoryCum = 0, //总内存
+          HDDsumUse = 0, //总硬盘占用
+          HDDsum = 0, //总硬盘
+          netInNum = 0, //入网总值
+          netOutNum = 0; //出网总值
+        this.SerEsources = this.SerResData.map(item => {
+          let itemData = {
+            ip: "",
+            cupLoad: "",
+            memory: "",
+            disk: "",
+            networkIn: "",
+            networkOut: "",
+            data: {}
+          };
+          let itemDatas = item.itemsVos;
+          let resItemData = {};
+          for (let i = 0; i < itemDatas.length; i++) {
+            resItemData[itemDatas[i].itemsName] = itemDatas[i].val;
+          }
+          cpuCum +=
+            resItemData.cupLoad == null ? 0 : Number(resItemData.cupLoad);
+          console.log("resItemData.cupLoad", resItemData.cupLoad);
+          memoryUse +=
+            resItemData.memoryAvailable == null
+              ? 0
+              : Number(resItemData.memoryAvailable);
+          memoryCum +=
+            resItemData.memoryTotal == null
+              ? 0
+              : Number(resItemData.memoryTotal);
+          HDDsumUse +=
+            resItemData.diskUsed == null ? 0 : Number(resItemData.diskUsed);
+          HDDsum +=
+            resItemData.diskTotal == null ? 0 : Number(resItemData.diskTotal);
+          netInNum +=
+            (resItemData.networkIn == null
+              ? 0
+              : Number(resItemData.networkIn)) / 1000;
+          netOutNum +=
+            (resItemData.networkOut == null
+              ? 0
+              : Number(resItemData.networkOut)) / 1000;
+          itemData.ip = item.ip == "127.0.0.1" ? "10.120.119.30" : item.ip;
+          itemData.memorySize =
+            (resItemData.memoryAvailable / 1024 / 1024 / 1024).toFixed(1) + "G";
+          itemData.diskSize =
+            (resItemData.diskUsed / 1024 / 1024 / 1024).toFixed(1) + "G";
+          itemData.cupLoad = (resItemData.cupLoad * 1).toFixed(2) + "%";
+          itemData.memory =
+            (
+              ((resItemData.memoryTotal - resItemData.memoryAvailable) /
+                resItemData.memoryTotal) *
+              100
+            ).toFixed(1) == "NaN"
+              ? " - "
+              : (
+                  ((resItemData.memoryTotal - resItemData.memoryAvailable) /
+                    resItemData.memoryTotal) *
+                  100
+                ).toFixed(1) + "%";
+          itemData.disk =
+            (
+              ((resItemData.diskTotal - resItemData.diskUsed) /
+                resItemData.diskTotal) *
+              100
+            ).toFixed(1) == "NaN"
+              ? " - "
+              : (
+                  ((resItemData.diskTotal - resItemData.diskUsed) /
+                    resItemData.diskTotal) *
+                  100
+                ).toFixed(1) + "%";
+          itemData.networkIn =
+            (resItemData.networkIn / 1000).toFixed(1) + "bps";
+          itemData.networkOut =
+            (resItemData.networkOut / 1000).toFixed(1) + "bps";
+          return itemData;
+        });
+        this.severNum = res.data.data.length; //服务器数量
+        // console.log('========================',cpuCum,this.severNum)
+        this.cpuData = (cpuCum / this.severNum).toFixed(1) + "%"; //cpu总占用率
+        this.RamData = ((memoryUse / memoryCum) * 100).toFixed(1) + "%"; //内存
+        this.HDDdata = ((HDDsumUse / HDDsum) * 100).toFixed(1) + "%"; //硬盘
+        console.log(HDDsumUse, HDDsum);
+        this.netIndata = (netInNum / this.severNum).toFixed(1) + "bps"; ////入网
+        this.netOutdata = (netOutNum / this.severNum).toFixed(1) + "bps"; ////出网
+      });
+    },
+    toDetail() {
+      let url = "http://10.120.119.30/zabbix";
+      window.open(url);
+    },
+    timer() {
+      setInterval(() => {
+        this.petition();
+      }, 300000);
+    },
+    diskdatanum() {
+      //计算当前时间与2019.9.1之间的间隔
+      var dateSpan, tempDate, iDays, sDate1, sDate2;
+      sDate1 = Date.parse(this.sDate1);
+      sDate2 = Date.parse(this.sDate2);
+      dateSpan = sDate2 - sDate1;
+      dateSpan = Math.abs(dateSpan);
+      iDays = Math.floor(dateSpan / (24 * 3600 * 1000));
+      this.dsikDefaules = parseInt(32.28 + iDays * 0.07);
+      console.log(iDays, this.dsikDefaules);
+    },
+    currtenTime() {
+      //获取当前时间
+      this.sDate2 = this.currentTime = //修改数据date
+        new Date().getFullYear() +
+        "-" +
+        (new Date().getMonth() + 1) +
+        "-" +
+        new Date().getDate();
+    },
+    cpuDataNums() {
+      this.cpuDataNumDefa = (5 * (1 + Math.random(1))).toFixed(1) + "%";
+    },
+    memoryDataNums() {
+      this.diskDataNumDefa = (8 * (1 + Math.random())).toFixed(1);
+      this.diskmemoryDefa =
+        ((this.diskDataNumDefa / 32) * 100).toFixed(1) + "%";
+    },
+    diskMemoryData() {
+      this.diskMemoryDataDefa = this.dsikDefaules;
+      this.diskMemoryNumDefa =
+        ((this.dsikDefaules / 128) * 100).toFixed(1) + "%";
+    }
   },
   created() {
-    // this.currtenTime();
-    // this.petition();
-    // this.diskdatanum();
-    // this.cpuDataNums();
-    // this.memoryDataNums();
-    // this.diskMemoryData();
+    this.currtenTime();
+    this.petition();
+    this.diskdatanum();
+    this.cpuDataNums();
+    this.memoryDataNums();
+    this.diskMemoryData();
   },
-  // destroyed() {
-  //   clearInterval(this.timer);
-  // },
+  destroyed() {
+    clearInterval(this.timer);
+  },
   components: {}
 };
 </script>

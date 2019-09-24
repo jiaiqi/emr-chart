@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import moment from 'moment'
 function data_util (){
   // 柱状图或折线图获取横轴/维度
   Vue.prototype.getXaxis = function(timeType='day'){
@@ -12,13 +13,13 @@ function data_util (){
     } else if (timeType === 'week') {
       let week = []
       for (let i = 1; i < 8; i++) {
-        week.push(moment(this.timeHorizon.today).subtract(7 - i, 'days').format('YYYY-MM-DD'))
+        week.push(moment().subtract(7 - i, 'days').format('YYYY-MM-DD'))
       }
       Xaxis = week
     } else if (timeType === 'month') {
       let days = []
       for (let i = 1; i < 31; i++) {
-        days.push(moment(this.timeHorizon.today).subtract(30 - i, 'days').format('YYYY-MM-DD'))
+        days.push(moment().subtract(30 - i, 'days').format('YYYY-MM-DD'))
       }
       Xaxis = days
     } else if (timeType === 'year') {

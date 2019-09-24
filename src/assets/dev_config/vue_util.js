@@ -1073,7 +1073,7 @@ function init_util() {
 }
 
 /**
- *  秒数转化为n天n小时
+ *  秒数转化为天数
  *  @param val: 秒数
  * @returns {string}
  */

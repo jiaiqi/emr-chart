@@ -6,7 +6,10 @@
           <div class="big-title">{{contentData.firstBar.title}}</div>
           <ve-histogram
             :data="contentData.firstBar.data"
-            :settings="chartSettings"
+            :settings="chartSetting"
+            :extend="chartExtendLine"
+            :textStyle="legend.textStyle"
+            :legend="legend"
             width="40vw"
             height="calc(100% - 50px)"
           ></ve-histogram>
@@ -16,13 +19,23 @@
             <div class="item_title">
               <dv-border-box-8>{{contentData.firstPie.title}}</dv-border-box-8>
             </div>
-            <ve-pie height="28vh" :legend-visible="false" :data="firstPie.data"></ve-pie>
+            <ve-pie
+              height="28vh"
+              :data="contentData.firstPie.data"
+              :legend-visible="false"
+              :extend="chartExtendPie"
+            ></ve-pie>
           </div>
           <div class="content_left_right_item">
             <div class="item_title">
               <dv-border-box-8>{{contentData.secondPie.title}}</dv-border-box-8>
             </div>
-            <ve-pie height="28vh" :legend-visible="false"></ve-pie>
+            <ve-pie
+              :data="contentData.secondPie.data"
+              height="28vh"
+              :legend-visible="false"
+              :extend="chartExtendPie"
+            ></ve-pie>
           </div>
         </div>
       </div>
@@ -35,11 +48,20 @@
               class="check_item"
               v-for="(item,index) in contentData.secondBar.tabCheckItem"
               :key="index"
+              :class="{current_hospital:currentHospital==index}"
+              @click="selectHospital(index)"
             >{{item}}</div>
           </div>
           <div class="tab_content">
             <div class="content_item">
-              <ve-histogram height="30vh"></ve-histogram>
+              <ve-histogram
+                height="30vh"
+                :extend="chartExtendLine"
+                :settings="chartSetting"
+                :textStyle="legend.textStyle"
+                :legend="legend"
+                :data="contentData.secondBar.data[currentHospital]"
+              ></ve-histogram>
             </div>
           </div>
         </div>
@@ -59,7 +81,12 @@
               <div class="item_title">
                 <dv-border-box-8>{{contentData.thirdPie.title}}</dv-border-box-8>
               </div>
-              <ve-pie height="28vh"></ve-pie>
+              <ve-pie
+                :data="contentData.thirdPie.data[currentHospital]"
+                height="28vh"
+                :legend="legend"
+                :extend="chartExtendPie"
+              ></ve-pie>
             </div>
           </div>
         </div>
@@ -159,86 +186,87 @@ export default {
       },
       CurrPage: "datacenter",
       tabCheckItem: [],
-      chartSettings: {}
+      chartSettings: {},
+      chartExtendLine: {
+        grid: {
+          top: '10%',
+          bottom: "0",
+          height: "auto"
+        },
+        series: {
+          type: "bar",
+          itemStyle: {
+            normal: {
+              label: {
+                show: true
+              }
+            }
+          }
+        }
+      },
+      chartExtendPie: {
+        grid: {
+          top: '10',
+          bottom: "0",
+          height: "auto"
+        },
+        series: {
+          type: 'pie',
+          center: ["50%", "50%"],
+          radius: [0, '30%'],
+          label: {
+            normal: {
+              show: true,
+              formatter: '{b}:{d}%'
+            }
+          },
+        }
+      },
+      currentHospital: 0,
+      legend: {
+        textStyle: {
+          color: '#fff'
+        }
+      },
     };
   },
   methods: {
-    getPie1Data(timeType) {
-      let data = this.contentData.firstPie.data
-      console.log(data)
-      if (data) {
-        // 获取指标
-        let types = this.getCols(data, "yljgmc")
-        // 获取columns
-        let columns = ["医院", "就诊次数"]
-        console.log('columns', columns)
-        let pie1Data = {
-          columns: columns,
-          rows: []
+    autoChangeHospital(interval = 3000) {
+      // 自动切换医院数据
+      setInterval(() => {
+        if (this.currentHospital < 5) {
+          this.currentHospital += 1
+        } else {
+          this.currentHospital = 0
         }
-        if (timeType === 'day') {
-
-        }
-        types.map(type => {
-          let pie1DataItem = {
-            "医院": "",
-            "就诊次数": 0
-          }
-          pie1Data.rows.push(pie1DataItem)
-          for (let i = 0; i < data.length; i++) {
-            if (type === data[i].yljgmc) {
-              pie1DataItem.就诊次数 = data[i].create_time
-              pie1DataItem.医院 = types
-            }
-          }
-        })
-        this.firstPie.data = pie1Data
-        console.log("PieData", pie1Data)
-      }
+      }, interval);
     },
-    getPie2Data() {
-      let data = this.contentData.secondPie.data
-    },
-    getPie3Data() {
-      let data = this.contentData.thirdPie.data
-    },
-    getBar1data() {
-      let data = this.contentData.firstBar.data
-    },
-    getBar2Data() {
-      let data = this.contentData.secondBar.data
-    },
-    getCountData() {
-      let data = this.contentData.countData
-    },
-    getAllData() {
-      this.getPie1Data()
-      this.getPie2Data()
-      this.getPie3Data()
-      this.getBar1data()
-      this.getBar2Data()
-      this.getCountData()
+    selectHospital(index) {
+      // 点击选择医院
+      this.currentHospital = index
     }
   },
   props: {
     contentData: {
       type: Object,
       default: {}
+    },
+    chartSetting: {
+      type: Object,
+      default: {}
     }
   },
   watch: {
-    // contentData: {
-    //   deep: true,
-    //   handler(newValue, oldValue) {
-    //     return newValue;
-    //   }
-    // }
+    contentData: {
+      deep: true,
+      handler(newValue, oldValue) {
+        this.chartExtendLine.series.type = newValue.firstBar.type
+        return newValue;
+      }
+    }
   },
   mounted() {
-    setTimeout(() => {
-      console.log("contentData", this.contentData)
-      this.getAllData(this.contentData);
-    }, 500);
+    this.autoChangeHospital(3000)
   },
 };
 </script>
@@ -325,6 +353,7 @@ $text-color: #47acff;
           .check_item {
             padding: 0 0.5rem;
             border-bottom: 1px solid #007aff;
+            font-size: 0.9rem;
             &.current_hospital {
               color: #fff;
               border-top-right-radius: 5px;

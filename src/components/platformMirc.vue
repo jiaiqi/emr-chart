@@ -7,17 +7,17 @@
     </div>
 
     <div class="main">
-      <div class="main_top">
+      <div   class="main_top">
         <div class="main_top_p">
           <div class="plan-view">
             <span>持续运行时长</span>
-            <span>0</span>
+            <span>{{secondToTime(centerData.operat.GATEWAY)}}</span>
           </div>
 
           <div>API网关</div>
           <div class="plan-view">
             <span>请求次数</span>
-            <span>0</span>
+            <span>{{convert(centerData.listwg)}}</span>
           </div>
         </div>
       </div>
@@ -29,22 +29,22 @@
                 <div>用户中心</div>
                 <div>
                   <span>持续运行时长:</span>
-                  <span>0</span>
+                  <span>{{secondToTime(centerData.operat.SSO)}}</span>
                 </div>
                 <div>
                   <span>用户总数:</span>
-                  <span>0</span>
+                  <span>{{convert(centerData.list_userno)}}</span>
                 </div>
               </li>
               <li>
                 <div>授权中心</div>
                 <div>
                   <span>持续运行时长:</span>
-                  <span>0</span>
+                  <span>{{secondToTime(centerData.operat.AUTH)}}</span>
                 </div>
                 <div>
                   <span>请求次数:</span>
-                  <span>0</span>
+                  <span>{{convert(centerData.regNum[0].num_of_calls)}}</span>
                 </div>
               </li>
 
@@ -52,11 +52,11 @@
                 <div>注册中心</div>
                 <div>
                   <span>持续运行时长:</span>
-                  <span>0</span>
+                  <span>{{secondToTime(centerData.operat.SSO)}}</span>
                 </div>
                 <div>
                   <span>应用总数量:</span>
-                  <span>0</span>
+                  <span>{{convert(centerData.list_zcyy)}}</span>
                 </div>
               </li>
 
@@ -64,11 +64,11 @@
                 <div>配置中心</div>
                 <div>
                   <span>持续运行时长:</span>
-                  <span>0</span>
+                  <span>{{secondToTime(centerData.operat.CONFIG)}}</span>
                 </div>
                 <div>
                   <span>请求次数:</span>
-                  <span>0</span>
+                  <span>{{convert(centerData.regNum[1].num_of_calls)}}</span>
                 </div>
               </li>
             </ul>
@@ -77,17 +77,15 @@
         <div class="main_cen_cen">
           <div class="main_cen_cen_top">
             <ul>
-              <!-- <li @click="toSecplat(item)" v-for="(item,index) in microSer" :key="index">
-              <p class="title">{{item ? item.app_name:0 }}</p>-->
-              <li @click="toSecplat">
-                <p class="title">电子病历</p>
+              <li @click="toSecplat(item)" v-for="(item,index) in microSer" :key="index">
+                <p class="title">{{item ? item.app_name:0 }}</p>
                 <div>
                   <span>持续运行时长</span>
-                  <span>0</span>
+                  <span>{{ secondToTime(item.running)}}</span>
                 </div>
                 <div>
                   <span>请求次数</span>
-                  <span>0</span>
+                  <span>{{convert(item.ask_num)}}</span>
                 </div>
               </li>
             </ul>
@@ -102,11 +100,11 @@
                   <div>
                     <div>
                       <span>持续运行时长</span>
-                      <span>0</span>
+                      <span>{{secondToTime(centerData.operat.TASK)}}</span>
                     </div>
                     <div>
                       <span>总任务个数</span>
-                      <span>0</span>
+                      <span>{{convert(centerData.list_rw)}}</span>
                     </div>
                   </div>
                 </li>
@@ -117,11 +115,11 @@
                   <div>
                     <div>
                       <span>持续运行时长</span>
-                      <span>0</span>
+                      <span>{{secondToTime(centerData.operat.EVENT)}}</span>
                     </div>
                     <div>
                       <span>事件总数量</span>
-                      <span>0</span>
+                      <span>{{convert(centerData.list_sj)}}</span>
                     </div>
                   </div>
                 </li>
@@ -133,11 +131,11 @@
                   <div>
                     <div>
                       <span>持续运行时长</span>
-                      <span>0</span>
+                      <span>{{secondToTime(centerData.operat.FILE)}}</span>
                     </div>
                     <div>
                       <span>文档总数量</span>
-                      <span>0</span>
+                      <span>{{centerData.listpz?convert(centerData.listpz):0}}</span>
                     </div>
                   </div>
                 </li>
@@ -169,22 +167,22 @@
                 <div>监控中心</div>
                 <div>
                   <span>持续运行时长:</span>
-                  <span>0</span>
+                  <span>{{secondToTime(centerData.operat.CONFIG)}}</span>
                 </div>
                 <div>
                   <span>监控应用个数:</span>
-                  <span>0</span>
+                  <span>{{convert(centerData.list_jkyygs)}}</span>
                 </div>
               </li>
               <li>
                 <div>开发中心</div>
                 <div>
                   <span>工单个数:</span>
-                  <span>0</span>
+                  <span>{{convert(centerData.list_kfgd)}}</span>
                 </div>
                 <div>
                   <span>处理工单数量:</span>
-                  <span>0</span>
+                  <span>{{centerData.list_kfcl? convert(centerData.list_kfcl) :0}}</span>
                 </div>
               </li>
 
@@ -192,11 +190,11 @@
                 <div>测试中心</div>
                 <div>
                   <span>测试应用数量:</span>
-                  <span>0</span>
+                  <span>{{convert(centerData.list_cs)}}</span>
                 </div>
                 <div>
                   <span>上线应用数量:</span>
-                  <span>0</span>
+                  <span>{{centerData.list_cssx ?convert(centerData.list_cssx) :0}}</span>
                 </div>
               </li>
 
@@ -204,11 +202,11 @@
                 <div>日志中心</div>
                 <div>
                   <span>持续运行时长:</span>
-                  <span>0</span>
+                  <span>{{secondToTime(centerData.operat.LOG)}}</span>
                 </div>
                 <div>
                   <span>日志记录数:</span>
-                  <span>0</span>
+                  <span>{{centerData.logNum?secondToTime(centerData.logNum):0}}</span>
                 </div>
               </li>
               <!--  -->
@@ -223,9 +221,11 @@
 <script>
 import { setInterval } from "timers";
 export default {
+  props:["platMirc"],
   data() {
     return {
-      // microSer: [],
+      centerData: this.platMirc,
+      microSer: [],
       // listwg: "",
       // listpz: "",
       // list_userno: "",
@@ -252,11 +252,16 @@ export default {
       // list_yxjk:'',
     };
   },
+  watch:{
+    platMirc:function(newVal,oldVal){
+       this.centerData=newVal
+    }
+  },
   components: {},
   methods: {
-    getdata(method = "post", app, condition, operate) {
-      const path = this.getServiceUrl("operate", bxReq.serviceName, "sso");
-    },
+    // getdata(method = "post", app, condition, operate) {
+    //   const path = this.getServiceUrl("operate", bxReq.serviceName, "sso");
+    // },
     toSecplat() {
       this.$router.push({
         name: "secplat"
@@ -270,6 +275,8 @@ export default {
     },
     //api网关 请求次数
     getData_one() {
+      console.log(this.centerData)
+      // console.log(this.centerData[1].list_cssx)
       let req = {
         serviceName: "srvlog_call_statistics_select",
         colNames: ["*"],
@@ -289,6 +296,7 @@ export default {
       this.axios
         .post(path, req)
         .then(res => {
+          // console.log(res)
           this.listwg = res.data.data[0].num_of_calls;
         })
         .catch(err => {
@@ -311,7 +319,7 @@ export default {
       this.axios
         .post(path, req)
         .then(res => {
-          console.log("222", res);
+          // console.log("222", res);
           this.listpz = res.data.data.length;
         })
         .catch(err => {
@@ -387,7 +395,7 @@ export default {
           console.log(err);
         });
     },
-    //请求次数
+    // 授权 请求次数
     getRegNum() {
       let req = {
         serviceName: "srvlog_call_statistics_select",
@@ -622,7 +630,7 @@ export default {
         });
     },
     //查询中间微服务
-    CenTiny() {
+   CenTiny() {
       let req = {
         serviceName: "srvconfig_app_list_select",
         colNames: ["*"],
@@ -635,8 +643,8 @@ export default {
         ],
         order: [
           {
-            colName: "create_time",
-            orderType: "desc"
+            colName: "app_seq",
+            orderType: "asc"
           }
         ],
         page: {
@@ -683,6 +691,7 @@ export default {
             this.axios
               .post(path1, req1)
               .then(res1 => {
+                // console.log(res1)
                 if (res1.data.data.length > 0) {
                   item["ask_num"] = res1.data.data[0].num_of_calls;
                   this.microSer.push(item);
@@ -693,7 +702,8 @@ export default {
               });
 
             let appName = item.app_no.toUpperCase();
-            item.running = this.operat[appName];
+            // console.log(appName)
+            item.running = this.centerData.operat[appName];
           });
         })
         .catch(err => {
@@ -704,7 +714,7 @@ export default {
   created() {
     // this.getRegNum();
     // this.getLog();
-    // this.getData_one();
+    this.getData_one();
     // this.getData_two();
     // this.getData_three();
     // this.getData_four();
@@ -716,7 +726,7 @@ export default {
     // this.getData_ten();
     // this.getData_eleven();
     // this.operation();
-    // this.CenTiny();
+    this.CenTiny();
   },
   mounted() {
     // setInterval(() => {

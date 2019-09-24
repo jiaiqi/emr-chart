@@ -37,7 +37,7 @@
     </div>-->
     <view-title :titleViewData="titleViewData" :currpage="titleViewData"></view-title>
     <div class="main">
-      <view-tabs v-on:adopt="Padopt" :tabsData="tabsData"></view-tabs>
+      <view-tabs v-on:viewtabs="viewtabs" :tabsData="tabsData"></view-tabs>
       <!-- <div class="main_top">
         <div
           class="top_header_item tabbtn"
@@ -79,6 +79,26 @@ export default {
         title: "业务协同标准化服务平台",
         date: "",
         currentPage: "platform"
+        // request: {
+        //   registerNum: {
+        //     req: {
+        //       serviceName: "srvsso_online_user_select",
+        //       colNames: ["*"],
+        //       condition: []
+        //     },
+        //     api: "sso",
+        //     way: "select"
+        //   },
+        //   currRegNum: {
+        //     req: {
+        //       serviceName: "srvsso_user_select",
+        //       colNames: ["*"],
+        //       condition: []
+        //     },
+        //     api: "sso",
+        //     way: "select"
+        //   }
+        // }
       },
       tabsData: {
         tabs: [
@@ -112,6 +132,9 @@ export default {
         },
         secondPie: {
           title: ""
+        },
+        platMirc: {
+          operation: {}
         }
       }
 
@@ -145,16 +168,15 @@ export default {
     this.contentData.currentPage = str;
   },
   mounted() {
-    this.init(),
-      // this.autoChangeTab(10000)
-      setInterval(() => {
-        this.date = moment().format("YYYY-MM-DD  HH:mm:ss");
-      }, 1000);
+    // this.autoChangeTab(10000)
   },
   methods: {
-    Padopt(pageName) {
-      this.contentData.currentPage = pageName;
+    //改变当前页
+    viewtabs(CurrPageData) {
+      this.contentData.currentPage = CurrPageData.key;
     }
+    //
+
     //   //转换数字
     //   convert(num) {
     //     let nums = parseInt(num);
