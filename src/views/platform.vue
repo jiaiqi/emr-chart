@@ -51,7 +51,9 @@
         >服务器资源</div>
       </div>-->
 
-      <plat-mirc v-if="contentData.currentPage === 'platMirc'"></plat-mirc>
+      <plat-mirc :platMirc="platMircData" v-if="contentData.currentPage === 'platMirc'"></plat-mirc>
+      <!-- <plat-mirc :operat="operat"  v-if="contentData.currentPage === 'platMirc'"></plat-mirc> -->
+
       <plat-serve v-if="contentData.currentPage === 'platService'"></plat-serve>
     </div>
   </div>
@@ -60,6 +62,7 @@
 let moment = require("moment");
 import ViewTitle from "@/components/ViewTitle";
 import ViewTabs from "@/components/ViewTabs";
+
 import platMirc from "../components/platformMirc";
 import platServe from "../components/platformServe";
 export default {
@@ -67,6 +70,30 @@ export default {
   components: { platMirc, platServe, ViewTitle, ViewTabs },
   data() {
     return {
+      platMircData:{
+              listwg:'',
+              listpz:'',
+              list_userno:'',
+              list_rw:'',
+              regNum:[
+                {num_of_calls:''},
+                {num_of_calls:''},
+              ],
+              list_sj:'',
+              logNum:'',
+              list_cs:'',
+              list_cssx:'',
+              list_kfgd:'',
+              list_kfcl:'',
+              list_zcyy:'',
+              list_jkyygs:'',
+              operat:{},
+
+          },
+
+       
+        
+      
       // date: null,
       // showComponent: platMirc,
       // tabsShow: 1,
@@ -171,9 +198,443 @@ export default {
     // this.autoChangeTab(10000)
   },
   methods: {
-    //改变当前页
-    viewtabs(CurrPageData) {
-      this.contentData.currentPage = CurrPageData.key;
+     getData_one() { //请求次数
+    //  console.log(this.platMircData)
+      let req = {
+        
+        serviceName: "srvlog_call_statistics_select",
+        colNames: ["*"],
+        condition: [],
+        group: [
+          {
+            colName: "num_of_calls",
+            type: "sum"
+          }
+        ]
+      };
+      let path = this.getServiceUrl(
+        "select",
+        "srvlog_call_statistics_select",
+        "log"
+      );
+      this.axios
+        .post(path, req)
+        .then(res => {
+          this.platMircData.listwg = res.data.data[0].num_of_calls;
+          // console.log(this.platMircData)
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+     getLog() {
+      let req = {
+        serviceName: "srvlog_operate_record_select",
+        colNames: ["*"],
+        condition: [],
+        group: [
+          {
+            colName: "id",
+            type: "count"
+          }
+        ],
+        page: {
+          pageNo: 1,
+          rownumber: 1
+        }
+      };
+      let path = this.getServiceUrl(
+        "select",
+        "srvlog_operate_record_select",
+        "log"
+      );
+      this.axios
+        .post(path, req)
+        .then(res => {
+          this.platMircData.logNum = res.data.page.total;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+     //文档管理 文档总数
+    getData_two() {
+      let req = {
+        serviceName: "srvapprc_dev_wendang_select",
+        colNames: ["*"],
+        condition: []
+      };
+      let path = this.getServiceUrl(
+        "select",
+        "srvapprc_dev_wendang_select",
+        "apprc"
+      );
+      this.axios
+        .post(path, req)
+        .then(res => {
+          // console.log( res);
+          this.platMircData.listpz = res.data.data.length;
+          // console.log(this.platMircData)
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getData_three() {  //用户中心 用户总数
+      let req = {
+        serviceName: "srvsso_user_select",
+        colNames: ["*"],
+        condition: []
+      };
+      let path = this.getServiceUrl("select", "srvsso_user_select", "sso");
+      this.axios
+        .post(path, req)
+        .then(res => {
+          this.platMircData.list_userno = res.data.data.length;
+          // console.log('333',res)
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    
+
+    getData() {
+      console.log("haha")
+      let path = this.getServiceUrl(
+        "",
+        "monitor",
+        "redis"
+      );
+      this.axios
+        .get(path)
+        .then(res => {
+          // console.log(res)
+          console.log("hahahah"+res)
+          // this.listwg = res.data.data[0].num_of_calls;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+
+
+
+
+     //任务管理 总任务数
+    getData_four() {
+      let req = {
+        serviceName: "srvtask_shedule_cfg_select",
+        colNames: ["*"],
+        condition: []
+      };
+      let path = this.getServiceUrl(
+        "select",
+        "srvtask_shedule_cfg_select",
+        "task"
+      );
+      this.axios
+        .post(path, req)
+        .then(res => {
+          this.platMircData.list_rw = res.data.data.length;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    //请求次数
+    getRegNum() {
+      let req = {
+        serviceName: "srvlog_call_statistics_select",
+        colNames: ["*"],
+        condition: [
+          {
+            colName: "application",
+            ruleType: "in",
+            value: "sso,config,log,auth"
+          }
+        ],
+        group: [
+          {
+            colName: "application",
+            type: "by"
+          },
+          {
+            colName: "num_of_calls",
+            type: "sum"
+          }
+        ]
+      };
+      let path = this.getServiceUrl(
+        "select",
+        "srvlog_call_statistics_select",
+        "log"
+      );
+      this.axios
+        .post(path, req)
+        .then(res => {
+          this.platMircData.regNum = res.data.data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    //事件管理 事件总数
+    getData_five() {
+      let req = {
+        serviceName: "srvevent_reg_select",
+        colNames: ["*"],
+        condition: []
+      };
+      let path = this.getServiceUrl("select", "srvevent_reg_select", "event");
+      this.axios
+        .post(path, req)
+        .then(res => {
+          this.platMircData.list_sj = res.data.data.length;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    //测试中心 测试应用数量
+    getData_six() {
+      let req = {
+        serviceName: "srvapprc_application_apply_dev_select",
+        colNames: ["*"],
+        condition: []
+      };
+      let path = this.getServiceUrl(
+        "select",
+        "srvapprc_application_apply_dev_select",
+        "apprc"
+      );
+      this.axios
+        .post(path, req)
+        .then(res => {
+          this.platMircData.list_cs = res.data.data.length;
+          // console.log('555',res)
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+        //测试中心 上线应用数量
+    getData_seven() {
+      let req = {
+        serviceName: "srvapprc_online_apply_dev_select",
+        colNames: ["*"],
+        condition: [
+          {
+            colName: "proc_status",
+            ruleType: "eq",
+            value: "完成"
+          }
+        ]
+      };
+      let path = this.getServiceUrl(
+        "select",
+        "srvapprc_online_apply_dev_select",
+        "apprc"
+      );
+      this.axios
+        .post(path, req)
+        .then(res => {
+          this.platMircData.list_cssx = res.data.data.length;
+          // console.log('555',res)
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    //开发中心 工单个数
+    getData_eight() {
+      let req = {
+        serviceName: "srvapprc_issue_info_select",
+        colNames: ["*"],
+        condition: []
+      };
+      let path = this.getServiceUrl(
+        "select",
+        "srvapprc_issue_info_select",
+        "apprc"
+      );
+      this.axios
+        .post(path, req)
+        .then(res => {
+            this.platMircData.list_kfgd = res.data.data.length;
+          // console.log('888',res)
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    //开发中心 处理工单个数
+    getData_nine() {
+      let req = {
+        serviceName: "srvapprc_issue_info_select",
+        colNames: ["*"],
+        condition: [
+          {
+            colName: "handle_status",
+            ruleType: "eq",
+            value: "已完成"
+          }
+        ]
+      };
+      let path = this.getServiceUrl(
+        "select",
+        "srvapprc_issue_info_select",
+        "apprc"
+      );
+      this.axios
+        .post(path, req)
+        .then(res => {
+          this.platMircData.list_kfcl = res.data.data.length;
+          // console.log('999',res)
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    //注册中心 应用总数量
+    getData_ten() {
+      let req = {
+        serviceName: "srvapprc_issue_info_select",
+        colNames: ["*"],
+        condition: []
+      };
+      let path = "http://192.168.0.192:8101/monitor/applications";
+      this.axios
+        .get(path, req)
+        .then(res => {
+          this.platMircData.list_zcyy = res.data.length;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    //监控中心 监控应用个数
+    getData_eleven() {
+      let path = "http://192.168.0.192:8101/monitor/applications";
+      this.axios
+        .get(path)
+        .then(res => {
+          this.platMircData.list_jkyygs = res.data.length;
+          // console.log('aaa',res.data.length)
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    //查询APP运行时长
+    operation() {
+      // console.log(this.platMircData)
+      let req = {
+        serviceName: "srvlog_apps_onlie_time_select",
+        colNames: ["*"],
+        condition: []
+      };
+      let path = this.getServiceUrl(
+        "select",
+        "srvlog_apps_onlie_time_select",
+        "monitor"
+      );
+      this.axios
+        .post(path, req)
+        .then(res => {
+          let operat1 = res.data.data;
+          operat1 = Object.assign(...operat1);
+          this.platMircData.operat = operat1;
+          // console.log(this.operat)
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+
+     //查询中间微服务
+    CenTiny() {
+      let req = {
+        serviceName: "srvconfig_app_list_select",
+        colNames: ["*"],
+        condition: [
+          {
+            colName: "app_class",
+            value: "platform",
+            ruleType: "ne"
+          }
+        ],
+        order: [
+          {
+            colName: "create_time",
+            orderType: "desc"
+          }
+        ],
+        page: {
+          pageNo: 1,
+          rownumber: 11
+        }
+      };
+      let path = this.getServiceUrl(
+        "select",
+        "srvconfig_app_list_select",
+        "config"
+      );
+      this.axios
+        .post(path, req)
+        .then(res => {
+          // this.microSer[3].beg = res.data.data[0].num_of_calls;
+          let micr = res.data.data;
+          console.log("micr", micr);
+          // this.microSer
+          this.microSer = [];
+          micr.forEach(item => {
+            let req1 = {
+              serviceName: "srvlog_call_statistics_select",
+              colNames: ["*"],
+              condition: [
+                {
+                  colName: "application",
+                  ruleType: "eq",
+                  value: item.app_no
+                }
+              ],
+              group: [
+                {
+                  colName: "num_of_calls",
+                  type: "sum"
+                }
+              ]
+            };
+            let path1 = this.getServiceUrl(
+              "select",
+              "srvlog_call_statistics_select",
+              "log"
+            );
+            this.axios
+              .post(path1, req1)
+              .then(res1 => {
+                if (res1.data.data.length > 0) {
+                  item["ask_num"] = res1.data.data[0].num_of_calls;
+                  this.microSer.push(item);
+                }
+              })
+              .catch(err => {
+                console.log(err);
+              });
+
+            let appName = item.app_no.toUpperCase();
+            item.running = this.operat[appName];
+            console.log(item.running)
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    viewtabs(pageName) {
+      this.contentData.currentPage = pageName.key;
+      console.log(this.contentData.currentPage)
     }
     //
 
@@ -292,6 +753,23 @@ export default {
     //   // this.user = top.user.user_no;
     //   // this.getData_userno();
     //   // this.CurrRegNum();
+  },
+  created(){
+    this.getData_one()
+    this.getData_two()
+    this.getData_three()
+    this.getData_four()
+    this.getData_five()
+    this.getData_six()
+    this.getData_seven()
+    this.getData_eight()
+    this.getData_nine()
+    this.getData_ten()
+    this.getData_eleven()
+    this.getRegNum()
+    this.operation()
+    // this.getData()
+    // this.CenTiny()
   }
 };
 </script>

@@ -1,9 +1,9 @@
 <template>
   <div class="top_indicat">
-    <div v-if="current === 'secplat'" class="secplat_indic">
-      <span>电子病历</span>
+    <div v-if="current.currentPage === 'secplat'" class="secplat_indic">
+      <span>{{current.title}}</span>
     </div>
-    <div v-if="current === 'datacenter'" class="dataCenter_indic">
+    <div v-if="current.currentPage === 'datacenter'" class="dataCenter_indic">
       <div class="content_cen_left">
         <p>
           <span>累计运行时间：</span>
@@ -16,8 +16,7 @@
         <p>
           <span>共享数据量(表/记录)：</span>
           <span>
-            {{indicatorData.dataShareSize.listNum}}/{{this
-            .convert(indicatorData.dataShareSize.record)}}
+            {{indicatorData.dataShareSize.listNum}}/{{this.convert(indicatorData.dataShareSize.record)}}
           </span>
         </p>
         <p>
@@ -38,7 +37,7 @@ export default {
   name: "TopIndicator",
   props: {
     current: {
-      type: String,
+      type: Object,
       default: null
     },
     indicatorData: {
@@ -53,7 +52,8 @@ export default {
   },
   components: {},
   created() {
-    console.log("indicatorData", this.indicatorData);
+    // console.log("indicatorData", this.indicatorData);
+    // console.log(this.current)
   }
 };
 </script>

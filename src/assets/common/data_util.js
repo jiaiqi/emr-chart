@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import moment from 'moment'
-function data_util (){
+
+function data_util() {
   // 柱状图或折线图获取横轴/维度
-  Vue.prototype.getXaxis = function(timeType='day'){
+  Vue.prototype.getXaxis = function (timeType = 'day') {
     let Xaxis = []
     if (timeType === 'day') {
       let hours = []
@@ -32,30 +33,30 @@ function data_util (){
     return Xaxis
   }
   // 获取v-chart的指标
-  Vue.prototype.getCols = function(datas,colName){
+  Vue.prototype.getCols = function (datas, colName) {
     let types = datas.map(item => item[colName])
     types = Array.from(new Set(types))
     return types
   }
   // 获取chart的columns---多指标+单维度组成的数组
-  Vue.prototype.getColumns = function(dimension,index){
+  Vue.prototype.getColumns = function (dimension, index) {
     let columns = []
     columns.concat(dimension)
     columns.concat(index)
     return columns
   }
-  Vue.prototype.getRowsItem = function(data){
+  Vue.prototype.getRowsItem = function (data) {
 
   }
   // 将原始数据组装成v-charts需要的数据
-  Vue.prototype.handleChartData = function(timeType,data,chartType,dataType){
+  Vue.prototype.handleChartData = function (timeType, data, chartType, dataType) {
     let Xaxis = this.getXaxis
-    if(timeType!==""){
+    if (timeType !== "") {
       this.getXaxis(timeType)
-      Xaxis.map(hour=>{
+      Xaxis.map(hour => {
 
       })
-    }else{
+    } else {
 
     }
   }

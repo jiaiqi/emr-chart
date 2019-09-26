@@ -3,13 +3,13 @@
   <div class="content_right_box">
     <div class="content_header">
       <div class="icon-view">
-        <div :class="item.classStyle" v-for="(item,index) in lineOne" :key="index">
+        <div  @click="homeHref(item.title)" id="currey" :class="item.classStyle" v-for="(item,index) in lineOne" :key="index">
           <div class="content_header_divo">
             <i :class="item.icon"></i>
           </div>
           <div class="content_header_divt">
             <span>{{item.title}}</span>
-            <span>{{item.value === null ? '-' : item.value}}</span>
+             <span>{{(item.value === null) ? '-' : (item.value>10000)? Math.ceil(item.value/10000)+'万':item.value}}</span>
           </div>
         </div>
       </div>
@@ -18,12 +18,12 @@
       <span>应用开发中心</span>
     </div>
     <div class="content_two">
-      <div class="content_two_box" v-for="(item,index) in lineTwo" :key="index">
+      <div @click="development(item.title)" id="currey" class="content_two_box" v-for="(item,index) in lineTwo" :key="index">
         <div class="content_two_boxone">
           <span>{{item.title}}</span>
         </div>
         <div class="content_two_boxtwo">
-          <span>{{item.value === null ? '-' : item.value}}</span>
+          <span>{{(item.value === null) ? '-' : (item.value>10000)? Math.ceil(item.value)+'万':item.value}}</span>
         </div>
       </div>
     </div>
@@ -113,6 +113,28 @@ export default {
     }
   },
   methods: {
+    homeHref(item){
+      if(item=="用户数"){
+         this.$router.push({path:'/vpages/index.html#/list/srvsso_user_select'})
+      }else if(item=="应用个数"){
+         this.$router.push({path:'/vpages/index.html#/list/srvconfig_app_list_select'})
+      }else if(item=="累计服务次数"){
+         this.$router.push({path:'/vpages/index.html#/list/srvlog_call_statistics_select'})
+      }
+    },
+    development(item){
+      if(item=="工单个数"){
+         this.$router.push({path:'/vpages/index.html#/list/srvapprc_issue_info_select'})
+      }else if(item=="文档个数"){
+         this.$router.push({path:'/vpages/index.html#/list/srvfile_attachment_select'})
+      }else if(item=="开发包个数"){
+         this.$router.push({path:'/vpages/index.html#/treegrid/srvapprc_kit_components_select'})
+      }else if(item=="申请中应用个数"){
+         this.$router.push({path:'/vpages/index.html#/listproc/srvapprc_application_apply_select'})
+      }else if(item=="上线应用个数"){
+         this.$router.push({path:'/vpages/index.html#/listproc/srvapprc_online_apply_select'})
+      }
+    },
     serverNum() {
       let req10 = {
         "serviceName": "srvlog_call_statistics_select",
@@ -426,18 +448,18 @@ export default {
   },
 
   created() {
-    // this.nowTime()
-    // this.getData_one()
-    // this.getData_two()
-    // this.getData_three()
-    // this.getData_four()
-    // this.getData_five()
-    // this.getData_six()
-    // this.getData_seven()
-    // this.getData_eight()
-    // this.getData_nine()
-    // this.nowTimeMinus()
-    // this.serverNum()
+    this.nowTime()
+    this.getData_one()
+    this.getData_two()
+    this.getData_three()
+    this.getData_four()
+    this.getData_five()
+    this.getData_six()
+    this.getData_seven()
+    this.getData_eight()
+    this.getData_nine()
+    this.nowTimeMinus()
+    this.serverNum()
     //模拟数据
 
     // this.chartExtendLine = {
@@ -464,6 +486,9 @@ export default {
 * {
   padding: 0;
   margin: 0;
+}
+#currey{
+  cursor: pointer;
 }
 .content_two_title,
 .content_three_title {

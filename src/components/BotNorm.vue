@@ -4,11 +4,11 @@
       <div class="main_right_word">
         <div class="main_right_count">
           <span>累计请求次数</span>
-          <span>1.7万</span>
+          <span>{{(title)?convert(title):0}}</span>
         </div>
         <div class="main_right_count">
           <span>累计运行时间</span>
-          <span>2.7天</span>
+          <span>{{secondToTime(appNo)?secondToTime(appNo):0}}</span>
         </div>
       </div>
     </dv-border-box-8>
@@ -19,7 +19,10 @@
 export default {
   name: "BotNorm",
   data() {
-    return {};
+    return {
+      title: this.$route.params.askNum,
+        appNo:this.$route.params.runtime,
+    };
   },
   components: {}
 };

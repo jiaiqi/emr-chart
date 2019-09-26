@@ -10,14 +10,15 @@
           <div class="databox-col">数据量（记录）</div>
           <div class="databox-col">占用空间</div>
         </div>
+        <!-- <div class="data_wrap"> -->
+        <!-- <div class="databox-three-contentdata-view">
+            <div class="databox-col">1</div>
+            <div class="databox-col">1</div>
+            <div class="databox-col">1</div>
+            <div class="databox-col">1</div>
+            <div class="databox-col">1</div>
+        </div>-->
         <div class="data_wrap">
-          <!-- <div class="databox-three-contentdata-view">
-            <div class="databox-col">1</div>
-            <div class="databox-col">1</div>
-            <div class="databox-col">1</div>
-            <div class="databox-col">1</div>
-            <div class="databox-col">1</div>
-          </div>-->
           <div
             class="databox-three-contentdata-view"
             v-show="databox3list1.length > 0"
@@ -33,6 +34,13 @@
           </div>
         </div>
       </div>
+      <el-pagination
+        layout="prev, pager, next"
+        @current-change="changePage"
+        :current-page="page.pageNo"
+        :page-size="page.rownumber"
+        :total="page.total"
+      ></el-pagination>
     </div>
   </div>
 </template>
@@ -55,7 +63,12 @@ export default {
         //   item07: "55412",
         //   item08: "20%"
         // }
-      ]
+      ],
+      page: {
+        total: 0,
+        pageNo: 1,
+        rownumber: 25
+      }
       // databox3list2: {
       //   item01: "MongoDB",
       //   item02: "√",
@@ -71,6 +84,10 @@ export default {
   },
   components: {},
   methods: {
+    changePage(val) {
+      this.page.pageNo = val;
+      this.getDataBase();
+    },
     getDataBase() {
       let req = {
         serviceName: "srvdc_rc_db_select",
@@ -82,6 +99,7 @@ export default {
           "row_count",
           "db_name"
         ],
+        page: this.page,
         // page: {
         //   pageNo: 1,
         //   rownumber: 5
@@ -97,6 +115,7 @@ export default {
         .post(path, req)
         .then(res => {
           console.log("222", res);
+          this.page = res.data.page;
           this.databox3list1 = res.data.data;
         })
         .catch(err => {
@@ -129,15 +148,18 @@ $text-color: #47acff;
 
 .databox_three {
   width: 100%;
-  height: 100%;
+  height: 92%;
   padding: 2rem;
+  padding-bottom: 0;
+
   box-sizing: border-box;
   //   background: url("../assets/images/panel-r-b.png") no-repeat;
   background-size: 100% 100%;
   // border:1px solid #fff;
   .databox_three_content {
     height: 100%;
-    border: 1px solid $br-color;
+    overflow-y: auto;
+    // border: 1px solid $br-color;
   }
   .databox_three_top {
     line-height: 1.8rem;
@@ -146,16 +168,13 @@ $text-color: #47acff;
     margin-bottom: 1rem;
   }
   .databox_three_contentheader {
+    border-top: 1px solid $br-color !important;
     > .databox-col {
       font-weight: bold;
       color: $text-color;
     }
   }
-  .data_wrap {
-    width: 100%;
-    height: 91%;
-    overflow-y: auto;
-  }
+
   .data_wrap::-webkit-scrollbar {
     display: none;
   }
@@ -166,7 +185,8 @@ $text-color: #47acff;
     padding: 5px 0;
     align-items: center;
     box-sizing: border-box;
-    border-bottom: 1px solid $br-color;
+    border: 1px solid $br-color;
+    border-top: none;
     line-height: 1rem;
     > .databox-col {
       width: 20%;
@@ -184,8 +204,29 @@ $text-color: #47acff;
       }
     }
   }
-  .databox-three-contentdata-view:last-child {
-    border-width: 0;
+
+  .databox-three-contentdata-view:first-child {
+    // border-width: 0;
+    border-top: 1px solid $br-color;
+  }
+  .el-pagination {
+    width: 20% !important;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+  @media screen and (max-width: 1366px) {
+    .el-pagination {
+      margin-top: 0rem;
+    }
+  }
+}
+@media screen and (max-width: 1366px) {
+  .data_wrap {
+    width: 100%;
+    height: 94%;
+    overflow-y: auto;
   }
 }
 // .databox_three_top {

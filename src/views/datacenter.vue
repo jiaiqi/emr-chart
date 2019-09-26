@@ -6,7 +6,7 @@
       <top-indicator :indicatorData="indicatorData" :current="titleViewData.currentPage"></top-indicator>
       <time-type @showTimeType="getTimeType" v-if="contentData.currentPage !== 'DataMonitor'"></time-type>
       <data-monitor v-if="contentData.currentPage === 'DataMonitor'"></data-monitor>
-      <onecard-content v-else :contentData="contentData"></onecard-content>
+      <onecard-content v-else @checktask='checktask' :chartSetting="contentData.firstBar.set" :contentData="contentData"></onecard-content>
     </div>
   </div>
 </template>
@@ -63,6 +63,10 @@ export default {
           data: {
             columns: [],
             rows: []
+          },
+          set:{            
+            stack: { '用户': ['访问用户', '下单用户'] },
+            type:null  
           }
         },
         secondBar: {
@@ -70,19 +74,42 @@ export default {
           data: {
             columns: [],
             rows: []
-          }
+          },
+          tableData:{
+            title:[],
+            step:[],
+            taskNo:'',
+            GanttData:[]
+          },
+          set:{
+            axisSite: { right: ["占用空间"] },
+            yAxisType: ["normal", "normal"],
+            yAxisName: ["数值", "占用空间"],
+            max: [1300, 2600],
+            itemStyle: {
+              normal: {
+                label: {
+                  show: true,
+                  formatter: function(c) {
+                    return JSON.stringify(c.data);
+                  }
+                }
+              }
+            }
+          },
+          interval:''
         },
         firstPie: {
           title: "数据共享比例",
           data: {
-            columns: [],
+            columns: ["医院", "访问用户"],
             rows: []
           }
         },
         secondPie: {
           title: "数据共享用户资源",
           data: {
-            columns: [],
+            columns: ["卡类型", "访问用户"],
             rows: []
           }
         }
@@ -123,7 +150,7 @@ export default {
         }
       },
       checkDataType: "day",
-       data01: {
+      data01: {
         "day": {
           columns: ['时间', '表1', '表2', '表3', '表4', '表5'],
           rows: [
@@ -215,6 +242,90 @@ export default {
             { 时间: '10月', 表1: 4593, 表2: 4293, 表3: 4293, 表4: 4293, 表5: 0.78 },
             { 时间: '11月', 表1: 5547, 表2: 4293, 表3: 4293, 表4: 4293, 表5: 0.78 },
             { 时间: '12月', 表1: 714, 表2: 4293, 表3: 4293, 表4: 4293, 表5: 0.78 }
+          ]
+        }
+      },
+      data02: {
+        day: {
+          columns: ["医院", "访问用户"],
+          rows: [
+            { 医院: "表1", 访问用户: 154 },
+            { 医院: "表2", 访问用户: 33 },
+            { 医院: "表3", 访问用户: 75 },
+            { 医院: "表4", 访问用户: 27 },
+            { 医院: "其他", 访问用户: 19 }
+          ]
+        },
+        week: {
+          columns: ["医院", "访问用户"],
+          rows: [
+            { 医院: "表1", 访问用户: 515 },
+            { 医院: "表2", 访问用户: 365 },
+            { 医院: "表3", 访问用户: 245 },
+            { 医院: "表4", 访问用户: 147 },
+            { 医院: "其他", 访问用户: 19 }
+          ]
+        },
+        month: {
+          columns: ["医院", "访问用户"],
+          rows: [
+            { 医院: "表1", 访问用户: 2564 },
+            { 医院: "表2", 访问用户: 1859 },
+            { 医院: "表3", 访问用户: 1574 },
+            { 医院: "表4", 访问用户: 982 },
+            { 医院: "其他", 访问用户: 19 }
+          ]
+        },
+        year: {
+          columns: ["医院", "访问用户"],
+          rows: [
+            { 医院: "表1", 访问用户: 15789 },
+            { 医院: "表2", 访问用户: 12658 },
+            { 医院: "表3", 访问用户: 6598 },
+            { 医院: "表4", 访问用户: 9852 },
+            { 医院: "其他", 访问用户: 19 }
+          ]
+        },
+      },
+      data03: {
+        day: {
+          columns: ["卡类型", "访问用户"],
+          rows: [
+            { 卡类型: "用户1", 访问用户: 235 },
+            { 卡类型: "用户2", 访问用户: 23 },
+            { 卡类型: "用户3", 访问用户: 223 },
+            { 卡类型: "用户4", 访问用户: 53 },
+            { 卡类型: "其他", 访问用户: 83 },
+          ]
+        },
+        week: {
+          columns: ["卡类型", "访问用户"],
+          rows: [
+            { 卡类型: "用户1", 访问用户: 35 },
+            { 卡类型: "用户2", 访问用户: 43 },
+            { 卡类型: "用户3", 访问用户: 93 },
+            { 卡类型: "用户4", 访问用户: 23 },
+            { 卡类型: "其他", 访问用户: 53 },
+          ]
+        },
+        month: {
+          columns: ["卡类型", "访问用户"],
+          rows: [
+            { 卡类型: "用户1", 访问用户: 235 },
+            { 卡类型: "用户2", 访问用户: 43 },
+            { 卡类型: "用户3", 访问用户: 13 },
+            { 卡类型: "用户4", 访问用户: 93 },
+            { 卡类型: "其他", 访问用户: 53 },
+          ]
+        },
+        year: {
+          columns: ["卡类型", "访问用户"],
+          rows: [
+            { 卡类型: "用户1", 访问用户: 235 },
+            { 卡类型: "用户2", 访问用户: 73 },
+            { 卡类型: "用户3", 访问用户: 23 },
+            { 卡类型: "用户4", 访问用户: 93 },
+            { 卡类型: "其他", 访问用户: 113 },
           ]
         }
       },
@@ -509,6 +620,12 @@ export default {
     },
     viewtabs(pageName) {
       this.contentData.currentPage = pageName.key;
+      if(pageName.key !=='DataMonitor'){
+      this.getChartData(this.checkDataType)        
+      }
+     if(pageName.key === 'ETL'){
+        this.getRightTask()
+      }
     },
     getRunTime() {
       let req = {
@@ -630,7 +747,9 @@ export default {
             res.data.data[0].share_row_count;
           this.indicatorData.dataShareSize.shareNum =
             res.data.data[0].invoke_success_count;
-          console.log("res.data.data", res.data.data);
+            if(this.contentData.currentPage ==='dataShare'){
+              this.getleftChartLegend()
+            }
         })
         .catch(err => {
           console.log(err);
@@ -643,15 +762,316 @@ export default {
     },
     getChartData(type) {
       let xValue = this.getXaxis(type);
-      console.log('xValue',xValue)
+      
       xValue.forEach((item,i)=>{
-        this.data01[type].rows[i].时间 = item
+        if(type === 'day'){
+          this.data01[type].rows[i].时间 = item + '点'
+        }else{
+          this.data01[type].rows[i].时间 = item
+        }
       })
-      this.contentData.firstBar.data.columns = this.data01[type].columns;
-      this.contentData.firstBar.data.rows = this.data01[type].rows;
 
-      console.log('this.contentData.firstBar.data',this.contentData.firstBar.data)
+      if(this.contentData.currentPage === 'dataShare'){
+        this.contentData.firstBar.set.type = 'bar'
+        //数据资源---数据共享数据
+        this.contentData.firstBar.set.stack.用户 = ['表1','表2','表3','表4','表5']//setting中得stack设置
+        this.contentData.firstBar.data.columns = this.data01[type].columns;//获取到的图例
+        this.contentData.firstBar.data.rows = this.data01[type].rows;//最终的rows
+
+        //数据资源---数据共享比例
+        this.contentData.firstPie.data.columns = this.data02[type].columns;
+        this.contentData.firstPie.data.rows = this.data02[type].rows;//最终的rows
+
+        //数据资源---数据共享用户资源
+        this.contentData.secondPie.data.columns = this.data03[type].columns;
+        this.contentData.secondPie.data.rows = this.data03[type].rows;//最终的rows
+
+      }else if(this.contentData.currentPage === 'ETL'){
+        this.contentData.firstBar.set.type = 'line'
+        let rowData = []
+        xValue.map(only=>{
+          let rowItem = {}
+            rowItem['时间'] = only + '点'
+            rowItem['处理总时长'] = parseInt(Math.random()*100000)
+            rowItem['总处理记录数'] =parseInt(Math.random()*100000)
+            rowData.push(rowItem)
+        })
         
+        //ETL---数据共享
+        this.contentData.firstBar.data.columns = ['时间','处理总时长','总处理记录数']
+        this.contentData.firstBar.data.rows = rowData;
+
+        //ETL---数据共享比例
+        let datas = {
+        columns: ['任务', '执行时间'],
+          rows: [
+            { '任务': '任务1', '执行时间': 393 },
+            { '任务': '任务2', '执行时间': 530 },
+            { '任务': '任务3', '执行时间': 923 },
+            { '任务': '任务4', '执行时间': 723 },
+            { '任务': '任务5', '执行时间': 792 },
+            { '任务': '任务6', '执行时间': 593 }
+          ]
+        }
+        datas.rows.map((item)=>{
+            item['执行时间'] = parseInt(Math.random()*100)
+          })
+
+        this.contentData.firstPie.data.columns = datas.columns
+        this.contentData.firstPie.data.rows = datas.rows
+
+        this.contentData.secondPie.data.columns = datas.columns
+        this.contentData.secondPie.data.rows = datas.rows
+
+
+      }
+      
+
+      
+
+      console.log('this.contentData.firstBar.data',this.contentData.firstBar)
+        
+    },
+    //获取右边双Y轴图例
+    getleftChartLegend(){
+      let req = {
+        serviceName: "srvdc_rc_db_table_uiconf_select",
+        colNames: ["table_no","table_name","table_label"],
+      };
+      let path = this.getServiceUrl(
+        "select",
+        "srvdc_rc_db_table_uiconf_select",
+        "datacenter"
+      );
+      this.axios
+        .post(path, req)
+        .then(res => {
+          // this.deploy = res.data.data
+          let Odeploy = res.data.data
+          // Odeploy.map(item=>{
+          //   // this.chartData01.columns.push(item.table_label)
+          // })
+            let tabeNum = Odeploy.map(item => item.table_no)
+            tabeNum = tabeNum.join(',')
+            this.getLegend(tabeNum)       
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    //获取图例对应的数据
+    getLegend(tabe){
+      let self = this
+      console.log('maxData',tabe)
+      let req = {        
+          "serviceName": "srvdc_rc_db_table_select",
+          "condition":[{"colName":"table_no","ruleType":"in","value":tabe}],
+          "colNames": ["row_count","storage_size","table_no","table_label"],           
+      }
+      let path = this.getServiceUrl('select','srvdc_rc_db_table_select','datacenter');
+      this.axios.post(path,req).then(res=>{
+        let barDatas = res.data.data
+        console.log('barDatas',barDatas)
+        let rightDateStro = []
+        let rightDataSize = []
+        this.contentData.secondBar.data.columns = ['表','占用空间','数据量']
+        barDatas.map((item,index)=>{
+            //  { 表: "表1", 数据量: 51, 占用空间: 0.22 },
+            let defaultObj = {}
+            
+            
+            defaultObj['占用空间'] = item.storage_size / 1024
+            defaultObj['数据量'] = item.row_count
+            defaultObj['表'] = item.table_label 
+            rightDateStro.push(defaultObj['占用空间'])
+            rightDataSize.push(defaultObj['数据量'])            
+            this.contentData.secondBar.data.rows.push(defaultObj)
+        })
+
+        console.log('this.secondBar.data',this.contentData.secondBar.data)
+        let maxNum = Math.max.apply(null, rightDateStro)
+        let ArgMax = Math.max.apply(null, rightDataSize)
+        this.maxData = {}
+        // console.log('this.maxData==>',this.maxData)
+        this.maxData['占用空间'] = maxNum
+        this.maxData['数据量'] = ArgMax
+        // console.log(this.rightData)
+        this.getMaxNum(maxNum,ArgMax)
+        console.log('maxData',this.maxData,maxNum,ArgMax)
+      })
+    },
+
+    //获取ETL右边记录
+    getRightTask (){
+      let params = {
+        "serviceName": "srvetl_job_history_select",
+        "colNames": ["*"],
+        "condition": [],   
+        "group":[{
+          "colName":"job_name",
+          "type":"by"
+        },
+        {
+          "colName":"job_no",
+          "type":"by"
+        }
+        
+        ]       
+      }
+      let url = this.getServiceUrl("select", params.serviceName, "etl")
+        this.axios({
+          method:"POST",url:url,data:params
+        }
+        )
+        .then(res => {
+
+          let taskName = res.data.data
+          let no = res.data.data[0].job_no
+          this.contentData.secondBar.tableData.taskNo = no
+          this.contentData.secondBar.tableData.title = taskName
+
+          let initial = res.data.data[0]
+          this.checktask(initial)
+
+          console.log('taskName',taskName)
+
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+
+    checktask(item){
+      let NewStep = []
+      let value = item.job_no
+      let name = item.job_name  
+      let params = {
+        "serviceName": "srvetl_job_history_select",
+        "colNames": ["*"],
+        "condition": [],
+        "group": [
+            {
+              "colName": "job_no",
+              "type": "by"
+            }, {
+              "colName": "job_name",
+              "type": "by"
+            }, {
+              "colName": "end_time",
+              "type": "by"
+            },
+            {
+              "colName": "start_time",
+              "type": "by"
+            }
+            
+          ],
+        "order": [
+            {
+              "colName": "start_time",
+              "orderType": "desc"
+            }
+          ]   
+               
+      }
+      let url = this.getServiceUrl("select", params.serviceName, "etl")
+        this.axios({
+          method:"POST",url:url,data:params
+        }
+        )
+        .then(res => {
+          let old = res.data.data
+          old.forEach(simple=>{
+            if(name === simple.job_name){
+              NewStep.push(simple)
+            }
+          })
+          this.contentData.secondBar.tableData.step = NewStep
+          console.log('/-/-/-/-/-//-/-/-/',NewStep)
+           this.contentData.secondBar.tableData.taskNo = this.contentData.secondBar.tableData.step[0].job_no
+          
+            this.getNewTask(this.contentData.secondBar.tableData.taskNo)
+          // this.taskName = res.data.data
+          // let no = res.data.data[0].job_no
+          // this.taskNo = no
+
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getNewTask(str){
+      console.log('121312')
+      let params = {
+        "serviceName": "srvetl_processor_history_select",
+        "colNames": ["*"],
+        "condition": [{
+          colName:'job_no',
+          ruleType:'eq',
+          value:str
+        }],
+        page: {
+          pageNo: 1,
+          rownumber: 6
+        },                        
+      }
+      let url = this.getServiceUrl("select", params.serviceName, "etl")
+        this.axios({
+          method:"POST",url:url,data:params
+        }
+        )
+        .then(res => {
+            this.contentData.secondBar.tableData.GanttData = res.data.data
+            console.error('GanttData',res.data.data)
+            // this.taskNo = res.data.data[0].job_no
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    //双Y轴间隔设置
+    getMaxNum(e, r) {
+      let ops = { maxbar: 0, maxline: 0, interval: 0 };
+      let n = 1;
+      ops.interval = n * 100;
+      if (Math.ceil(r / ops.interval) % 2 !== 0) {
+        ops.maxline = Math.ceil(r / ops.interval) + 1;
+        ops.maxline = ops.maxline * ops.interval;
+      } else {
+        ops.maxline = Math.ceil(r / ops.interval);
+        ops.maxline = ops.maxline * ops.interval;
+      }
+      if (Math.ceil(e / ops.interval) % 2 !== 0) {
+        ops.maxbar = Math.ceil(e / ops.interval) + 1;
+        ops.maxbar = ops.maxbar * ops.interval;
+      } else {
+        ops.maxbar = Math.ceil(e / ops.interval);
+        ops.maxbar = ops.maxbar * ops.interval;
+      }
+      if (ops.maxbar > ops.maxline) {
+        ops.interval = ops.maxline;
+        ops.maxbar = Math.ceil(ops.maxbar / ops.interval) * ops.interval;
+        if (ops.maxbar / ops.interval < 4) {
+          ops.interval = ops.interval / 2;
+        } else if (ops.maxbar / ops.interval > 8) {
+          ops.interval = ops.interval * 2;
+        }
+      } else {
+        ops.interval = ops.maxbar;
+        ops.maxline = Math.ceil(ops.maxline / ops.interval) * ops.interval;
+        if (ops.maxline / ops.interval < 4) {
+          ops.interval = ops.interval / 2;
+        } else if (ops.maxline / ops.interval > 8) {
+          ops.interval = ops.interval * 2;
+        }
+      }
+
+      this.contentData.secondBar.interval = ops.interval;
+      this.contentData.secondBar.set.max[0] = ops.maxbar;
+      this.contentData.secondBar.set.max[1] = ops.maxline;
+
+      console.log("ops", e, r, ops);
+      return ops;
     }
 
     // toIndex(num) {
@@ -1160,7 +1580,7 @@ export default {
 <style lang="scss">
 * {
   // overflow: hidden;
-  color: rgba(255, 255, 255, 1);
+  // color: rgba(255, 255, 255, 1);
 }
 div /deep/ .swiper-pagination-bullets {
   height: 30px;
@@ -1330,7 +1750,7 @@ div /deep/ .swiper-pagination-bullets {
   @media screen and (max-width: 1366px) {
     .main {
       overflow: hidden;
-      height: calc(100% - 25px);
+      height: calc(100% - 30px);
     }
   }
 

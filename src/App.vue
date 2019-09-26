@@ -37,5 +37,14 @@ export default {
     }
   }
 }
+.el-pagination button:disabled,
+.el-pager li,
+.btn-next,
+.btn-prev {
+  background: transparent !important;
+}
+.el-pagination {
+  color: #eee;
+}
 </style>
 

@@ -3,7 +3,7 @@
   <div class="content_right_box">
     <div class="content_header">
       <div class="icon-view">
-        <div :class="item.classStyle" v-for="(item,index) in lineOne" :key="index">
+        <div id="currey" @click="homeHref(item.title)" :class="item.classStyle" v-for="(item,index) in lineOne" :key="index">
           <div class="content_header_divo">
             <i :class="item.icon"></i>
           </div>
@@ -18,7 +18,7 @@
       <span>电子病历</span>
     </div>
     <div class="content_two">
-      <div class="content_two_box" v-for="(item,index) in lineTwo" :key="index">
+      <div @click="development(item.title)" id="currey" class="content_two_box" v-for="(item,index) in lineTwo" :key="index">
         <div class="content_two_boxone">
           <span>{{item.title}}</span>
         </div>
@@ -244,6 +244,31 @@ export default {
         console.log(err)
       })
     },
+     homeHref(item){
+      if(item=="卡机个数"){
+         this.$router.push({path:'/vpages/index.html#/list/srvcvs_device_cfg_select/0001'})
+      }else if(item=="门诊记录数"){
+         this.$router.push({path:'/vpages/index.html#/list/srvcvs_medical_records_select'})
+      }else if(item=="住院记录数"){
+         this.$router.push({path:'/vpages/index.html#/list/srvcvs_medical_records_select'})
+      }else if(item=="卡机设备心跳"){
+         this.$router.push({path:'/vpages/index.html#/list/srvcvs_device_heart_record_select'})
+      }
+    },
+    development(item){
+      if(item=="患者总数"){
+         this.$router.push({path:'/vpages/index.html#/list/DI_MPI_REGISTERINFO_select'})
+      }else if(item=="门诊挂号"){
+         this.$router.push({path:'/vpages/index.html#/list/DI_ADI_REGISTER_INFO_select'})
+      }else if(item=="入院记录"){
+         this.$router.push({path:'/vpages/index.html#/list/DI_HDI_INRECORD_INFO_select'})
+      }
+      // }else if(item=="申请中应用个数"){
+      //    this.$router.push({path:'/vpages/index.html#/listproc/srvapprc_application_apply_select'})
+      // }else if(item=="上线应用个数"){
+      //    this.$router.push({path:'/vpages/index.html#/listproc/srvapprc_online_apply_select'})
+      // }
+    },
     //卡机设备心跳数
     getData_kj() {
       let req = {
@@ -410,18 +435,18 @@ export default {
     },
   },
   created() {
-    // this.getData_one()
-    // this.getLineData()
-    // this.getData_two2()
-    // this.getData_two3()
-    // this.getData_three()
-    // this.getData_four()
-    // this.getData_five()
-    // this.getData_six()
-    // // this.getData_seven()
-    // this.getData_eight()
-    // this.getData_nine()
-    // this.getData_kj()
+    this.getData_one()
+    this.getLineData()
+    this.getData_two2()
+    this.getData_two3()
+    this.getData_three()
+    this.getData_four()
+    this.getData_five()
+    this.getData_six()
+    // this.getData_seven()
+    this.getData_eight()
+    this.getData_nine()
+    this.getData_kj()
   }
 
 }  
@@ -432,7 +457,9 @@ export default {
   padding: 0;
   margin: 0;
 }
-
+#currey{
+  cursor: pointer;
+}
 /* 1920*1080 */
 .content_two_title,
 .content_three_title {
@@ -523,6 +550,7 @@ export default {
 }
 .content_two_box {
   margin-top: 20px;
+  color: black!important;
   width: 20%;
 }
 .content_two_boxone {

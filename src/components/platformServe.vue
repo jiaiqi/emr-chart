@@ -343,7 +343,7 @@ export default {
         console.log(HDDsumUse, HDDsum);
         this.netIndata = (netInNum / this.severNum).toFixed(1) + "bps"; ////入网
         this.netOutdata = (netOutNum / this.severNum).toFixed(1) + "bps"; ////出网
-      });
+      })
     },
     toDetail() {
       let url = "http://10.120.119.30/zabbix";
@@ -354,26 +354,26 @@ export default {
         this.petition();
       }, 300000);
     },
-    diskdatanum() {
-      //计算当前时间与2019.9.1之间的间隔
-      var dateSpan, tempDate, iDays, sDate1, sDate2;
-      sDate1 = Date.parse(this.sDate1);
-      sDate2 = Date.parse(this.sDate2);
-      dateSpan = sDate2 - sDate1;
-      dateSpan = Math.abs(dateSpan);
-      iDays = Math.floor(dateSpan / (24 * 3600 * 1000));
-      this.dsikDefaules = parseInt(32.28 + iDays * 0.07);
-      console.log(iDays, this.dsikDefaules);
-    },
-    currtenTime() {
-      //获取当前时间
-      this.sDate2 = this.currentTime = //修改数据date
-        new Date().getFullYear() +
-        "-" +
-        (new Date().getMonth() + 1) +
-        "-" +
-        new Date().getDate();
-    },
+    // diskdatanum() {
+    //   //计算当前时间与2019.9.1之间的间隔
+    //   var dateSpan, tempDate, iDays, sDate1, sDate2;
+    //   sDate1 = Date.parse(this.sDate1);
+    //   sDate2 = Date.parse(this.sDate2);
+    //   dateSpan = sDate2 - sDate1;
+    //   dateSpan = Math.abs(dateSpan);
+    //   iDays = Math.floor(dateSpan / (24 * 3600 * 1000));
+    //   this.dsikDefaules = parseInt(32.28 + iDays * 0.07);
+    //   console.log(iDays, this.dsikDefaules);
+    // },
+    // currtenTime() {
+    //   //获取当前时间
+    //   this.sDate2 = this.currentTime = //修改数据date
+    //     new Date().getFullYear() +
+    //     "-" +
+    //     (new Date().getMonth() + 1) +
+    //     "-" +
+    //     new Date().getDate();
+    // },
     cpuDataNums() {
       this.cpuDataNumDefa = (5 * (1 + Math.random(1))).toFixed(1) + "%";
     },
@@ -386,8 +386,8 @@ export default {
       this.diskMemoryDataDefa = this.dsikDefaules;
       this.diskMemoryNumDefa =
         ((this.dsikDefaules / 128) * 100).toFixed(1) + "%";
-    }
-  },
+    },
+ 
   created() {
     this.currtenTime();
     this.petition();
@@ -399,8 +399,10 @@ export default {
   destroyed() {
     clearInterval(this.timer);
   },
-  components: {}
-};
+//   components: {}
+// }
+}
+}
 </script>
 
 <style scoped lang="scss">

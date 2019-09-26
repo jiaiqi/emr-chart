@@ -1,7 +1,7 @@
 <template>
   <div class="view_title">
     <div class="title_left">
-      <div v-if="titleViewData.currentPage === 'platform'" class="header_left">
+      <div v-if="titleViewData.currentPage === 'platform'||'secplat'" class="header_left">
         <div class="platform_title">
           <span>当前用户数:</span>
           <span>{{list_useno}}</span>
@@ -19,7 +19,7 @@
         <span>当前帐号:</span>
         <span class="user_no">{{user !== null && user.user_no !== null ? user.user_no:'-'}}</span>
       </div>
-      <div class="btn_logout long_btn">管理入口</div>
+      <div class="btn_logout long_btn" @click="toManangerment">管理入口</div>
       <div @click="toIndex('1')" class="btn_logout">注销</div>
       <div @click="toIndex('2')" class="btn_logout">返回</div>
     </div>
@@ -48,7 +48,7 @@ export default {
     };
   },
   methods: {
-    name() {},
+    name() { },
     toIndex(num) {
       if (num === "1") {
         sessionStorage.clear();
@@ -62,6 +62,12 @@ export default {
           this.$router.push({ name: "navs" });
         }
       }
+    },
+    toManangerment() {
+      let str = window.location.href
+      let num = str.indexOf("?");
+      str = str.substr(num + 1);
+      window.location.href = '../../main/index.html?' + str
     },
     RegNum() {
       let self = this;
@@ -78,6 +84,8 @@ export default {
       self.axios
         .post(path, req)
         .then(res => {
+          console.log(res)
+
           self.regNum = res.data.data[0].number_of_online_users;
           self.getData_userno();
         })
@@ -111,7 +119,7 @@ export default {
   created() {
     let user = sessionStorage.getItem("current_login_user");
     this.user = JSON.parse(user);
-    if (this.titleViewData.currentPage === "platform") {
+    if (this.titleViewData.currentPage === "platform" || "secplat") {
       this.RegNum();
     }
   },
@@ -167,6 +175,9 @@ export default {
         display: inline-block;
         min-width: 5rem; /* 80/16 */
       }
+      @media screen and (max-width: 1366px) {
+        min-width: 3rem;
+      }
     }
     .btn_logout {
       // min-width: 3.75rem /* 60/16 */;
@@ -178,5 +189,14 @@ export default {
       }
     }
   }
+  @media screen and (max-width: 1366px) {
+    .title_right {
+      .date_time {
+        min-width: 150px;
+      }
+    }
+  }
+}
+@media screen and (max-width: 1366px) {
 }
 </style>

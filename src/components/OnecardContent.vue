@@ -35,13 +35,24 @@
               height="28vh"
               :legend-visible="false"
               :extend="chartExtendPie"
+              v-if="contentData.currentPage==='emrCollect'"
+            ></ve-pie>
+            <ve-pie
+              :data="contentData.secondPie.data"
+              height="28vh"
+              :legend-visible="false"
+              :extend="chartExtendPieL"
+              v-else
             ></ve-pie>
           </div>
         </div>
       </div>
     </dv-border-box-10>
     <dv-border-box-10 class="content_right">
-      <div class="content_right_box" v-if="contentData.currentPage == 'oneCard'">
+      <div
+        class="content_right_box"
+        v-if="contentData.currentPage == 'oneCard'||contentData.currentPage == 'emrShare'||contentData.currentPage == 'emrCollect'"
+      >
         <div class="content_right_content">
           <div class="tab_check">
             <div
@@ -68,12 +79,38 @@
         <div class="content_right_bottom">
           <div class="content_right_bottom_item">
             <div class="count">
-              <div class="label">门诊次数</div>
-              <div class="text-val" v-if="countData.length>0">{{countData[currentHospital].门诊}}</div>
+              <div class="label" v-if="contentData.currentPage === 'oneCard'">门诊次数</div>
+              <div class="label" v-if="contentData.currentPage === 'emrShare'">总查询次数</div>
+              <div class="label" v-if="contentData.currentPage === 'emrCollect'">门诊总数</div>
+              <div
+                class="text-val"
+                v-if="countData.length>0&&contentData.currentPage === 'oneCard'"
+              >{{countData[currentHospital].门诊}}</div>
+              <div
+                class="text-val"
+                v-if="countData.length>0&&contentData.currentPage === 'emrShare'"
+              >{{countData[currentHospital].select}}</div>
+              <div
+                class="text-val"
+                v-if="countData.length>0&&contentData.currentPage === 'emrCollect'"
+              >{{countData[currentHospital].门诊}}</div>
             </div>
             <div class="count">
-              <div class="label">住院次数</div>
-              <div class="text-val" v-if="countData.length>0">{{countData[currentHospital].住院}}</div>
+              <div class="label" v-if="contentData.currentPage === 'oneCard'">住院次数</div>
+              <div class="label" v-if="contentData.currentPage === 'emrShare'">总验证次数</div>
+              <div class="label" v-if="contentData.currentPage === 'emrCollect'">住院总数</div>
+              <div
+                class="text-val"
+                v-if="countData.length>0&&contentData.currentPage === 'oneCard'"
+              >{{countData[currentHospital].住院}}</div>
+              <div
+                class="text-val"
+                v-if="countData.length>0&&contentData.currentPage === 'emrShare'"
+              >{{countData[currentHospital].verify}}</div>
+              <div
+                class="text-val"
+                v-if="countData.length>0&&contentData.currentPage === 'emrCollect'"
+              >{{countData[currentHospital].住院}}</div>
             </div>
           </div>
           <div class="content_right_bottom_item">
@@ -84,8 +121,16 @@
               <ve-pie
                 :data="contentData.thirdPie.data[currentHospital]"
                 height="28vh"
-                :legend="legend"
                 :extend="chartExtendPie"
+                :legend-visible="false"
+                v-if="contentData.currentPage==='emrShare'||contentData.currentPage==='oneCard'"
+              ></ve-pie>
+              <ve-pie
+                :data="contentData.thirdPie.data[currentHospital]"
+                height="28vh"
+                :extend="chartExtendPieS"
+                :legend-visible="false"
+                v-if="contentData.currentPage==='emrCollect'"
               ></ve-pie>
             </div>
           </div>
@@ -102,24 +147,30 @@
               class="item_title"
             >{{contentData.secondBar.title}}</div>
             <div class="content_item">
-              <ve-histogram height="70vh"></ve-histogram>
+              <ve-histogram
+                :settings="contentData.secondBar.set"
+                :data="contentData.secondBar.data"
+                :textStyle="legend.textStyle"
+                :legend="legend"
+                :extend="rightChartExtend"
+                height="70vh"
+              ></ve-histogram>
             </div>
           </div>
         </div>
       </div>
       <div class="databox_three" v-else-if="contentData.currentPage === 'ETL'">
         <div class="last">
-          <span>上一次</span>
-          <span>下一次</span>
+          <span @click="GoLast">上一次</span>
+          <span @click="GoNext">下一次</span>
           <span>选择记录</span>
         </div>
         <div class="gantt_task">
-          <!-- <span
-            @click="checkTask(item)"
-            v-for="(item,index) in taskName"
+          <span
+            @click="choose(item)"
+            v-for="(item,index) in contentData.secondBar.tableData.title"
             :key="index"
-          >{{item.job_name}}</span>-->
-          <span>任务1</span>
+          >{{item.job_name}}</span>
         </div>
         <div class="databox_three_content">
           <div class="databox_three_contentheader">
@@ -131,23 +182,25 @@
             <div class="databox-col">输出记录数</div>
             <div class="databox-col">结束时间</div>
           </div>
-          <!-- <div
+          <div
             v-show="index < 6"
             class="databox-three-contentdata-view"
-            v-for="(item,index) in GanttData"
+            v-for="(item,index) in contentData.secondBar.tableData.GanttData"
             :key="index"
-          >-->
-          <div class="databox-three-contentdata-view">
-            <div class="databox-col">2019-9-9</div>
-            <div class="databox-col">one</div>
-            <div class="databox-col">1</div>
-            <div class="databox-col">1</div>
-            <div class="databox-col">1</div>
-            <div class="databox-col">1</div>
-            <div class="databox-col">2019-9-9</div>
+          >
+            <div class="databox-col">{{item.start_time}}</div>
+            <div class="databox-col">{{item.processor_name}}</div>
+            <div class="databox-col">{{item.failed_records_count}}</div>
+            <div class="databox-col">{{item.ok_records_count}}</div>
+            <div class="databox-col">{{item.input_record_count}}</div>
+            <div class="databox-col">{{item.output_record_count}}</div>
+            <div class="databox-col">{{item.end_time}}</div>
             <!-- <div class="databox-col">{{item.item08}}</div> -->
           </div>
-          <!-- <div style="text-align:center;padding:5rem 0;" v-if="!this.GanttData.length">~ 暂无数据 ~</div> -->
+          <div
+            style="text-align:center;padding:5rem 0;"
+            v-if="!contentData.secondBar.tableData.GanttData.length"
+          >~ 暂无数据 ~</div>
         </div>
       </div>
     </dv-border-box-10>
@@ -186,9 +239,19 @@ export default {
       chartSettings: {},
       chartExtendLine: {
         grid: {
-          top: '10%',
+          top: "10%",
           bottom: "0",
           height: "auto"
+        },
+        legend: {
+          type: "scroll",
+          textStyle: {
+            color: "#fff"
+          },
+          pageTextStyle: {
+            color: "#fff"
+          },
+          pageIconColor: "#3399ff"
         },
         series: {
           type: "bar",
@@ -202,29 +265,64 @@ export default {
         }
       },
       chartExtendPie: {
-        grid: {
-          top: '10',
-          bottom: "0",
-          height: "auto"
-        },
         series: {
-          type: 'pie',
+          type: "pie",
           center: ["50%", "50%"],
-          radius: [0, '30%'],
+          radius: [0, "35%"],
           label: {
             normal: {
               show: true,
-              formatter: '{b}:{d}%'
+              formatter: "{b}:{d}%"
             }
-          },
+          }
+        }
+      },
+      chartExtendPieL: {
+        series: {
+          type: "pie",
+          center: ["50%", "50%"],
+          radius: [0, "70%"],
+          label: {
+            normal: {
+              show: true,
+              formatter: "{b}:{d}%"
+            }
+          }
+        }
+      },
+      chartExtendPieS: {
+        // 小饼图
+        series: {
+          type: "pie",
+          center: ["50%", "50%"],
+          radius: [0, "20%"],
+          label: {
+            normal: {
+              show: true,
+              formatter: "{b}:{d}%"
+            }
+          }
         }
       },
       currentHospital: 0,
       legend: {
         textStyle: {
-          color: '#fff'
+          color: "#fff"
         }
       },
+      rightChartExtend: {
+        xAxis: {
+          axisLabel: {
+            margin: 10,
+            interval: 0
+          }
+        },
+        yAxis: {
+          interval: ""
+        }
+      },
+      taskName: [],
+      chooseNum: 0
     };
   },
   methods: {
@@ -260,6 +358,12 @@ export default {
         this.chartExtendLine.series.type = newValue.firstBar.type
         this.countData = newValue.countData
         return newValue;
+      }
+    },
+    chartSetting: {
+      deep: true,
+      handler(newValue, oldValue) {
+        this.chartExtendLine.series.type = this.contentData.firstBar.set.type;
       }
     }
   },
@@ -398,7 +502,7 @@ $text-color: #47acff;
         .content_right_bottom_item {
           // margin: 0 auto;
           border: #007aff 1px solid;
-          width: calc(47% - 1rem);
+          width: calc(38% - 1rem);
           .count {
             text-align: center;
             height: 40%;
@@ -418,7 +522,10 @@ $text-color: #47acff;
             align-items: center;
             justify-content: space-around;
             flex-direction: column;
-            margin-right: 1.5rem;
+            margin-right: 0.5rem;
+          }
+          &:last-child {
+            width: calc(55%);
           }
           .item_title {
             height: 2rem;

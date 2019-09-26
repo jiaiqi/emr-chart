@@ -17,7 +17,7 @@
           <div>API网关</div>
           <div class="plan-view">
             <span>请求次数</span>
-            <span>{{convert(centerData.listwg)}}</span>
+            <span>{{centerData.listwg?convert(centerData.listwg):0}}</span>
           </div>
         </div>
       </div>
@@ -33,7 +33,7 @@
                 </div>
                 <div>
                   <span>用户总数:</span>
-                  <span>{{convert(centerData.list_userno)}}</span>
+                  <span>{{centerData.list_userno?convert(centerData.list_userno):0}}</span>
                 </div>
               </li>
               <li>
@@ -45,6 +45,7 @@
                 <div>
                   <span>请求次数:</span>
                   <span>{{convert(centerData.regNum[0].num_of_calls)}}</span>
+                  <!-- convert(centerData.regNum[0].num_of_calls) -->
                 </div>
               </li>
 
@@ -56,7 +57,7 @@
                 </div>
                 <div>
                   <span>应用总数量:</span>
-                  <span>{{convert(centerData.list_zcyy)}}</span>
+                  <span>{{centerData.list_zcyy?convert(centerData.list_zcyy):0}}</span>
                 </div>
               </li>
 
@@ -69,6 +70,7 @@
                 <div>
                   <span>请求次数:</span>
                   <span>{{convert(centerData.regNum[1].num_of_calls)}}</span>
+                  <!-- convert(centerData.regNum[1].num_of_calls) -->
                 </div>
               </li>
             </ul>
@@ -104,7 +106,7 @@
                     </div>
                     <div>
                       <span>总任务个数</span>
-                      <span>{{convert(centerData.list_rw)}}</span>
+                      <span>{{centerData.list_rw?convert(centerData.list_rw):0}}</span>
                     </div>
                   </div>
                 </li>
@@ -119,7 +121,7 @@
                     </div>
                     <div>
                       <span>事件总数量</span>
-                      <span>{{convert(centerData.list_sj)}}</span>
+                      <span>{{centerData.list_sj?convert(centerData.list_sj):0}}</span>
                     </div>
                   </div>
                 </li>
@@ -146,7 +148,7 @@
                   </div>
                   <div>
                     <div>
-                      <span>应用命中率</span>
+                      <span>应用命中个数</span>
                       <span>12%</span>
                     </div>
                     <div>
@@ -171,14 +173,14 @@
                 </div>
                 <div>
                   <span>监控应用个数:</span>
-                  <span>{{convert(centerData.list_jkyygs)}}</span>
+                  <span>{{centerData.list_jkyygs?convert(centerData.list_jkyygs):0}}</span>
                 </div>
               </li>
               <li>
                 <div>开发中心</div>
                 <div>
                   <span>工单个数:</span>
-                  <span>{{convert(centerData.list_kfgd)}}</span>
+                  <span>{{centerData.list_kfgd?convert(centerData.list_kfgd):0}}</span>
                 </div>
                 <div>
                   <span>处理工单数量:</span>
@@ -190,7 +192,7 @@
                 <div>测试中心</div>
                 <div>
                   <span>测试应用数量:</span>
-                  <span>{{convert(centerData.list_cs)}}</span>
+                  <span>{{centerData.list_cs?convert(centerData.list_cs):0}}</span>
                 </div>
                 <div>
                   <span>上线应用数量:</span>
@@ -226,6 +228,8 @@ export default {
     return {
       centerData: this.platMirc,
       microSer: [],
+      // recoerOne:'',
+      // recoerTwo:''
       // listwg: "",
       // listpz: "",
       // list_userno: "",
@@ -262,16 +266,36 @@ export default {
     // getdata(method = "post", app, condition, operate) {
     //   const path = this.getServiceUrl("operate", bxReq.serviceName, "sso");
     // },
-    toSecplat() {
+   
+    toSecplat(item) {
       this.$router.push({
-        name: "secplat"
-        // params: {
-        //   title: item.app_name,
-        //   askNum: item.ask_num,
-        //   appNo: item.app_no,
-        //   runtime: item.running
-        // }
+        name: "secplat",
+        params: {
+          title: item.app_name,
+          askNum: item.ask_num,
+          appNo: item.app_no,
+          runtime: item.running
+        },
       });
+      // this.$router.push({
+      //   name:"BotNorm",
+      //   params:{
+      //     runtime: item.running,
+      //     askNum: item.ask_num,
+      //   }
+      // })
+
+      // this.$router.push({
+      //   name: "BotNorm",
+      //   params: {
+      //     title: item.app_name,
+      //     askNum: item.ask_num,
+      //     appNo: item.app_no,
+      //     runtime: item.running
+      //   },
+      // });
+      // console.log(item.app_name)
+
     },
     //api网关 请求次数
     getData_one() {
@@ -714,7 +738,7 @@ export default {
   created() {
     // this.getRegNum();
     // this.getLog();
-    this.getData_one();
+    // this.getData_one();
     // this.getData_two();
     // this.getData_three();
     // this.getData_four();
@@ -747,7 +771,7 @@ export default {
     //   this.CenTiny();
     // }, 30000);
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
