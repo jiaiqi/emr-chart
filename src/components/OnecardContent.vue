@@ -13,6 +13,10 @@
             width="40vw"
             height="calc(100% - 50px)"
           ></ve-histogram>
+          <div
+            v-if="!contentData.firstBar||!contentData.firstBar.data||contentData.firstBar.data.length==0"
+            class="nodata"
+          >Loading</div>
         </div>
         <div class="content_left_right">
           <div class="content_left_right_item">
@@ -132,6 +136,10 @@
                 :legend-visible="false"
                 v-if="contentData.currentPage==='emrCollect'"
               ></ve-pie>
+              <div
+                v-if="!contentData.thirdPie||!contentData.thirdPie.data||contentData.thirdPie.data.length==0"
+                class="nodata"
+              >Loading</div>
             </div>
           </div>
         </div>
@@ -213,6 +221,7 @@ export default {
   data() {
     return {
       data: {},
+      loading: true,
       firstBar: {
         title: "",
         data: {}
@@ -357,6 +366,7 @@ export default {
       handler(newValue, oldValue) {
         this.chartExtendLine.series.type = newValue.firstBar.type
         this.countData = newValue.countData
+        this.loading = newValue.thirdPie.loading
         return newValue;
       }
     },
@@ -377,6 +387,14 @@ export default {
 $br-color: #4b93ff78;
 $bg-color: #ed795a;
 $text-color: #47acff;
+.nodata {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+}
 .onecard_content {
   display: flex;
   height: calc(100% - 10rem /* 140/16 */);

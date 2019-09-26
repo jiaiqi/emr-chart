@@ -246,8 +246,12 @@ export default {
     },
      homeHref(item){
       if(item=="卡机个数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvcvs_device_cfg_select/0001'})
+        // window.location.href ='http://192.168.0.199/vpages/index.html#/list/srvcvs_device_cfg_select/0001'
+        window.location.href = window.location.host + '/vpages/index.html#/list/srvcvs_device_cfg_select/0001'
+        //  this.$router.push({path:'/vpages/index.html#/list/srvcvs_device_cfg_select/0001'})
       }else if(item=="门诊记录数"){
+        window.location.href = '/vpages/index.html#/list/srvcvs_medical_records_select'
+
          this.$router.push({path:'/vpages/index.html#/list/srvcvs_medical_records_select'})
       }else if(item=="住院记录数"){
          this.$router.push({path:'/vpages/index.html#/list/srvcvs_medical_records_select'})

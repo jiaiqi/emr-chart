@@ -263,12 +263,22 @@ export default {
       }
     },
     getAllChartData(currentPage) {
-      this.getPie1Data(currentPage)
-      this.getPie2Data(currentPage)
-      this.getPie3Data(currentPage)
       this.getBar1data(currentPage)
-      this.getBar2Data(currentPage)
-      this.getCount(currentPage)
+      setTimeout(() => {
+        this.getPie1Data(currentPage)
+        setTimeout(() => {
+          this.getPie2Data(currentPage)
+          setTimeout(() => {
+            this.getBar2Data(currentPage)
+            setTimeout(() => {
+              this.getPie3Data(currentPage)
+              setTimeout(() => {
+                this.getCount(currentPage)
+              }, 200);
+            }, 200);
+          }, 200);
+        }, 200);
+      }, 200);
     },
     getRunTime() {
       // 获取累计运行时间
@@ -465,45 +475,43 @@ export default {
           .then(res => {
             allData.Bar1 = res.data.data
             this.contentData.firstBar.loading = false
-            setTimeout(() => {
-              this.axios({ method: "POST", url: url, data: reqb })
-                .then(res => {
-                  allData.Pie1 = res.data.data
-                  this.contentData.firstPie.loading = false
-                  this.axios({ method: "POST", url: url, data: reqc })
-                    .then(res => {
-                      allData.Pie2 = res.data.data
-                      this.contentData.secondPie.loading = false
-                      this.axios({ method: "POST", url: url, data: reqd })
-                        .then(res => {
-                          allData.Bar2 = res.data.data
-                          this.contentData.secondBar.loading = false
-                          this.axios({ method: "POST", url: url, data: reqe })
-                            .then(res => {
-                              allData.countData = res.data.data
-                              this.axios({ method: "POST", url: url, data: reqf })
-                                .then(res => {
-                                  allData.Pie3 = res.data.data
-                                  this.contentData.thirdPie.loading = false
-                                  console.log("allData::::", allData)
-                                  this.allData = allData
-                                  this.getAllChartData(this.contentData.currentPage)
-                                }).catch(err => {
-                                  console.error(err)
-                                })
-                            }).catch(err => {
-                              console.error(err)
-                            })
-                        }).catch(err => {
-                          console.error(err)
-                        })
-                    }).catch(err => {
-                      console.error(err)
-                    })
-                }).catch(err => {
-                  console.error(err)
-                })
-            }, 200);
+            this.axios({ method: "POST", url: url, data: reqb })
+              .then(res => {
+                allData.Pie1 = res.data.data
+                this.contentData.firstPie.loading = false
+                this.axios({ method: "POST", url: url, data: reqc })
+                  .then(res => {
+                    allData.Pie2 = res.data.data
+                    this.contentData.secondPie.loading = false
+                    this.axios({ method: "POST", url: url, data: reqd })
+                      .then(res => {
+                        allData.Bar2 = res.data.data
+                        this.contentData.secondBar.loading = false
+                        this.axios({ method: "POST", url: url, data: reqe })
+                          .then(res => {
+                            allData.countData = res.data.data
+                            this.axios({ method: "POST", url: url, data: reqf })
+                              .then(res => {
+                                allData.Pie3 = res.data.data
+                                this.contentData.thirdPie.loading = false
+                                console.log("allData::::", allData)
+                                this.allData = allData
+                                this.getAllChartData(this.contentData.currentPage)
+                              }).catch(err => {
+                                console.error(err)
+                              })
+                          }).catch(err => {
+                            console.error(err)
+                          })
+                      }).catch(err => {
+                        console.error(err)
+                      })
+                  }).catch(err => {
+                    console.error(err)
+                  })
+              }).catch(err => {
+                console.error(err)
+              })
           }).catch(err => {
             console.error(err)
           })
