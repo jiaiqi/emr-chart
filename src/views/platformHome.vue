@@ -115,24 +115,68 @@ export default {
   methods: {
     homeHref(item){
       if(item=="用户数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvsso_user_select'})
+        let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvsso_user_select',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
       }else if(item=="应用个数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvconfig_app_list_select'})
+        let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvconfig_app_list_select',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
       }else if(item=="累计服务次数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvlog_call_statistics_select'})
+         let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvlog_call_statistics_select',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
       }
     },
     development(item){
       if(item=="工单个数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvapprc_issue_info_select'})
+        let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvapprc_issue_info_select',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
       }else if(item=="文档个数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvfile_attachment_select'})
+        let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvfile_attachment_select',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+        // window.location.href = '/vpages/index.html#/list/srvfile_attachment_select'
       }else if(item=="开发包个数"){
-         this.$router.push({path:'/vpages/index.html#/treegrid/srvapprc_kit_components_select'})
+        let page = {
+        title: item,
+        url: '/vpages/index.html#/treegrid/srvapprc_kit_components_select',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+      //  window.location.href = '/vpages/index.html#/treegrid/srvapprc_kit_components_select'
       }else if(item=="申请中应用个数"){
-         this.$router.push({path:'/vpages/index.html#/listproc/srvapprc_application_apply_select'})
+         let page = {
+        title: item,
+        url: '/vpages/index.html#/listproc/srvapprc_application_apply_select',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+        // window.location.href = '/vpages/index.html#/listproc/srvapprc_application_apply_select'
       }else if(item=="上线应用个数"){
-         this.$router.push({path:'/vpages/index.html#/listproc/srvapprc_online_apply_select'})
+        let page = {
+        title: item,
+        url: '/vpages/index.html#/listproc/srvapprc_online_apply_select',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+        // window.location.href = '/vpages/index.html#/listproc/srvapprc_online_apply_select'
       }
     },
     serverNum() {
@@ -489,6 +533,7 @@ export default {
 }
 #currey{
   cursor: pointer;
+  color: black;
 }
 .content_two_title,
 .content_three_title {

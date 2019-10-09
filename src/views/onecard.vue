@@ -72,6 +72,9 @@ export default {
 
       } else if (currentPage === 'emrCollect') { }
       this.contentData.firstBar.data = bar1Data
+      if (datas && datas.length == 0) {
+        return false
+      }
     },
     getPie1Data(currentPage) {
       let data = this.allData.Pie1
@@ -103,6 +106,9 @@ export default {
 
       } else if (currentPage === 'emrCollect') { }
       this.contentData.firstPie.data = pie1Data
+      if (data && data.length == 0) {
+        return false
+      }
     },
     getPie2Data(currentPage) {
       let datas = this.allData.Pie2
@@ -322,8 +328,87 @@ export default {
         end: end
       }
     },
+    getBar1OriginData() {
+      let condition = []
+      let timeGroupType = "by_hour"
+      let timeType = this.checkDataType
+      let currentPage = this.contentData.currentPage
+      if (currentPage === 'oneCard') {
+        this.contentData.firstBar.title = "一卡通就诊次数"
+        this.contentData.firstPie.title = "各医院就诊分布"
+        this.contentData.secondPie.title = "就诊刷卡类型分布"
+        this.contentData.thirdPie.title = "就诊刷卡类型分布"
+        this.contentData.firstBar.type = 'bar'
+        let serviceName = "srvcvs_medical_records_select"
+        this.getTimeSection(timeType)
+        condition = [
+          {
+            "colName": "ywfssj",
+            "value": this.timeSection.start,
+            "ruleType": "ge"
+          },
+          {
+            "colName": "ywfssj",
+            "value": this.timeSection.end,
+            "ruleType": "le"
+          }
+        ]
+        if (timeType === 'week' || timeType === 'month') {
+          timeGroupType = "by_date"
+        } else if (timeType === 'year') {
+          timeGroupType = "by_month_of_year"
+        }
+        let url = this.getServiceUrl("select", serviceName, "cvs")
+        let request = {
+          "serviceName": serviceName,
+          "colNames": ["*"],
+          "condition": condition,
+          "group": [
+            {
+              "colName": "ywfssj", // 业务发生时间
+              "type": timeGroupType
+            },
+            {
+              "colName": "cmd", // 就诊类型
+              "type": "by"
+            },
+            {
+              "colName": "create_time",
+              "type": "count"
+            }
+          ]
+        }
+        this.axios({ method: "POST", url: url, data: request }).then(res => {
+          this.allData.bar1 = res.data.data
+          if (res.data.data.length = 0 || res.data.data == []) {
+            return false
+          } else { return true }
+        }).catch(err => {
+          console.error(err)
+          return false
+        })
+      } else if (currentPage === 'emrShare') {
+
+      } else if (currentPage === 'emrCollect') {
+
+      }
+    },
+    getBar2OriginData() {
+      let condition = []
+      let timeGroupType = "by_hour"
+      let type = this.checkDataType
+      let currentPage = this.contentData.currentPage
+      if (currentPage === 'oneCard') {
+        let serviceName = "srvcvs_medical_records_select"
+        this.getTimeSection(type)
+
+      }
+    },
+    getPie1OriginData() { },
+    getPie2OriginData() { },
+    getPie3OriginData() { },
+    getCountOriginData() { },
     getAlldata() {
-      let reqs = []
       let condition = []
       let timeGroupType = "by_hour"
       let type = this.checkDataType
@@ -373,7 +458,6 @@ export default {
             }
           ]
         }
-        reqs.push(reqa)
         let reqb = {
           "serviceName": serviceName,
           "colNames": ["*"],
@@ -384,12 +468,11 @@ export default {
               "type": "by"
             },
             {
-              "colName": "create_time",
+              "colName": "create_time", // 要用来统计的字段
               "type": "count"
             }
           ]
         }
-        reqs.push(reqb)
         let reqc = {
           "serviceName": serviceName,
           "colNames": ["*"],
@@ -405,7 +488,6 @@ export default {
             }
           ]
         }
-        reqs.push(reqc)
         let reqd = {
           "serviceName": serviceName,
           "colNames": ["*"],
@@ -429,7 +511,6 @@ export default {
             }
           ]
         }
-        reqs.push(reqd)
         let reqe = {
           "serviceName": serviceName,
           "colNames": ["*"],
@@ -449,7 +530,6 @@ export default {
             }
           ]
         }
-        reqs.push(reqe)
         let reqf = {
           "serviceName": serviceName,
           "colNames": ["*"],
@@ -469,7 +549,6 @@ export default {
             }
           ]
         }
-        reqs.push(reqf)
         let allData = {}
         this.axios({ method: "POST", url: url, data: reqa })
           .then(res => {
@@ -493,7 +572,6 @@ export default {
                             this.axios({ method: "POST", url: url, data: reqf })
                               .then(res => {
                                 allData.Pie3 = res.data.data
-                                this.contentData.thirdPie.loading = false
                                 console.log("allData::::", allData)
                                 this.allData = allData
                                 this.getAllChartData(this.contentData.currentPage)
@@ -512,6 +590,11 @@ export default {
               }).catch(err => {
                 console.error(err)
               })
+            if (res.data.data) {
+              return true
+            } else {
+              return false
+            }
           }).catch(err => {
             console.error(err)
           })
@@ -1734,23 +1817,12 @@ export default {
         })
         this.contentData.countData = countArr
         console.log("countArr", countArr)
-        // datas.map(data => {
-        //   if (data.record_type.indexOf("门急诊") != -1 || data.record_type.indexOf("门诊") != -1) {
-        //     console.log(data.record_type, data.amount)
-        //     treatmentCount.mz += data.amount
-        //   } else if (data.record_type.indexOf("住院") != -1) {
-        //     console.log(data.record_type, data.amount)
-        //     treatmentCount.zy += data.amount
-        //   }
-        // })
-        // // this.collectMz = treatmentCount.mz
-        // // this.collectZy = treatmentCount.zy
-        // console.log("collectMzZY:", treatmentCount.mz, treatmentCount.zy)
       }
     },
     viewtabs(pageName) {
       this.contentData.currentPage = pageName.key;
       console.log("当前页：", pageName.value);
+      this.checkDataType = 'day'
       this.getTimeType('day')
 
     },
@@ -1766,7 +1838,9 @@ export default {
       if (TimeType) {
         this.checkDataType = TimeType
       }
-      this.getAlldata()
+      let timeOutReq = new this.timeOut(10, 0, this.getAlldata)
+      timeOutReq.startTime()
+      // console.log(timeOutReq)
     },
     toManangerment() {
       // 跳转到后台管理页面
@@ -1791,9 +1865,6 @@ export default {
       if (tabsShow == 1) {
 
       }
-    },
-    getBar1Data() {
-
     },
   },
   data() {
@@ -1877,6 +1948,7 @@ export default {
   mounted() {
     this.getTimeType()
     this.getRunTime()
+    // console.log(timeOutReq)
     // this.autoChangeTab(10000) // 自动切换Tab
   }
 };

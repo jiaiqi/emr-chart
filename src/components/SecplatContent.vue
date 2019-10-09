@@ -8,7 +8,7 @@
         <div class="bar_content">
           <ve-histogram 
               :data="chartData"
-               height="58vh"
+               height="60vh"
               :legend="legend"
               :textStyle="legend.textStyle"
               :extend="chartExtendLine"
@@ -630,6 +630,8 @@ export default {
       year_start: year_start
     }
     this.getLegend()
+    //  this.$cookie.set('appNo', this.appNo);
+    //  console.log("________"+this.$route.params.appNo)
   }
 };
 </script>
@@ -645,9 +647,11 @@ export default {
       }
 .Cont_wrap {
   width: 95%;
+  //  height: calc(100% - 10rem /* 140/16 */);
   margin: 0 auto;
   display: flex;
   margin-top: 3rem;
+  // box-sizing: border-box;
   .Cont_left_bar {
     flex: 6;
     margin-right: 1rem;

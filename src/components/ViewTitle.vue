@@ -115,6 +115,8 @@ export default {
     setInterval(() => {
       this.date = moment().format("YYYY-MM-DD  HH:mm:ss");
     }, 1000);
+    sessionStorage.setItem("title",this.titleViewData.title)
+    
   },
   created() {
     let user = sessionStorage.getItem("current_login_user");

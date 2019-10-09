@@ -151,25 +151,73 @@ export default {
 
         homeHref(item){
       if(item=="数据库个数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvdc_rc_db_select?menuapp=datacenter'})
+        let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvdc_rc_db_select?menuapp=datacenter',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+        // window.location.href = '/vpages/index.html#/list/srvdc_rc_db_select?menuapp=datacenter'
       }else if(item=="表个数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvdc_rc_db_table_select?menuapp=datacenter'})
+        let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvdc_rc_db_table_select?menuapp=datacenter',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+      //  window.location.href = '/vpages/index.html#/list/srvdc_rc_db_table_select?menuapp=datacenter'
       }else if(item=="记录数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvdc_rc_db_table_select?menuapp=datacenter'})
+        let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvdc_rc_db_table_select?menuapp=datacenter',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+        // window.location.href = '/vpages/index.html#/list/srvdc_rc_db_table_select?menuapp=datacenter'
       }
     },
     development(item){
       if(item=="作业数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvetl_job_select?menuapp=etl'})
+        let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvetl_job_select?menuapp=etl',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+        // window.location.href = '/vpages/index.html#/list/srvetl_job_select?menuapp=etl'
       }else if(item=="执行次数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvetl_job_history_select?menuapp=etl'})
+        let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvetl_job_history_select?menuapp=etl',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+      //  window.location.href = '/vpages/index.html#/list/srvetl_job_history_select?menuapp=etl'
       }else if(item=="抽取记录数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvetl_processor_history_select?menuapp=etl'})
+        let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvetl_processor_history_select?menuapp=etl',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+      //  window.location.href = '/vpages/index.html#/list/srvetl_processor_history_select?menuapp=etl'
 
       }else if(item=="加载表个数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvetl_processor_history_select?menuapp=etl'})
+        let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvetl_processor_history_select?menuapp=etl',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+      // window.location.href = '/vpages/index.html#/list/srvetl_processor_history_select?menuapp=etl'
       }else if(item=="加载记录数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvetl_processor_history_select?menuapp=etl'})
+        let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvetl_processor_history_select?menuapp=etl',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+        //  window.location.href = '/vpages/index.html#/list/srvetl_processor_history_select?menuapp=etl'
       }
     },
         //数据库个数

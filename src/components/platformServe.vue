@@ -243,6 +243,7 @@ export default {
   },
   methods: {
     petition() {
+      console.log("==================================")
       this.axios({
         method: "get",
         url: this.getServiceUrl(
@@ -387,11 +388,12 @@ export default {
       this.diskMemoryNumDefa =
         ((this.dsikDefaules / 128) * 100).toFixed(1) + "%";
     },
+},
  
   created() {
-    this.currtenTime();
+    // this.currtenTime();
     this.petition();
-    this.diskdatanum();
+    // this.diskdatanum();
     this.cpuDataNums();
     this.memoryDataNums();
     this.diskMemoryData();
@@ -401,7 +403,6 @@ export default {
   },
 //   components: {}
 // }
-}
 }
 </script>
 

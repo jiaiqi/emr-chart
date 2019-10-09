@@ -1022,7 +1022,7 @@ export default {
         )
         .then(res => {
             this.contentData.secondBar.tableData.GanttData = res.data.data
-            console.error('GanttData',res.data.data)
+            // console.error('GanttData',res.data.data)
             // this.taskNo = res.data.data[0].job_no
         })
         .catch(err => {

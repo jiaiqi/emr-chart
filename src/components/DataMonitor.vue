@@ -3,9 +3,9 @@
     <div class="databox_three">
       <div class="databox_three_content">
         <div class="databox_three_contentheader">
-          <div class="databox-col">数据库名称</div>
           <div class="databox-col">数据源</div>
           <div class="databox-col">数据库类型</div>
+          <div class="databox-col">数据库名称</div>
           <div class="databox-col">表/集合数</div>
           <div class="databox-col">数据量（记录）</div>
           <div class="databox-col">占用空间</div>
@@ -25,9 +25,9 @@
             v-for="(item,index) in databox3list1"
             :key="index"
           >
-            <div class="databox-col">{{item.db_name}}</div>
             <div class="databox-col">{{item.src_no}}</div>
             <div class="databox-col">{{item.db_type?item.db_type:'mongodb'}}</div>
+            <div class="databox-col">{{item.db_name}}</div>
             <div class="databox-col">{{item.table_count_real?item.table_count_real:'0'}}</div>
             <div class="databox-col">{{item.row_count?item.row_count:'0'}}</div>
             <div class="databox-col">{{item.storage_size?ConvertStor(item.storage_size):0 }}</div>

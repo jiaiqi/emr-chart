@@ -7,7 +7,7 @@
     </div>
 
     <div class="main">
-      <div   class="main_top">
+      <div class="main_top">
         <div class="main_top_p">
           <div class="plan-view">
             <span>持续运行时长</span>
@@ -78,7 +78,7 @@
         </div>
         <div class="main_cen_cen">
           <div class="main_cen_cen_top">
-            <ul>
+            <ul >
               <li @click="toSecplat(item)" v-for="(item,index) in microSer" :key="index">
                 <p class="title">{{item ? item.app_name:0 }}</p>
                 <div>
@@ -148,12 +148,12 @@
                   </div>
                   <div>
                     <div>
-                      <span>应用命中个数</span>
-                      <span>12%</span>
+                      <span>应用命中率</span>
+                      <span>{{mean?mean:(0+"%")}}</span>
                     </div>
                     <div>
                       <span>内存使用率</span>
-                      <span>5%</span>
+                      <span>{{memoryMean?memoryMean:(0+"%")}}</span>
                     </div>
                   </div>
                 </li>
@@ -223,42 +223,18 @@
 <script>
 import { setInterval } from "timers";
 export default {
-  props:["platMirc"],
+  props: ["platMirc"],
   data() {
     return {
       centerData: this.platMirc,
       microSer: [],
-      // recoerOne:'',
-      // recoerTwo:''
-      // listwg: "",
-      // listpz: "",
-      // list_userno: "",
-      // list_rw: "",
-      // list_sj: "",
-      // list_cs: "",
-      // list_cssx: "",
-      // list_kfgd: "",
-      // list_kfcl: "",
-      // list_zcyy: "",
-      // list_jkyygs: "",
-      // list_pzqq: "",
-      // list_rzzx: "",
-      // list_sqzx: "",
-      // logNum: "",
-      // operat: {},
-      // regNum: [],
-      // ApiNum: null
-      // list_ykt:'',
-      // list_dzbl:'',
-      // list_sjgl:'',
-      // list_sjgx: '',
-      // list_sjfxzs:'',
-      // list_yxjk:'',
+      memoryMean:null,
+      mean:null
     };
   },
-  watch:{
-    platMirc:function(newVal,oldVal){
-       this.centerData=newVal
+  watch: {
+    platMirc: function(newVal, oldVal) {
+      this.centerData = newVal;
     }
   },
   components: {},
@@ -266,7 +242,7 @@ export default {
     // getdata(method = "post", app, condition, operate) {
     //   const path = this.getServiceUrl("operate", bxReq.serviceName, "sso");
     // },
-   
+
     toSecplat(item) {
       this.$router.push({
         name: "secplat",
@@ -275,7 +251,7 @@ export default {
           askNum: item.ask_num,
           appNo: item.app_no,
           runtime: item.running
-        },
+        }
       });
       // this.$router.push({
       //   name:"BotNorm",
@@ -295,11 +271,10 @@ export default {
       //   },
       // });
       // console.log(item.app_name)
-
     },
     //api网关 请求次数
     getData_one() {
-      console.log(this.centerData)
+      // console.log(this.centerData);
       // console.log(this.centerData[1].list_cssx)
       let req = {
         serviceName: "srvlog_call_statistics_select",
@@ -654,7 +629,7 @@ export default {
         });
     },
     //查询中间微服务
-   CenTiny() {
+      CenTiny() {
       let req = {
         serviceName: "srvconfig_app_list_select",
         colNames: ["*"],
@@ -686,10 +661,13 @@ export default {
         .then(res => {
           // this.microSer[3].beg = res.data.data[0].num_of_calls;
           let micr = res.data.data;
-          console.log("micr", micr);
+          // console.log("micr", micr);
           // this.microSer
           this.microSer = [];
-          micr.forEach(item => {
+          // micr.forEach(item => {
+            for( let i=0; i<micr.length;i++){
+              
+            
             let req1 = {
               serviceName: "srvlog_call_statistics_select",
               colNames: ["*"],
@@ -697,7 +675,7 @@ export default {
                 {
                   colName: "application",
                   ruleType: "eq",
-                  value: item.app_no
+                  value: micr[i].app_no
                 }
               ],
               group: [
@@ -715,29 +693,73 @@ export default {
             this.axios
               .post(path1, req1)
               .then(res1 => {
-                // console.log(res1)
                 if (res1.data.data.length > 0) {
-                  item["ask_num"] = res1.data.data[0].num_of_calls;
-                  this.microSer.push(item);
+                  // console.log(arr[0].app_nos)
+                  for(let j = 0;j<micr.length;j++){
+                    if(micr[j].app_no === req1.condition[0].value){
+                      this.$set(micr[j],['ask_num'],res1.data.data[0].num_of_calls)
+                      // micr[j]['ask_num']= res1.data.data[0].num_of_calls;
+                      let appName = micr[j].app_no.toUpperCase();
+                      // console.log(appName)
+                      // micr[j].running = this.operat[appName];
+                      this.$set(micr[j],'running',this.operat[appName])
+                      // console.log('micr[j].ask_num--------',micr[j].ask_num,res1.data.data[0].num_of_calls,micr[j].running)
+                    }
+                  }
                 }
               })
               .catch(err => {
                 console.log(err);
               });
-
-            let appName = item.app_no.toUpperCase();
-            // console.log(appName)
-            item.running = this.centerData.operat[appName];
-          });
+          }
+          this.microSer = micr
+          // console.log('micr=>2',this.microSer,this.microSer.app_name)
+  
         })
         .catch(err => {
           console.log(err);
         });
+    },
+    methitem(){
+
+       let path= this.getServiceUrl(
+              "",
+              "redis",
+              "monitor"
+            );
+        this.axios.get(path).then(res=>{
+          console.log(res)
+          let space = null  //命中总数
+          let miss = null  //未命中总数
+          let mean = null  //命中率
+
+          let memory = null //已使用内存
+          let totalMemory = null //未使用内存
+          let memoryMean = null //内存使用率
+          // console.log(typeof )
+          let resa=res.data.data
+           for(var i=0;i<res.data.data.length;i++){
+             space+=Number(resa[i].itemsVos[0].val)
+             miss+=Number(resa[i].itemsVos[1].val)
+             memory+=Number(resa[i].itemsVos[2].val)
+             totalMemory+=Number(resa[i].itemsVos[3].val)
+           }
+         this.mean= mean=(((space/(space+miss))).toFixed(2)*100)+"%"
+         this.memoryMean= memoryMean= ((((memory/1024/1024)/(totalMemory/1024/1024))).toFixed(2)*100)+"%"
+           console.log(memory,totalMemory)
+
+        }).catch(err=>{
+          console.log(err);
+        })
     }
   },
   created() {
+    this.operation();
+    this.CenTiny();
+    // console.log(this.centerData)
     // this.getRegNum();
     // this.getLog();
+    this.methitem()
     // this.getData_one();
     // this.getData_two();
     // this.getData_three();
@@ -749,8 +771,6 @@ export default {
     // this.getData_nine();
     // this.getData_ten();
     // this.getData_eleven();
-    // this.operation();
-    this.CenTiny();
   },
   mounted() {
     // setInterval(() => {
@@ -771,7 +791,7 @@ export default {
     //   this.CenTiny();
     // }, 30000);
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

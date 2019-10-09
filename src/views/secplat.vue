@@ -4,7 +4,9 @@
     <view-title :titleViewData="titleViewData"></view-title>
     <div class="wrap">
       <top-indicator  :current="titleViewData"></top-indicator>
+      <div class="timeType">
       <time-type v-on:showTimeType="showTimeType"></time-type>
+      </div>
       <secplat-content :secplatdata='secplatdata'></secplat-content>
     </div>
   </div>
@@ -45,7 +47,11 @@ export default {
       },
       secplatdata:''
     };
+    
   },
+  computed:{
+      
+    },
   mounted() {
   },
 
@@ -696,6 +702,7 @@ export default {
       // this.getLegend()
       // this.sustain()
     }, 30000);
+    sessionStorage.setItem('title', this.$route.params.title)
   },
   watch:{
       showTimeType:function(newdata,olddata){
@@ -707,6 +714,9 @@ export default {
 <style lang='scss' scoped>
 body {
   margin: 0;
+}
+.timeType{
+  // margin-top: 1.5rem;
 }
 .wrap_t {
   width: 100%;

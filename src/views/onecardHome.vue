@@ -246,26 +246,68 @@ export default {
     },
      homeHref(item){
       if(item=="卡机个数"){
+          let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvcvs_device_cfg_select/0001',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
         // window.location.href ='http://192.168.0.199/vpages/index.html#/list/srvcvs_device_cfg_select/0001'
-        window.location.href = window.location.host + '/vpages/index.html#/list/srvcvs_device_cfg_select/0001'
+        // window.location.href = '/vpages/index.html#/list/srvcvs_device_cfg_select/0001'
         //  this.$router.push({path:'/vpages/index.html#/list/srvcvs_device_cfg_select/0001'})
       }else if(item=="门诊记录数"){
-        window.location.href = '/vpages/index.html#/list/srvcvs_medical_records_select'
+          let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvcvs_medical_records_select',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+        // window.location.href = '/vpages/index.html#/list/srvcvs_medical_records_select'
 
-         this.$router.push({path:'/vpages/index.html#/list/srvcvs_medical_records_select'})
+        //  this.$router.push({path:'/vpages/index.html#/list/srvcvs_medical_records_select'})
       }else if(item=="住院记录数"){
-         this.$router.push({path:'/vpages/index.html#/list/srvcvs_medical_records_select'})
+          let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvcvs_medical_records_select',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+        //  window.location.href ='/vpages/index.html#/list/srvcvs_medical_records_select'
       }else if(item=="卡机设备心跳"){
-         this.$router.push({path:'/vpages/index.html#/list/srvcvs_device_heart_record_select'})
+          let page = {
+        title: item,
+        url: '/vpages/index.html#/list/srvcvs_device_heart_record_select',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+        // window.location.href = '/vpages/index.html#/list/srvcvs_device_heart_record_select'
       }
     },
     development(item){
       if(item=="患者总数"){
-         this.$router.push({path:'/vpages/index.html#/list/DI_MPI_REGISTERINFO_select'})
+          let page = {
+        title: item,
+        url: '/vpages/index.html#/list/DI_MPI_REGISTERINFO_select',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+        // window.location.href = '/vpages/index.html#/list/DI_MPI_REGISTERINFO_select'
       }else if(item=="门诊挂号"){
-         this.$router.push({path:'/vpages/index.html#/list/DI_ADI_REGISTER_INFO_select'})
+          let page = {
+        title: item,
+        url: '/vpages/index.html#/list/DI_ADI_REGISTER_INFO_select',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+        //  window.location.href = '/vpages/index.html#/list/DI_ADI_REGISTER_INFO_select'
       }else if(item=="入院记录"){
-         this.$router.push({path:'/vpages/index.html#/list/DI_HDI_INRECORD_INFO_select'})
+          let page = {
+        title: item,
+        url: '/vpages/index.html#/list/DI_HDI_INRECORD_INFO_select',
+        icon: ""
+      };
+      window.top.tab.addTab(page);
+        // window.location.href = '/vpages/index.html#/list/DI_HDI_INRECORD_INFO_select'
       }
       // }else if(item=="申请中应用个数"){
       //    this.$router.push({path:'/vpages/index.html#/listproc/srvapprc_application_apply_select'})

@@ -1,9 +1,9 @@
 <template>
   <div class="top_indicat">
-    <div v-if="current.currentPage === 'secplat'" class="secplat_indic">
-      <span>{{current.title}}</span>
+    <div v-if="current.currentPage=='secplat'" class="secplat_indic">
+      <span>{{(douTitle.title)}}</span>
     </div>
-    <div v-if="current.currentPage === 'datacenter'" class="dataCenter_indic">
+    <div v-if="current === 'datacenter'" class="dataCenter_indic">
       <div class="content_cen_left">
         <p>
           <span>累计运行时间：</span>
@@ -15,9 +15,7 @@
         </p>
         <p>
           <span>共享数据量(表/记录)：</span>
-          <span>
-            {{indicatorData.dataShareSize.listNum}}/{{this.convert(indicatorData.dataShareSize.record)}}
-          </span>
+          <span>{{indicatorData.dataShareSize.listNum}}/{{this.convert(indicatorData.dataShareSize.record)}}</span>
         </p>
         <p>
           <span>数据共享次数：</span>
@@ -35,6 +33,7 @@
 <script>
 export default {
   name: "TopIndicator",
+  // props:["current"],
   props: {
     current: {
       type: Object,
@@ -47,14 +46,24 @@ export default {
   },
   data() {
     return {
-      isSecplat: 1
+      isSecplat: 1,
+      douTitle:[]
     };
   },
-  components: {},
+  // components: {},
   created() {
-    // console.log("indicatorData", this.indicatorData);
-    // console.log(this.current)
-  }
+    console.log(this.current)
+    this.douTitle=JSON.parse(JSON.stringify (this.current));
+    console.log(this.douTitle)
+  },
+  mounted(){
+    // console.log("____________________indicatorData");
+  },
+  watch: {
+  current: function (newdata,olddata) {
+     this.douTitle=newdata
+   }
+ },
 };
 </script>
 

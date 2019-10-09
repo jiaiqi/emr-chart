@@ -56,7 +56,7 @@ let dummy = {
         }
     }
     
-      sessionStorage.setItem("bx_auth_ticket", "512b5255-f1f7-4336-af2e-90937808275d"); //  开发bx_auth_ticket
+      sessionStorage.setItem("bx_auth_ticket", "9ea36738-13f1-42ef-a100-ace560be05cb"); //  开发bx_auth_ticket
       sessionStorage.setItem("current_login_user", JSON.stringify(top.user)); //  开发bx_auth_ticket
     }
   }

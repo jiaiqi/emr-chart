@@ -13,10 +13,10 @@
             width="40vw"
             height="calc(100% - 50px)"
           ></ve-histogram>
-          <div
+          <!-- <div
             v-if="!contentData.firstBar||!contentData.firstBar.data||contentData.firstBar.data.length==0"
             class="nodata"
-          >Loading</div>
+          >Loading</div>-->
         </div>
         <div class="content_left_right">
           <div class="content_left_right_item">
@@ -136,10 +136,10 @@
                 :legend-visible="false"
                 v-if="contentData.currentPage==='emrCollect'"
               ></ve-pie>
-              <div
+              <!-- <div
                 v-if="!contentData.thirdPie||!contentData.thirdPie.data||contentData.thirdPie.data.length==0"
                 class="nodata"
-              >Loading</div>
+              >Loading</div>-->
             </div>
           </div>
         </div>
@@ -335,19 +335,43 @@ export default {
     };
   },
   methods: {
-    autoChangeHospital(interval = 3000) {
-      // 自动切换医院数据
-      setInterval(() => {
-        if (this.currentHospital < 5) {
-          this.currentHospital += 1
-        } else {
-          this.currentHospital = 0
-        }
-      }, interval);
-    },
     selectHospital(index) {
       // 点击选择医院
       this.currentHospital = index
+    },
+    autoChangeHospital(interval) {
+      // 医院轮播
+      setInterval(() => {
+        if (this.currentHospital >= 5) {
+          this.currentHospital = 0
+        } else {
+          this.currentHospital += 1
+        }
+      }, interval);
+    },
+    choose(item) {
+      this.$emit("checktask", item);
+    },
+    GoLast() {
+      this.chooseNum++;
+      if (
+        this.chooseNum <=
+        this.contentData.secondBar.tableData.step.length - 1
+      ) {
+        this.contentData.secondBar.tableData.taskNo = this.contentData.secondBar.tableData.step[
+          this.chooseNum
+        ].job_no;
+
+        this.$parent.getNewTask(this.contentData.secondBar.tableData.taskNo);
+      }
+    },
+    GoNext() {
+      if (this.chooseNum > 0) this.chooseNum--;
+
+      this.contentData.secondBar.tableData.taskNo = this.contentData.secondBar.tableData.step[
+        this.chooseNum
+      ].job_no;
+      this.$parent.getNewTask(this.contentData.secondBar.tableData.taskNo);
     }
   },
   props: {
@@ -364,10 +388,8 @@ export default {
     contentData: {
       deep: true,
       handler(newValue, oldValue) {
-        this.chartExtendLine.series.type = newValue.firstBar.type
+        this.rightChartExtend.yAxis.interval = newValue.secondBar.interval;
         this.countData = newValue.countData
-        this.loading = newValue.thirdPie.loading
-        return newValue;
       }
     },
     chartSetting: {
@@ -379,7 +401,7 @@ export default {
   },
   mounted() {
     this.autoChangeHospital(3000)
-  },
+  }
 };
 </script>
 
@@ -397,7 +419,7 @@ $text-color: #47acff;
 }
 .onecard_content {
   display: flex;
-  height: calc(100% - 10rem /* 140/16 */);
+  height: calc(100% - 10rem /* 160/16 */);
   justify-content: space-between;
   margin: 1.25rem /* 20/16 */ 2rem;
   box-sizing: border-box;
@@ -414,7 +436,7 @@ $text-color: #47acff;
       padding: 1rem;
       box-sizing: border-box;
       .content_left_left {
-        border: #007aff 1px solid;
+        // border: #007aff 1px solid;
         // margin: 1rem;
         height: 100%;
         box-sizing: border-box;
@@ -440,7 +462,7 @@ $text-color: #47acff;
         .content_left_right_item {
           height: 49%;
           width: 100%;
-          border: #007aff 1px solid;
+          // border: #007aff 1px solid;
           .item_title {
             height: 2rem;
             line-height: 2rem;
@@ -459,7 +481,7 @@ $text-color: #47acff;
       flex-direction: column;
       .content_right_content {
         width: 100%;
-        border: #007aff 1px solid;
+        // border: #007aff 1px solid;
         height: calc(53% - 1rem);
         width: calc(100% - 3rem);
         margin: 0 auto;
@@ -471,14 +493,14 @@ $text-color: #47acff;
           margin: 0 auto;
           justify-content: center;
           .check_item {
-            padding: 0 0.5rem;
+            flex: 1;
+            text-align: center;
             border-bottom: 1px solid #007aff;
             font-size: 0.9rem;
             &.current_hospital {
               color: #fff;
               border-top-right-radius: 5px;
               border-top-left-radius: 5px;
-              border: 1px solid #024994;
               background-color: #007aff;
               border-bottom: none;
             }
@@ -487,7 +509,7 @@ $text-color: #47acff;
       }
       .content_right_content_datacenter {
         width: 100%;
-        border: #007aff 1px solid;
+        // border: #007aff 1px solid;
         width: calc(100% - 3rem);
         height: 95%;
         margin: 0 auto;
@@ -500,7 +522,7 @@ $text-color: #47acff;
           justify-content: center;
           .check_item {
             padding: 0 0.5rem;
-            border-bottom: 1px solid #007aff;
+            // border-bottom: 1px solid #007aff;
             &.current_hospital {
               color: #fff;
               border-top-right-radius: 5px;
@@ -519,7 +541,7 @@ $text-color: #47acff;
         margin-bottom: 1rem;
         .content_right_bottom_item {
           // margin: 0 auto;
-          border: #007aff 1px solid;
+          // border: #007aff 1px solid;
           width: calc(38% - 1rem);
           .count {
             text-align: center;

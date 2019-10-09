@@ -88,7 +88,6 @@ export default {
               list_zcyy:'',
               list_jkyygs:'',
               operat:{},
-
           },
 
        
@@ -555,25 +554,23 @@ export default {
      //查询中间微服务
     CenTiny() {
       let req = {
-        serviceName: "srvconfig_app_list_select",
-        colNames: ["*"],
-        condition: [
-          {
-            colName: "app_class",
-            value: "platform",
-            ruleType: "ne"
-          }
+        "serviceName": "srvconfig_app_list_select",
+        "colNames": [
+            "*"
         ],
-        order: [
-          {
-            colName: "create_time",
-            orderType: "desc"
-          }
+        "condition": [
+            {
+                "colName": "app_class",
+                "value": "platform",
+                "ruleType": "ne"
+            }
         ],
-        page: {
-          pageNo: 1,
-          rownumber: 11
-        }
+        "order": [
+            {
+                "colName": "app_seq",
+                "orderType": "asc"
+            }
+        ]
       };
       let path = this.getServiceUrl(
         "select",
@@ -583,6 +580,7 @@ export default {
       this.axios
         .post(path, req)
         .then(res => {
+          // console.log
           // this.microSer[3].beg = res.data.data[0].num_of_calls;
           let micr = res.data.data;
           console.log("micr", micr);
