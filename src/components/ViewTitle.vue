@@ -85,7 +85,6 @@ export default {
         .post(path, req)
         .then(res => {
           console.log(res)
-
           self.regNum = res.data.data[0].number_of_online_users;
           self.getData_userno();
         })
@@ -115,8 +114,7 @@ export default {
     setInterval(() => {
       this.date = moment().format("YYYY-MM-DD  HH:mm:ss");
     }, 1000);
-    sessionStorage.setItem("title",this.titleViewData.title)
-    
+    sessionStorage.setItem("title", this.titleViewData.title)
   },
   created() {
     let user = sessionStorage.getItem("current_login_user");

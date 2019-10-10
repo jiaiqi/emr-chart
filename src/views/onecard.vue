@@ -72,9 +72,6 @@ export default {
 
       } else if (currentPage === 'emrCollect') { }
       this.contentData.firstBar.data = bar1Data
-      if (datas && datas.length == 0) {
-        return false
-      }
     },
     getPie1Data(currentPage) {
       let data = this.allData.Pie1
@@ -106,9 +103,6 @@ export default {
 
       } else if (currentPage === 'emrCollect') { }
       this.contentData.firstPie.data = pie1Data
-      if (data && data.length == 0) {
-        return false
-      }
     },
     getPie2Data(currentPage) {
       let datas = this.allData.Pie2
@@ -140,7 +134,6 @@ export default {
 
       } else if (currentPage === 'emrCollect') { }
       this.contentData.secondPie.data = pie2Data
-
     },
     getBar2Data(currentPage) {
       let datas = this.allData.Bar2
@@ -286,25 +279,26 @@ export default {
         }, 200);
       }, 200);
     },
-    getRunTime() {
+    async getRunTime() {
       // 获取累计运行时间
       let runTime = {}
       let req = { serviceName: "srvlog_apps_onlie_time_select" }
       let url = this.getServiceUrl("select", req.serviceName, "monitor")
-      this.axios.post(url, req)
-        .then(res => {
-          let data = res.data.data
-          runTime = Object.assign(...data)
-          this.runTime = runTime
-          if (this.contentData.currentPage === 'oneCard') {
-            this.tabsData.runTime = this.secondToTime(runTime.CVS)
-          } else if (this.contentData.currentPage === 'emrShare' || this.contentData.currentPage === "emrCollect") {
-            this.tabsData.runTime = this.secondToTime(runTime.EMR)
-          }
-        })
-        .catch(err => {
-          console.error(err);
-        })
+      let res = await this.axios.post(url, req)
+      let data = res.data.data
+      runTime = Object.assign(...data)
+      this.runTime = runTime
+      if (this.contentData.currentPage === 'oneCard') {
+        this.tabsData.runTime = this.secondToTime(runTime.CVS)
+      } else if (this.contentData.currentPage === 'emrShare' || this.contentData.currentPage === "emrCollect") {
+        this.tabsData.runTime = this.secondToTime(runTime.EMR)
+      }
+      // console.log("\n\n\n\n", res, "\n\n\n\n")
+      if (res.status == 200 && res.statusText == "OK") {
+        return { 'isRes': true, 'res': res }
+      } else {
+        return { 'isRes': false, 'res': res }
+      }
     },
     getTimeSection(type = 'day') {
       // 获取时间区间
@@ -328,87 +322,7 @@ export default {
         end: end
       }
     },
-    getBar1OriginData() {
-      let condition = []
-      let timeGroupType = "by_hour"
-      let timeType = this.checkDataType
-      let currentPage = this.contentData.currentPage
-      if (currentPage === 'oneCard') {
-        this.contentData.firstBar.title = "一卡通就诊次数"
-        this.contentData.firstPie.title = "各医院就诊分布"
-        this.contentData.secondPie.title = "就诊刷卡类型分布"
-        this.contentData.thirdPie.title = "就诊刷卡类型分布"
-        this.contentData.firstBar.type = 'bar'
-        let serviceName = "srvcvs_medical_records_select"
-        this.getTimeSection(timeType)
-        condition = [
-          {
-            "colName": "ywfssj",
-            "value": this.timeSection.start,
-            "ruleType": "ge"
-          },
-          {
-            "colName": "ywfssj",
-            "value": this.timeSection.end,
-            "ruleType": "le"
-          }
-        ]
-        if (timeType === 'week' || timeType === 'month') {
-          timeGroupType = "by_date"
-        } else if (timeType === 'year') {
-          timeGroupType = "by_month_of_year"
-        }
-        let url = this.getServiceUrl("select", serviceName, "cvs")
-        let request = {
-          "serviceName": serviceName,
-          "colNames": ["*"],
-          "condition": condition,
-          "group": [
-            {
-              "colName": "ywfssj", // 业务发生时间
-              "type": timeGroupType
-            },
-            {
-              "colName": "cmd", // 就诊类型
-              "type": "by"
-            },
-            {
-              "colName": "create_time",
-              "type": "count"
-            }
-          ]
-        }
-        this.axios({ method: "POST", url: url, data: request }).then(res => {
-          this.allData.bar1 = res.data.data
-          if (res.data.data.length = 0 || res.data.data == []) {
-            return false
-          } else { return true }
-        }).catch(err => {
-          console.error(err)
-          return false
-        })
-      } else if (currentPage === 'emrShare') {
-
-      } else if (currentPage === 'emrCollect') {
-
-      }
-    },
-    getBar2OriginData() {
-      let condition = []
-      let timeGroupType = "by_hour"
-      let type = this.checkDataType
-      let currentPage = this.contentData.currentPage
-      if (currentPage === 'oneCard') {
-        let serviceName = "srvcvs_medical_records_select"
-        this.getTimeSection(type)
-
-      }
-    },
-    getPie1OriginData() { },
-    getPie2OriginData() { },
-    getPie3OriginData() { },
-    getCountOriginData() { },
-    getAlldata() {
+    async getAlldata() {
       let condition = []
       let timeGroupType = "by_hour"
       let type = this.checkDataType
@@ -550,54 +464,68 @@ export default {
           ]
         }
         let allData = {}
-        this.axios({ method: "POST", url: url, data: reqa })
-          .then(res => {
-            allData.Bar1 = res.data.data
-            this.contentData.firstBar.loading = false
-            this.axios({ method: "POST", url: url, data: reqb })
-              .then(res => {
-                allData.Pie1 = res.data.data
-                this.contentData.firstPie.loading = false
-                this.axios({ method: "POST", url: url, data: reqc })
-                  .then(res => {
-                    allData.Pie2 = res.data.data
-                    this.contentData.secondPie.loading = false
-                    this.axios({ method: "POST", url: url, data: reqd })
-                      .then(res => {
-                        allData.Bar2 = res.data.data
-                        this.contentData.secondBar.loading = false
-                        this.axios({ method: "POST", url: url, data: reqe })
-                          .then(res => {
-                            allData.countData = res.data.data
-                            this.axios({ method: "POST", url: url, data: reqf })
-                              .then(res => {
-                                allData.Pie3 = res.data.data
-                                console.log("allData::::", allData)
-                                this.allData = allData
-                                this.getAllChartData(this.contentData.currentPage)
-                              }).catch(err => {
-                                console.error(err)
-                              })
-                          }).catch(err => {
-                            console.error(err)
-                          })
-                      }).catch(err => {
-                        console.error(err)
-                      })
-                  }).catch(err => {
-                    console.error(err)
-                  })
-              }).catch(err => {
-                console.error(err)
-              })
-            if (res.data.data) {
-              return true
-            } else {
-              return false
-            }
-          }).catch(err => {
-            console.error(err)
-          })
+        let resa = await this.axios.post(url, reqa)
+        allData.Bar1 = resa.data.data
+        let resb = await this.axios.post(url, reqb)
+        allData.Pie1 = resb.data.data
+        let resc = await this.axios.post(url, reqc)
+        allData.Pie2 = resc.data.data
+        let resd = await this.axios.post(url, reqd)
+        allData.Bar2 = resd.data.data
+        let rese = await this.axios.post(url, reqe)
+        allData.countData = rese.data.data
+        let resf = await this.axios.post(url, reqf)
+        allData.Pie3 = resf.data.data
+        this.allData = allData
+        this.getAllChartData(this.contentData.currentPage)
+        if (resf.status == 200 && resf.statusText == "OK") {
+          return { 'isRes': true, 'res': resa }
+        } else {
+          return { 'isRes': false, 'res': resa }
+        }
+        // this.axios({ method: "POST", url: url, data: reqa })
+        //   .then(res => {
+        //     allData.Bar1 = res.data.data
+        //     this.contentData.firstBar.loading = false
+        //     this.axios({ method: "POST", url: url, data: reqb })
+        //       .then(res => {
+        //         allData.Pie1 = res.data.data
+        //         this.contentData.firstPie.loading = false
+        //         this.axios({ method: "POST", url: url, data: reqc })
+        //           .then(res => {
+        //             allData.Pie2 = res.data.data
+        //             this.contentData.secondPie.loading = false
+        //             this.axios({ method: "POST", url: url, data: reqd })
+        //               .then(res => {
+        //                 allData.Bar2 = res.data.data
+        //                 this.contentData.secondBar.loading = false
+        //                 this.axios({ method: "POST", url: url, data: reqe })
+        //                   .then(res => {
+        //                     allData.countData = res.data.data
+        //                     this.axios({ method: "POST", url: url, data: reqf })
+        //                       .then(res => {
+        //                         allData.Pie3 = res.data.data
+        //                         console.log("allData::::", allData)
+        //                         this.allData = allData
+        //                         this.getAllChartData(this.contentData.currentPage)
+        //                       }).catch(err => {
+        //                         console.error(err)
+        //                       })
+        //                   }).catch(err => {
+        //                     console.error(err)
+        //                   })
+        //               }).catch(err => {
+        //                 console.error(err)
+        //               })
+        //           }).catch(err => {
+        //             console.error(err)
+        //           })
+        //       }).catch(err => {
+        //         console.error(err)
+        //       })
+        //   }).catch(err => {
+        //     console.error(err)
+        //   })
       } else if (currentPage === 'emrShare') {
         this.contentData.firstBar.title = "电子病历查询统计"
         this.contentData.firstPie.title = "各医院查询次数分布"
@@ -924,64 +852,110 @@ export default {
           ]
         }
         let url = this.getServiceUrl("select", req.serviceName, "log")
-        this.axios({ method: "POST", url: url, data: req })
-          .then(res => {
-            let data = res.data.data
-            data.map(datas => {
-              if (datas.service_name == "DI_ADI_REGISTER_INFO_select") {
-                datas.name = "门诊诊疗挂号记录"
-              } else if (datas.service_name == "DI_ADI_DRUREC_INFO_select") {
-                datas.name = "门急诊诊疗医嘱"
-              } else if (datas.service_name == "DI_ADI_LAREXA_INFO_select") {
-                datas.name = "门急诊诊疗检查报告"
-              } else if (datas.service_name == "DI_HDI_INRECORD_INFO_select") {
-                datas.name = "住院诊疗入院记录"
-              } else if (datas.service_name == "DI_HDI_DRUREC_INFO_select") {
-                datas.name = "住院诊疗医嘱信息"
-              } else if (datas.service_name == "DI_HDI_LAREXA_INFO_select") {
-                datas.name = "住院诊疗检验报告"
-              }
-            })
-            console.log("emr-share-data:", data)
-            this.getCountData(data, type, currentPage)
-          }).catch(err => { console.log(err) })
+        let resa = await this.axios.post(url, req)
+        let dataa = resa.data.data
+        dataa.map(datas => {
+          if (datas.service_name == "DI_ADI_REGISTER_INFO_select") {
+            datas.name = "门诊诊疗挂号记录"
+          } else if (datas.service_name == "DI_ADI_DRUREC_INFO_select") {
+            datas.name = "门急诊诊疗医嘱"
+          } else if (datas.service_name == "DI_ADI_LAREXA_INFO_select") {
+            datas.name = "门急诊诊疗检查报告"
+          } else if (datas.service_name == "DI_HDI_INRECORD_INFO_select") {
+            datas.name = "住院诊疗入院记录"
+          } else if (datas.service_name == "DI_HDI_DRUREC_INFO_select") {
+            datas.name = "住院诊疗医嘱信息"
+          } else if (datas.service_name == "DI_HDI_LAREXA_INFO_select") {
+            datas.name = "住院诊疗检验报告"
+          }
+        })
+        this.getCountData(dataa, type, currentPage)
+        // this.axios({ method: "POST", url: url, data: req })
+        //   .then(res => {
+        //     let data = res.data.data
+        //     data.map(datas => {
+        //       if (datas.service_name == "DI_ADI_REGISTER_INFO_select") {
+        //         datas.name = "门诊诊疗挂号记录"
+        //       } else if (datas.service_name == "DI_ADI_DRUREC_INFO_select") {
+        //         datas.name = "门急诊诊疗医嘱"
+        //       } else if (datas.service_name == "DI_ADI_LAREXA_INFO_select") {
+        //         datas.name = "门急诊诊疗检查报告"
+        //       } else if (datas.service_name == "DI_HDI_INRECORD_INFO_select") {
+        //         datas.name = "住院诊疗入院记录"
+        //       } else if (datas.service_name == "DI_HDI_DRUREC_INFO_select") {
+        //         datas.name = "住院诊疗医嘱信息"
+        //       } else if (datas.service_name == "DI_HDI_LAREXA_INFO_select") {
+        //         datas.name = "住院诊疗检验报告"
+        //       }
+        //     })
+        //     console.log("emr-share-data:", data)
+        //     this.getCountData(data, type, currentPage)
+        //   }).catch(err => { console.log(err) })
         let url2 = this.getServiceUrl("select", req2.serviceName, "emr")
-        this.axios({ method: "POST", url: url2, data: req2 }).then(res => {
-          let data = res.data.data
-          console.log("验证次数：", res.data.data)
-          this.getCountData(data, type, currentPage, "verify_count")
-        }).catch(err => { console.log(err) })
+        let resb = await this.axios.post(url2, req2)
+        let datab = resb.data.data
+        this.getCountData(datab, type, currentPage, "verify_count")
+        // this.axios({ method: "POST", url: url2, data: req2 }).then(res => {
+        //   let data = res.data.data
+        //   console.log("验证次数：", res.data.data)
+        //   this.getCountData(data, type, currentPage, "verify_count")
+        // }).catch(err => { console.log(err) })
         // 获取查询次数
         let emrShareCount = { select: 0, verify: 0 }
         let url3 = this.getServiceUrl("select", req.serviceName, "log")
-        this.axios({
-          method: 'post',
-          url: url3,
-          data: req3
-        }).then(res => {
-          console.log("allSelectNumdata,", res.data.data);
-          if (res.data.data[0].num_of_calls == null) {
-            emrShareCount.select = 0
-          } else {
-            emrShareCount.select = res.data.data[0].num_of_calls
-          }
-          let url4 = this.getServiceUrl("select", req4.serviceName, "emr")       // 获取验证次数
-          this.axios({ method: 'post', url: url4, data: req4 }).then(res => {
-            let verifyCount = res.data.data[0].cert_no
-            if (verifyCount) {
-              emrShareCount.verify = verifyCount
-            } else {
-              emrShareCount.verify = 0
-            }
-            console.log("emrShareCount:", emrShareCount);
-            let allEmrShareCount = []
-            for (let i = 0; i < 6; i++) {
-              allEmrShareCount.push({ select: 0, verify: 0 })
-            }
-            allEmrShareCount[2] = emrShareCount
-            this.contentData.countData = allEmrShareCount
-          }).catch(err => { console.error(err); })
-        }).catch(err => { console.error(err); })
+        let resc = await this.axios.post(url3, req3)
+        if (resc.data.data[0].num_of_calls == null) {
+          emrShareCount.select = 0
+        } else {
+          emrShareCount.select = resc.data.data[0].num_of_calls
+        }
+        let url4 = this.getServiceUrl("select", req4.serviceName, "emr")
+        let resd = await this.axios.post(url4, req4)
+        let verifyCount = resd.data.data[0].cert_no
+        if (verifyCount) {
+          emrShareCount.verify = verifyCount
+        } else {
+          emrShareCount.verify = 0
+        }
+        let allEmrShareCount = []
+        for (let i = 0; i < 6; i++) {
+          allEmrShareCount.push({ select: 0, verify: 0 })
+        }
+        allEmrShareCount[2] = emrShareCount
+        this.contentData.countData = allEmrShareCount
+        if (resa.status == 200 && resa.statusText == "OK") {
+          return { 'isRes': true, 'res': resa }
+        } else {
+          return { 'isRes': false, 'res': resa }
+        }
+        // this.axios({
+        //   method: 'post',
+        //   url: url3,
+        //   data: req3
+        // }).then(res => {
+        //   console.log("allSelectNumdata,", res.data.data);
+        //   if (res.data.data[0].num_of_calls == null) {
+        //     emrShareCount.select = 0
+        //   } else {
+        //     emrShareCount.select = res.data.data[0].num_of_calls
+        //   }
+        //   let url4 = this.getServiceUrl("select", req4.serviceName, "emr")       // 获取验证次数
+        //   this.axios({ method: 'post', url: url4, data: req4 }).then(res => {
+        //     let verifyCount = res.data.data[0].cert_no
+        //     if (verifyCount) {
+        //       emrShareCount.verify = verifyCount
+        //     } else {
+        //       emrShareCount.verify = 0
+        //     }
+        //     console.log("emrShareCount:", emrShareCount);
+        //     let allEmrShareCount = []
+        //     for (let i = 0; i < 6; i++) {
+        //       allEmrShareCount.push({ select: 0, verify: 0 })
+        //     }
+        //     allEmrShareCount[2] = emrShareCount
+        //     this.contentData.countData = allEmrShareCount
+        //   }).catch(err => { console.error(err); })
+        // }).catch(err => { console.error(err); })
       } else if (currentPage === 'emrCollect') { // 电子病历采集电子病历采集
         this.contentData.firstBar.title = "电子病历采集数量"
         this.contentData.firstPie.title = "各医院采集数量分布"
@@ -1172,21 +1146,32 @@ export default {
             ]
           }
         }
-        this.axios({ method: "POST", url: url, data: req }).then(res => {
-          let data = res.data.data
-          console.log("emr-collect-data:", data)
-          this.getCountData(data, type, currentPage)
-          this.axios.post(url, reqPie3)
-            .then(res => {
-              console.log(res)
-              this.getCountData(data, type, currentPage, "collectPie3")
-            })
-            .catch(err => {
-              console.error(err);
-            })
-        }).catch(err => {
-          console.log(err);
-        })
+        let res = await this.axios.post(url, req)
+        let data = res.data.data
+        this.getCountData(data, type, currentPage)
+        let resb = await this.axios.post(url, reqPie3)
+        let datab = resb.data.data
+        this.getCountData(datab, type, currentPage, "collectPie3")
+        if (resb.status == 200 && res.statusText == "OK") {
+          return { 'isRes': true, 'res': resb }
+        } else {
+          return { 'isRes': false, 'res': resb }
+        }
+        // this.axios({ method: "POST", url: url, data: req }).then(res => {
+        //   let data = res.data.data
+        //   console.log("emr-collect-data:", data)
+        //   this.getCountData(data, type, currentPage)
+        //   this.axios.post(url, reqPie3)
+        //     .then(res => {
+        //       console.log(res)
+        //       this.getCountData(data, type, currentPage, "collectPie3")
+        //     })
+        //     .catch(err => {
+        //       console.error(err);
+        //     })
+        // }).catch(err => {
+        //   console.log(err);
+        // })
       }
     },
     getCountData(data, type, currentPage, dataType) {
@@ -1222,7 +1207,6 @@ export default {
       if (currentPage == 'oneCard') {
         let types = datas.map(item => item.cmd)
         types = Array.from(new Set(types))
-
         /**
          * 一卡通就诊次数
          * 左侧柱状图不分医院
@@ -1824,7 +1808,6 @@ export default {
       console.log("当前页：", pageName.value);
       this.checkDataType = 'day'
       this.getTimeType('day')
-
     },
     loginOut() {
       sessionStorage.clear();
@@ -1833,14 +1816,13 @@ export default {
     toNav() {
       this.$router.push({ name: "navs", query: { from: "onecard" } })
     },
-    getTimeType(TimeType) {
+    async getTimeType(TimeType) {
       // 获取时间区间类型
       if (TimeType) {
         this.checkDataType = TimeType
       }
-      let timeOutReq = new this.timeOut(10, 0, this.getAlldata)
-      timeOutReq.startTime()
-      // console.log(timeOutReq)
+      let timeOutReq = new this.timeOut(30, 0, this.getAlldata)
+      timeOutReq.reqFun()
     },
     toManangerment() {
       // 跳转到后台管理页面
@@ -1861,11 +1843,14 @@ export default {
         this.changeTab(this.tabsShow)
       }, interval);
     },
-    getChartData(type = "day", tabsShow = this.tabsShow) {
-      if (tabsShow == 1) {
-
-      }
-    },
+    autoRefresh() {
+      let RunTime = new this.timeOut(30, 0, this.getRunTime)
+      RunTime.reqFun()
+      RunTime.startTime()
+      let timeOutReq = new this.timeOut(30, 0, this.getAlldata)
+      timeOutReq.reqFun()
+      timeOutReq.startTime()
+    }
   },
   data() {
     return {
@@ -1947,8 +1932,8 @@ export default {
   },
   mounted() {
     this.getTimeType()
-    this.getRunTime()
-    // console.log(timeOutReq)
+    // this.getRunTime()
+    this.autoRefresh()
     // this.autoChangeTab(10000) // 自动切换Tab
   }
 };

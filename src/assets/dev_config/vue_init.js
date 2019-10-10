@@ -5,7 +5,6 @@ import devSrv from './spa_mock'
 
 function init() {
   let backendIpAddr = null;
-  
   if (window.top.pathConfig && window.top.pathConfig.gateway) {
     // 如果外层有就用外层的路径配置
     let parentServerPath = window.top.pathConfig.gateway;
@@ -111,7 +110,8 @@ function init() {
   //   next();
 
   // });
-  
+
+
   /**
    * 定时重复发送请求
    * @params t: 时间间隔
@@ -150,7 +150,6 @@ function init() {
       // $http 处理 发请求机制，多久发，
     }
     this.startTime = function () {
-
       if (this.eNum < 3 && this.nTime === this.time) {
         this.reqFun(this.nTime)
       } else if (this.eNum === 3) {
