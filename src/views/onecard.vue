@@ -68,7 +68,7 @@ export default {
     async getBar1Data() { // 获取柱状图1/折线图1的数据
       let condition = []
       let timeGroupType = "by_hour"
-      let timeType = this.checkDataType
+      let type = this.checkDataType
       let currentPage = this.contentData.currentPage
       if (currentPage === 'oneCard') {
         let serviceName = "srvcvs_medical_records_select"
@@ -110,8 +110,13 @@ export default {
           ]
         }
         let res = await this.axios.post(url, req)
-        if (resd.status == 200) {
+        if (res.status == 200) {
           this.allData.Bar1 = res.data.data
+          if (res.data.data) {
+            this.contentData.firstBar.loading = false
+          } else if (res.data.data = []) {
+            this.contentData.firstBar.dataEmpty = true
+          }
           return { 'isRes': true, 'res': res }
         } else {
           return { 'isRes': false, 'res': res }
@@ -125,7 +130,7 @@ export default {
     async getBar2Data() { // 获取柱状图2/折线图2的数据
       let condition = []
       let timeGroupType = "by_hour"
-      let timeType = this.checkDataType
+      let type = this.checkDataType
       let currentPage = this.contentData.currentPage
       if (currentPage === 'oneCard') {
         let serviceName = "srvcvs_medical_records_select"
@@ -171,8 +176,13 @@ export default {
           ]
         }
         let res = await this.axios.post(url, req)
-        if (resd.status == 200) {
+        if (res.status == 200) {
           this.allData.Bar2 = res.data.data
+          if (res.data.data) {
+            this.contentData.secondBar.loading = false
+          } else if (res.data.data = []) {
+            this.contentData.secondBar.dataEmpty = true
+          }
           return { 'isRes': true, 'res': res }
         } else {
           return { 'isRes': false, 'res': res }
@@ -186,7 +196,7 @@ export default {
     async getPie1Data() { // 获取饼图1的数据
       let condition = []
       let timeGroupType = "by_hour"
-      let timeType = this.checkDataType
+      let type = this.checkDataType
       let currentPage = this.contentData.currentPage
       if (currentPage === 'oneCard') {
         let serviceName = "srvcvs_medical_records_select"
@@ -224,8 +234,13 @@ export default {
           ]
         }
         let res = await this.axios.post(url, req)
-        if (resd.status == 200) {
-          this.allData.Bar1 = res.data.data
+        if (res.status == 200) {
+          this.allData.Pie1 = res.data.data
+          if (res.data.data) {
+            this.contentData.firstPie.loading = false
+          } else if (res.data.data = []) {
+            this.contentData.firstPie.dataEmpty = true
+          }
           return { 'isRes': true, 'res': res }
         } else {
           return { 'isRes': false, 'res': res }
@@ -239,7 +254,7 @@ export default {
     async getPie2Data() { // 获取饼图2的数据
       let condition = []
       let timeGroupType = "by_hour"
-      let timeType = this.checkDataType
+      let type = this.checkDataType
       let currentPage = this.contentData.currentPage
       if (currentPage === 'oneCard') {
         let serviceName = "srvcvs_medical_records_select"
@@ -277,8 +292,13 @@ export default {
           ]
         }
         let res = await this.axios.post(url, req)
-        if (resd.status == 200) {
-          this.allData.Pie1 = res.data.data
+        if (res.status == 200) {
+          this.allData.Pie2 = res.data.data
+          if (res.data.data) {
+            this.contentData.secondPie.loading = false
+          } else if (res.data.data = []) {
+            this.contentData.secondPie.dataEmpty = true
+          }
           return { 'isRes': true, 'res': res }
         } else {
           return { 'isRes': false, 'res': res }
@@ -292,7 +312,7 @@ export default {
     async getPie3Data() { // 获取饼图3的数据
       let condition = []
       let timeGroupType = "by_hour"
-      let timeType = this.checkDataType
+      let type = this.checkDataType
       let currentPage = this.contentData.currentPage
       if (currentPage === 'oneCard') {
         let serviceName = "srvcvs_medical_records_select"
@@ -334,8 +354,13 @@ export default {
           ]
         }
         let res = await this.axios.post(url, req)
-        if (resd.status == 200) {
-          this.allData.Bar1 = res.data.data
+        if (res.status == 200) {
+          this.allData.Pie3 = res.data.data
+          if (res.data.data) {
+            this.contentData.thirdPie.loading = false
+          } else if (res.data.data = []) {
+            this.contentData.thirdPie.dataEmpty = true
+          }
           return { 'isRes': true, 'res': res }
         } else {
           return { 'isRes': false, 'res': res }
@@ -349,7 +374,7 @@ export default {
     async getCountData() { // 获取请求次数
       let condition = []
       let timeGroupType = "by_hour"
-      let timeType = this.checkDataType
+      let type = this.checkDataType
       let currentPage = this.contentData.currentPage
       if (currentPage === 'oneCard') {
         let serviceName = "srvcvs_medical_records_select"
@@ -391,8 +416,13 @@ export default {
           ]
         }
         let res = await this.axios.post(url, req)
-        if (resd.status == 200) {
-          this.allData.Bar1 = res.data.data
+        if (res.status == 200) {
+          this.allData.countData = res.data.data
+          if (res.data.data) {
+            this.contentData.countData.loading = false
+          } else if (res.data.data = []) {
+            this.contentData.countData.dataEmpty = true
+          }
           return { 'isRes': true, 'res': res }
         } else {
           return { 'isRes': false, 'res': res }
@@ -404,28 +434,48 @@ export default {
       }
     },
     refreshRunTime() {  // 定时刷新运行时长
-
+      this.refresh.RunTime = new this.timeOut(30, 0, this.getRunTime)
+      this.refresh.RunTime.reqFun()
+      this.refresh.RunTime.startTime()
     },
     refreshBar1Data() { // 定时刷新柱状图/折线图1的数据
-
+      this.refresh.Bar1 = new this.timeOut(30, 0, this.getBar1Data)
+      this.refresh.Bar1.reqFun()
+      this.refresh.Bar1.startTime()
     },
     refreshBar2Data() { // 定时刷新柱状图/折线图2的数据
-
+      this.refresh.Bar2 = new this.timeOut(30, 0, this.getBar2Data)
+      this.refresh.Bar2.reqFun()
+      this.refresh.Bar2.startTime()
     },
     refreshPie1Data() { // 定时刷新饼图1的数据
-
+      this.refresh.Pie1 = new this.timeOut(30, 0, this.getPie1Data)
+      this.refresh.Pie1.reqFun()
+      this.refresh.Pie1.startTime()
     },
     refreshPie2Data() { // 定时刷新饼图2的数据
-
+      this.refresh.Pie2 = new this.timeOut(30, 0, this.getPie2Data)
+      this.refresh.Pie2.reqFun()
+      this.refresh.Pie2.startTime()
     },
     refreshPie3Data() { // 定时刷新饼图3的数据
-
+      this.refresh.Pie3 = new this.timeOut(30, 0, this.getPie3Data)
+      this.refresh.Pie3.reqFun()
+      this.refresh.Pie3.startTime()
     },
     refreshCountData() { // 定时刷新请求次数
-
+      this.refresh.Count = new this.timeOut(30, 0, this.getCountData)
+      this.refresh.Count.reqFun()
+      this.refresh.Count.startTime()
     },
     refreshAllData() { // 定时刷新所有数据
-
+      this.refreshRunTime()
+      this.refreshBar1Data()
+      this.refreshBar2Data()
+      this.refreshPie1Data()
+      this.refreshPie2Data()
+      this.refreshPie3Data()
+      this.refreshCountData()
     },
     getTimeSection(type = 'day') { // 获取时间区间
       let start = ""
@@ -1351,6 +1401,11 @@ export default {
       refresh: { // 定时刷新的实例
         RunTime: null,
         Bar1: null,
+        Bar2: null,
+        Pie1: null,
+        Pie2: null,
+        Pie3: null,
+        Count: null
       },
       titleViewData: {
         title: "社保医疗一卡通融合平台",
@@ -1430,7 +1485,7 @@ export default {
     this.user = top.user
   },
   mounted() {
-
+    this.refreshAllData()
   }
 };
 </script>

@@ -50,7 +50,7 @@ export default {
     };
   },
   methods: {
-    name() {},
+    name() { },
     toIndex(num) {
       if (num === "1") {
         sessionStorage.clear();
