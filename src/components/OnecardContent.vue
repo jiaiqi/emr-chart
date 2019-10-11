@@ -12,6 +12,8 @@
             :legend="legend"
             width="40vw"
             height="calc(100% - 50px)"
+            :loading="contentData.firstBar.loading"
+            :data-empty="contentData.firstBar.dataEmpty"
           ></ve-histogram>
         </div>
         <div class="content_left_right">
@@ -24,6 +26,8 @@
               :data="contentData.firstPie.data"
               :legend-visible="false"
               :extend="chartExtendPie"
+              :loading="contentData.firstPie.loading"
+              :data-empty="contentData.firstPie.dataEmpty"
             ></ve-pie>
           </div>
           <div class="content_left_right_item">
@@ -35,12 +39,16 @@
               height="28vh"
               :legend-visible="false"
               :extend="chartExtendPie"
+              :loading="contentData.secondPie.loading"
+              :data-empty="contentData.secondPie.dataEmpty"
               v-if="contentData.currentPage==='emrCollect'"
             ></ve-pie>
             <ve-pie
               :data="contentData.secondPie.data"
               height="28vh"
               :legend-visible="false"
+              :loading="contentData.secondPie.loading"
+              :data-empty="contentData.secondPie.dataEmpty"
               :extend="chartExtendPieL"
               v-else
             ></ve-pie>
@@ -71,6 +79,8 @@
                 :settings="chartSetting"
                 :textStyle="legend.textStyle"
                 :legend="legend"
+                :loading="contentData.secondBar.loading"
+                :data-empty="contentData.secondBar.dataEmpty"
                 :data="contentData.secondBar.data[currentHospital]"
               ></ve-histogram>
             </div>
@@ -123,6 +133,8 @@
                 height="28vh"
                 :extend="chartExtendPie"
                 :legend-visible="false"
+                :loading="contentData.thirdPie.loading"
+                :data-empty="contentData.thirdPie.loading.dataEmpty"
                 v-if="contentData.currentPage==='emrShare'||contentData.currentPage==='oneCard'"
               ></ve-pie>
               <ve-pie
@@ -130,6 +142,8 @@
                 height="28vh"
                 :extend="chartExtendPieS"
                 :legend-visible="false"
+                :loading="contentData.thirdPie.loading"
+                :data-empty="contentData.thirdPie.dataEmpty"
                 v-if="contentData.currentPage==='emrCollect'"
               ></ve-pie>
               <!-- <div
@@ -217,7 +231,8 @@ export default {
   data() {
     return {
       data: {},
-      loading: true,
+      loading: true, // 加载状态
+      dataEmpty: true, // 数据是否为空
       firstBar: {
         title: "",
         data: {}
@@ -243,33 +258,6 @@ export default {
       tabCheckItem: [],
       chartSettings: {},
       chartExtendLine: {
-        grid: {
-          top: "10%",
-          bottom: "0",
-          height: "auto"
-        },
-        legend: {
-          type: "scroll",
-          textStyle: {
-            color: "#fff"
-          },
-          pageTextStyle: {
-            color: "#fff"
-          },
-          pageIconColor: "#3399ff"
-        },
-        series: {
-          type: "bar",
-          itemStyle: {
-            normal: {
-              label: {
-                show: true
-              }
-            }
-          }
-        }
-      },
-      chartExtendLine2: {
         grid: {
           top: "10%",
           bottom: "0",

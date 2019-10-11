@@ -1121,4 +1121,27 @@ Vue.prototype.convert = function (num) {
   return nums;
 }
 
+Vue.prototype.getTimeSection= function(type = 'day') { // 获取时间区间
+  let start = ""
+  let end = ""
+  if (type === 'day') {
+    start = moment().subtract(23, 'hours').format("YYYY-MM-DD HH") //大于当前时间往前推23个小时
+    end = moment().add(1, 'hours').format("YYYY-MM-DD HH") //小于当前时间的下一个整点
+  } else if (type === 'week') {
+    start = moment().subtract(6, 'days').format('YYYY-MM-DD') // 六天前,
+    end = moment().add(1, 'days').format('YYYY-MM-DD') // 今晚0点
+  } else if (type === 'month') {
+    start = moment().subtract(30, 'days').format('YYYY-MM-DD') // 30天前
+    end = moment().add(1, 'days').format('YYYY-MM-DD') // 今晚0点,
+  } else if (type === 'year') {
+    start = moment().subtract(11, 'month').format('YYYY-MM-DD')
+    end = moment().add(1, 'days').format('YYYY-MM-DD')
+  }
+  let timeSection = {
+    "start": start,
+    "end": end
+  }
+  return timeSection
+}
+
 export default init_util;
