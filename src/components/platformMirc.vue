@@ -44,7 +44,7 @@
                 </div>
                 <div>
                   <span>请求次数:</span>
-                  <span>{{convert(centerData.regNum[0].num_of_calls)}}</span>
+                  <span>{{convert(centerData.regNum[0].num_of_calls)?convert(centerData.regNum[0].num_of_calls):0}}</span>
                   <!-- convert(centerData.regNum[0].num_of_calls) -->
                 </div>
               </li>
@@ -69,7 +69,7 @@
                 </div>
                 <div>
                   <span>请求次数:</span>
-                  <span>{{convert(centerData.regNum[1].num_of_calls)}}</span>
+                  <span>{{convert(centerData.regNum[1].num_of_calls)?convert(centerData.regNum[1].num_of_calls):0}}</span>
                   <!-- convert(centerData.regNum[1].num_of_calls) -->
                 </div>
               </li>
@@ -272,312 +272,8 @@ export default {
       // });
       // console.log(item.app_name)
     },
-    //api网关 请求次数
-    getData_one() {
-      // console.log(this.centerData);
-      // console.log(this.centerData[1].list_cssx)
-      let req = {
-        serviceName: "srvlog_call_statistics_select",
-        colNames: ["*"],
-        condition: [],
-        group: [
-          {
-            colName: "num_of_calls",
-            type: "sum"
-          }
-        ]
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvlog_call_statistics_select",
-        "log"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          // console.log(res)
-          this.listwg = res.data.data[0].num_of_calls;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-
-    //文档管理 文档总数
-    getData_two() {
-      let req = {
-        serviceName: "srvapprc_dev_wendang_select",
-        colNames: ["*"],
-        condition: []
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvapprc_dev_wendang_select",
-        "apprc"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          // console.log("222", res);
-          this.listpz = res.data.data.length;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    getLog() {
-      let req = {
-        serviceName: "srvlog_operate_record_select",
-        colNames: ["*"],
-        condition: [],
-        group: [
-          {
-            colName: "id",
-            type: "count"
-          }
-        ],
-        page: {
-          pageNo: 1,
-          rownumber: 1
-        }
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvlog_operate_record_select",
-        "log"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.logNum = res.data.page.total;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    //用户中心 用户总数
-    getData_three() {
-      let req = {
-        serviceName: "srvsso_user_select",
-        colNames: ["*"],
-        condition: []
-      };
-      let path = this.getServiceUrl("select", "srvsso_user_select", "sso");
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.list_userno = res.data.data.length;
-          // console.log('333',res)
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    //任务管理 总任务数
-    getData_four() {
-      let req = {
-        serviceName: "srvtask_shedule_cfg_select",
-        colNames: ["*"],
-        condition: []
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvtask_shedule_cfg_select",
-        "task"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.list_rw = res.data.data.length;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    // 授权 请求次数
-    getRegNum() {
-      let req = {
-        serviceName: "srvlog_call_statistics_select",
-        colNames: ["*"],
-        condition: [
-          {
-            colName: "application",
-            ruleType: "in",
-            value: "sso,config,log,auth"
-          }
-        ],
-        group: [
-          {
-            colName: "application",
-            type: "by"
-          },
-          {
-            colName: "num_of_calls",
-            type: "sum"
-          }
-        ]
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvlog_call_statistics_select",
-        "log"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.regNum = res.data.data;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    //事件管理 事件总数
-    getData_five() {
-      let req = {
-        serviceName: "srvevent_reg_select",
-        colNames: ["*"],
-        condition: []
-      };
-      let path = this.getServiceUrl("select", "srvevent_reg_select", "event");
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.list_sj = res.data.data.length;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    //测试中心 测试应用数量
-    getData_six() {
-      let req = {
-        serviceName: "srvapprc_application_apply_dev_select",
-        colNames: ["*"],
-        condition: []
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvapprc_application_apply_dev_select",
-        "apprc"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.list_cs = res.data.data.length;
-          // console.log('555',res)
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    //测试中心 上线应用数量
-    getData_seven() {
-      let req = {
-        serviceName: "srvapprc_online_apply_dev_select",
-        colNames: ["*"],
-        condition: [
-          {
-            colName: "proc_status",
-            ruleType: "eq",
-            value: "完成"
-          }
-        ]
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvapprc_online_apply_dev_select",
-        "apprc"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.list_cssx = res.data.data.length;
-          // console.log('555',res)
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    //开发中心 工单个数
-    getData_eight() {
-      let req = {
-        serviceName: "srvapprc_issue_info_select",
-        colNames: ["*"],
-        condition: []
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvapprc_issue_info_select",
-        "apprc"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.list_kfgd = res.data.data.length;
-          // console.log('888',res)
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    //开发中心 处理工单个数
-    getData_nine() {
-      let req = {
-        serviceName: "srvapprc_issue_info_select",
-        colNames: ["*"],
-        condition: [
-          {
-            colName: "handle_status",
-            ruleType: "eq",
-            value: "已完成"
-          }
-        ]
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvapprc_issue_info_select",
-        "apprc"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.list_kfcl = res.data.data.length;
-          // console.log('999',res)
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    //注册中心 应用总数量
-    getData_ten() {
-      let req = {
-        serviceName: "srvapprc_issue_info_select",
-        colNames: ["*"],
-        condition: []
-      };
-      let path = "http://192.168.0.192:8101/monitor/applications";
-      this.axios
-        .get(path, req)
-        .then(res => {
-          this.list_zcyy = res.data.length;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    //监控中心 监控应用个数
-    getData_eleven() {
-      let path = "http://192.168.0.192:8101/monitor/applications";
-      this.axios
-        .get(path)
-        .then(res => {
-          this.list_jkyygs = res.data.length;
-          // console.log('aaa',res.data.length)
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
+   
+ 
     converts(num) {
       let nums = parseInt(num);
       if (nums > 10000) {
@@ -666,8 +362,6 @@ export default {
           this.microSer = [];
           // micr.forEach(item => {
             for( let i=0; i<micr.length;i++){
-              
-            
             let req1 = {
               serviceName: "srvlog_call_statistics_select",
               colNames: ["*"],
@@ -756,21 +450,7 @@ export default {
   created() {
     this.operation();
     this.CenTiny();
-    // console.log(this.centerData)
-    // this.getRegNum();
-    // this.getLog();
     this.methitem()
-    // this.getData_one();
-    // this.getData_two();
-    // this.getData_three();
-    // this.getData_four();
-    // this.getData_five();
-    // this.getData_six();
-    // this.getData_seven();
-    // this.getData_eight();
-    // this.getData_nine();
-    // this.getData_ten();
-    // this.getData_eleven();
   },
   mounted() {
     // setInterval(() => {

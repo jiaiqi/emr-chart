@@ -19,7 +19,7 @@ export default {
   name: "onecard",
   components: { ViewTitle, ViewTabs, TimeType, OnecardContent },
   methods: {
-    getBar1data(currentPage) {
+    buildBar1data(currentPage) {
       let datas = this.allData.Bar1
       let rows = []
       let timeType = this.checkDataType
@@ -73,7 +73,7 @@ export default {
       } else if (currentPage === 'emrCollect') { }
       this.contentData.firstBar.data = bar1Data
     },
-    getPie1Data(currentPage) {
+    buildPie1Data(currentPage) {
       let data = this.allData.Pie1
       let timeType = this.checkDataType
       let pie1Data = {
@@ -104,7 +104,7 @@ export default {
       } else if (currentPage === 'emrCollect') { }
       this.contentData.firstPie.data = pie1Data
     },
-    getPie2Data(currentPage) {
+    buildPie2Data(currentPage) {
       let datas = this.allData.Pie2
       // let cardType = this.getCols(datas, "card_type")
       let pie2Data = {
@@ -135,7 +135,7 @@ export default {
       } else if (currentPage === 'emrCollect') { }
       this.contentData.secondPie.data = pie2Data
     },
-    getBar2Data(currentPage) {
+    buildBar2Data(currentPage) {
       let datas = this.allData.Bar2
       let bar2Arr = []
       let timeType = this.checkDataType
@@ -198,7 +198,7 @@ export default {
       } else if (currentPage === 'emrCollect') { }
 
     },
-    getPie3Data(currentPage) {
+    buildPie3Data(currentPage) {
       let data = this.allData.Pie3
       let pie3Arr = []
       if (currentPage === 'oneCard') {
@@ -233,7 +233,7 @@ export default {
       } else if (currentPage === 'emrCollect') { }
       this.contentData.thirdPie.data = pie3Arr
     },
-    getCount(currentPage) {
+    buildCountData(currentPage) {
       let datas = this.allData.countData
       let hospital = ["延大附院", "市人民医院", "市中医医院", "博爱医院", "市妇幼医院", "宝塔区医院"]
       // let hospital = this.contentData.tabCheckItem
@@ -262,17 +262,17 @@ export default {
       }
     },
     getAllChartData(currentPage) {
-      this.getBar1data(currentPage)
+      this.buildBar1data(currentPage)
       setTimeout(() => {
-        this.getPie1Data(currentPage)
+        this.buildPie1Data(currentPage)
         setTimeout(() => {
-          this.getPie2Data(currentPage)
+          this.buildPie2Data(currentPage)
           setTimeout(() => {
-            this.getBar2Data(currentPage)
+            this.buildBar2Data(currentPage)
             setTimeout(() => {
-              this.getPie3Data(currentPage)
+              this.buildPie3Data(currentPage)
               setTimeout(() => {
-                this.getCount(currentPage)
+                this.buildCountData(currentPage)
               }, 200);
             }, 200);
           }, 200);
@@ -322,17 +322,756 @@ export default {
         end: end
       }
     },
+    getAlldata() {
+      let condition = []
+      let timeGroupType = "by_hour"
+      let type = this.checkDataType
+      let currentPage = this.contentData.currentPage
+      if (currentPage === 'oneCard') {
+        // this.contentData.firstBar.title = "一卡通就诊次数"
+        // this.contentData.firstPie.title = "各医院就诊分布"
+        // this.contentData.secondPie.title = "就诊刷卡类型分布"
+        // this.contentData.thirdPie.title = "就诊刷卡类型分布"
+        // this.contentData.firstBar.type = 'bar'
+        let serviceName = "srvcvs_medical_records_select"
+        this.getTimeSection(type)
+        condition = [
+          {
+            "colName": "ywfssj",
+            "value": this.timeSection.start,
+            "ruleType": "ge"
+          },
+          {
+            "colName": "ywfssj",
+            "value": this.timeSection.end,
+            "ruleType": "le"
+          }
+        ]
+        if (type === 'week' || type === 'month') {
+          timeGroupType = "by_date"
+        } else if (type === 'year') {
+          timeGroupType = "by_month_of_year"
+        }
+        let url = this.getServiceUrl("select", serviceName, "cvs")
+        let reqa = {
+          "serviceName": serviceName,
+          "colNames": ["*"],
+          "condition": condition,
+          "group": [
+            {
+              "colName": "ywfssj", // 业务发生时间
+              "type": timeGroupType
+            },
+            {
+              "colName": "cmd", // 就诊类型
+              "type": "by"
+            },
+            {
+              "colName": "create_time",
+              "type": "count"
+            }
+          ]
+        }
+        let reqb = {
+          "serviceName": serviceName,
+          "colNames": ["*"],
+          "condition": condition,
+          "group": [
+            {
+              "colName": "yljgmc", // 医疗机构名称
+              "type": "by"
+            },
+            {
+              "colName": "create_time", // 要用来统计的字段
+              "type": "count"
+            }
+          ]
+        }
+        let reqc = {
+          "serviceName": serviceName,
+          "colNames": ["*"],
+          "condition": condition,
+          "group": [
+            {
+              "colName": "card_type", // 卡类型
+              "type": "by"
+            },
+            {
+              "colName": "create_time",
+              "type": "count"
+            }
+          ]
+        }
+        let reqd = {
+          "serviceName": serviceName,
+          "colNames": ["*"],
+          "condition": condition,
+          "group": [
+            {
+              "colName": "ywfssj", // 业务发生时间
+              "type": timeGroupType
+            },
+            {
+              "colName": "yljgmc", // 医疗机构名称
+              "type": "by"
+            },
+            {
+              "colName": "cmd", // 就诊类型
+              "type": "by"
+            },
+            {
+              "colName": "create_time",
+              "type": "count"
+            }
+          ]
+        }
+        let reqe = {
+          "serviceName": serviceName,
+          "colNames": ["*"],
+          "condition": condition,
+          "group": [
+            {
+              "colName": "yljgmc", // 医疗机构名称
+              "type": "by"
+            },
+            {
+              "colName": "cmd", // 就诊类型
+              "type": "by"
+            },
+            {
+              "colName": "create_time",
+              "type": "count"
+            }
+          ]
+        }
+        let reqf = {
+          "serviceName": serviceName,
+          "colNames": ["*"],
+          "condition": condition,
+          "group": [
+            {
+              "colName": "yljgmc", // 医疗机构名称
+              "type": "by"
+            },
+            {
+              "colName": "card_type", // 卡类型
+              "type": "by"
+            },
+            {
+              "colName": "create_time",
+              "type": "count"
+            }
+          ]
+        }
+        let allData = {}
+        let resa = this.axios.post(url, reqa)
+        allData.Bar1 = resa.data.data
+        let resb = this.axios.post(url, reqb)
+        allData.Pie1 = resb.data.data
+        let resc = this.axios.post(url, reqc)
+        allData.Pie2 = resc.data.data
+        let resd = this.axios.post(url, reqd)
+        allData.Bar2 = resd.data.data
+        let rese = this.axios.post(url, reqe)
+        allData.countData = rese.data.data
+        let resf = this.axios.post(url, reqf)
+        allData.Pie3 = resf.data.data
+        this.allData = allData
+        this.getAllChartData(this.contentData.currentPage)
+        if (resf.status == 200 && resf.statusText == "OK") {
+          return { 'isRes': true, 'res': resa }
+        } else {
+          return { 'isRes': false, 'res': resa }
+        }
+      } else if (currentPage === 'emrShare') {
+        // this.contentData.firstBar.title = "电子病历查询统计"
+        // this.contentData.firstPie.title = "各医院查询次数分布"
+        // this.contentData.secondPie.title = "身份验证卡类型分布"
+        // this.contentData.thirdPie.title = "身份验证卡类型分布"
+        // this.contentData.firstBar.type = 'bar'
+        let serviceNames = [
+          "DI_ADI_REGISTER_INFO_select",//门诊诊疗挂号记录
+          "DI_ADI_DRUREC_INFO_select",//门急诊诊疗医嘱
+          "DI_ADI_LAREXA_INFO_select",// 门急诊诊疗检查报告
+          "DI_HDI_INRECORD_INFO_select",// 住院诊疗入院记录
+          "DI_HDI_DRUREC_INFO_select", // 住院诊疗医嘱信息
+          "DI_HDI_LAREXA_INFO_select",// 住院诊疗检验报告
+        ]
+        let cond = [
+          {
+            "colName": "service_name",
+            "value": "DI_ADI_REGISTER_INFO_select",
+            "ruleType": "eq"
+          },
+          {
+            "colName": "service_name",
+            "value": "DI_ADI_DRUREC_INFO_select",
+            "ruleType": "eq"
+          },
+          {
+            "colName": "service_name",
+            "value": "DI_ADI_LAREXA_INFO_select",
+            "ruleType": "eq"
+          },
+          {
+            "colName": "service_name",
+            "value": "DI_HDI_INRECORD_INFO_select",
+            "ruleType": "eq"
+          },
+          {
+            "colName": "service_name",
+            "value": "DI_HDI_DRUREC_INFO_select",
+            "ruleType": "eq"
+          },
+          {
+            "colName": "service_name",
+            "value": "DI_HDI_LAREXA_INFO_select",
+            "ruleType": "eq"
+          }
+        ]
+        let req = {
+          "serviceName": "srvlog_call_statistics_select",
+          "colNames": ["*"],
+          "group": [
+            {
+              "colName": "service_name",
+              "type": "by"
+            },
+            {
+              "colName": "num_of_calls",
+              "type": "sum"
+            }, {
+              "colName": "statistics_time",
+              "type": "by_date"
+            }
+          ]
+        }
+        let req2 = {
+          "serviceName": "srvemr_req_cert_select",
+          "colNames": ["*"],
+          "condition": [],
+          "group": [
+            {
+              "colName": "card_type",
+              "type": "by"
+            },
+            {
+              "colName": "cert_no",
+              "type": "count"
+            },
+          ]
+        }
+        let req3 = {
+          "serviceName": "srvlog_call_statistics_select",
+          "colNames": ["*"],
+          "group": [
+            {
+              "colName": "num_of_calls",
+              "type": "sum"
+            }
+          ]
+        }
+        let req4 = {
+          "serviceName": "srvemr_req_cert_select",
+          "colNames": ["*"],
+          "group": [
+            {
+              "colName": "cert_no",
+              "type": "count"
+            }
+          ]
+        }
+        if (type == "day") {
+          req["group"] = [
+            {
+              "colName": "service_name",
+              "type": "by"
+            },
+            {
+              "colName": "num_of_calls",
+              "type": "sum"
+            }, {
+              "colName": "statistics_time",
+              "type": "by_hour"
+            }
+          ]
+          req["relation_condition"] = {
+            "relation": "AND",
+            "data": [
+              {
+                "relation": "or",
+                "data": cond
+              },
+              {
+                "relation": "AND",
+                "data": [
+                  {
+                    "colName": "statistics_time",
+                    "value": moment().subtract(23, 'hours').format("YYYY-MM-DD HH"),
+                    "ruleType": "ge"
+                  },
+                  {
+                    "colName": "statistics_time",
+                    "value": moment().format("YYYY-MM-DD HH"),
+                    "ruleType": "le"
+                  }
+                ]
+              }
+            ]
+          }
+          req3["relation_condition"] = req["relation_condition"]
+          req2.condition = [
+            {
+              "colName": "cert_time",
+              "value": moment().subtract(23, 'hours').format("YYYY-MM-DD HH"),
+              "ruleType": "ge"
+            },
+            {
+              "colName": "cert_time",
+              "value": moment().format("YYYY-MM-DD HH"),
+              "ruleType": "le"
+            }
+          ]
+          req4.condition = [
+            {
+              "colName": "cert_time",
+              "value": moment().subtract(23, 'hours').format("YYYY-MM-DD HH"),
+              "ruleType": "ge"
+            },
+            {
+              "colName": "cert_time",
+              "value": moment().format("YYYY-MM-DD HH"),
+              "ruleType": "le"
+            }
+          ]
+        } else if (type == "week") {
+          req["relation_condition"] = {
+            "relation": "AND",
+            "data": [
+              {
+                "relation": "or",
+                "data": cond
+              },
+              {
+                "relation": "AND",
+                "data": [
+                  {
+                    "colName": "statistics_time",
+                    "value": moment().subtract(6, 'days').format('YYYY-MM-DD'),
+                    "ruleType": "ge"
+                  },
+                  {
+                    "colName": "statistics_time",
+                    "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+                    "ruleType": "le"
+                  }
+                ]
+              }
+            ]
+          }
+          req2.condition = [
+            {
+              "colName": "cert_time",
+              "value": moment().subtract(6, 'days').format('YYYY-MM-DD'),
+              "ruleType": "ge"
+            },
+            {
+              "colName": "cert_time",
+              "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+              "ruleType": "le"
+            }
+          ]
+          req3["relation_condition"] = req["relation_condition"]
+          req4.condition = [
+            {
+              "colName": "cert_time",
+              "value": moment().subtract(6, 'days').format('YYYY-MM-DD'),
+              "ruleType": "ge"
+            },
+            {
+              "colName": "cert_time",
+              "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+              "ruleType": "le"
+            }
+          ]
+        } else if (type == "month") {
+          req["relation_condition"] = {
+            "relation": "AND",
+            "data": [
+              {
+                "relation": "or",
+                "data": cond
+              },
+              {
+                "relation": "AND",
+                "data": [
+                  {
+                    "colName": "statistics_time",
+                    "value": moment().subtract(30, 'days').format('YYYY-MM-DD'),
+                    "ruleType": "ge"
+                  },
+                  {
+                    "colName": "statistics_time",
+                    "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+                    "ruleType": "le"
+                  }
+                ]
+              }
+            ]
+          }
+          req3["relation_condition"] = req["relation_condition"]
+          req2.condition = [
+            {
+              "colName": "cert_time",
+              "value": moment().subtract(30, 'days').format('YYYY-MM-DD'),
+              "ruleType": "ge"
+            },
+            {
+              "colName": "cert_time",
+              "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+              "ruleType": "le"
+            }
+          ]
+          req4.condition = [
+            {
+              "colName": "cert_time",
+              "value": moment().subtract(30, 'days').format('YYYY-MM-DD'),
+              "ruleType": "ge"
+            },
+            {
+              "colName": "cert_time",
+              "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+              "ruleType": "le"
+            }
+          ]
+        } else if (type == "year") {
+          req["group"] = [
+            {
+              "colName": "service_name",
+              "type": "by"
+            },
+            {
+              "colName": "num_of_calls",
+              "type": "sum"
+            }, {
+              "colName": "statistics_time",
+              "type": "by_month_of_year"
+            }
+          ]
+          req["relation_condition"] = {
+            "relation": "AND",
+            "data": [
+              {
+                "relation": "or",
+                "data": cond
+              },
+              {
+                "relation": "AND",
+                "data": [
+                  {
+                    "colName": "statistics_time",
+                    "value": moment().subtract(11, 'month').format('YYYY-MM-DD'),
+                    "ruleType": "ge"
+                  },
+                  {
+                    "colName": "statistics_time",
+                    "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+                    "ruleType": "le"
+                  }
+                ]
+              }
+            ]
+          }
+          req3["relation_condition"] = req["relation_condition"]
+          req2.condition = [
+            {
+              "colName": "cert_time",
+              "value": moment().subtract(11, 'month').format('YYYY-MM-DD'),
+              "ruleType": "ge"
+            },
+            {
+              "colName": "cert_time",
+              "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+              "ruleType": "le"
+            }
+          ]
+          req4.condition = [
+            {
+              "colName": "cert_time",
+              "value": moment().subtract(11, 'month').format('YYYY-MM-DD'),
+              "ruleType": "ge"
+            },
+            {
+              "colName": "cert_time",
+              "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+              "ruleType": "le"
+            }
+          ]
+        }
+        let url = this.getServiceUrl("select", req.serviceName, "log")
+        let resa = this.axios.post(url, req)
+        let dataa = resa.data.data
+        dataa.map(datas => {
+          if (datas.service_name == "DI_ADI_REGISTER_INFO_select") {
+            datas.name = "门诊诊疗挂号记录"
+          } else if (datas.service_name == "DI_ADI_DRUREC_INFO_select") {
+            datas.name = "门急诊诊疗医嘱"
+          } else if (datas.service_name == "DI_ADI_LAREXA_INFO_select") {
+            datas.name = "门急诊诊疗检查报告"
+          } else if (datas.service_name == "DI_HDI_INRECORD_INFO_select") {
+            datas.name = "住院诊疗入院记录"
+          } else if (datas.service_name == "DI_HDI_DRUREC_INFO_select") {
+            datas.name = "住院诊疗医嘱信息"
+          } else if (datas.service_name == "DI_HDI_LAREXA_INFO_select") {
+            datas.name = "住院诊疗检验报告"
+          }
+        })
+        this.getCountData(dataa, type, currentPage)
+        let url2 = this.getServiceUrl("select", req2.serviceName, "emr")
+        let resb = this.axios.post(url2, req2)
+        let datab = resb.data.data
+        this.getCountData(datab, type, currentPage, "verify_count")
+        let emrShareCount = { select: 0, verify: 0 }
+        let url3 = this.getServiceUrl("select", req.serviceName, "log")
+        let resc = this.axios.post(url3, req3)
+        if (resc.data.data[0].num_of_calls == null) {
+          emrShareCount.select = 0
+        } else {
+          emrShareCount.select = resc.data.data[0].num_of_calls
+        }
+        let url4 = this.getServiceUrl("select", req4.serviceName, "emr")
+        let resd = this.axios.post(url4, req4)
+        let verifyCount = resd.data.data[0].cert_no
+        if (verifyCount) {
+          emrShareCount.verify = verifyCount
+        } else {
+          emrShareCount.verify = 0
+        }
+        let allEmrShareCount = []
+        for (let i = 0; i < 6; i++) {
+          allEmrShareCount.push({ select: 0, verify: 0 })
+        }
+        allEmrShareCount[2] = emrShareCount
+        this.contentData.countData = allEmrShareCount
+        if (resa.status == 200 && resa.statusText == "OK") {
+          return { 'isRes': true, 'res': resa }
+        } else {
+          return { 'isRes': false, 'res': resa }
+        }
+      } else if (currentPage === 'emrCollect') { // 电子病历采集电子病历采集
+        // this.contentData.firstBar.title = "电子病历采集数量"
+        // this.contentData.firstPie.title = "各医院采集数量分布"
+        // this.contentData.secondPie.title = "各类型记录分布"
+        // this.contentData.thirdPie.title = "各类型记录分布"
+        // this.contentData.firstBar.type = 'line'
+        let cond = [
+          {
+            "colName": "record_type",
+            "value": "门诊诊疗挂号记录",
+            "ruleType": "eq"
+          },
+          {
+            "colName": "record_type",
+            "value": "门急诊诊疗医嘱",
+            "ruleType": "eq"
+          },
+          {
+            "colName": "record_type",
+            "value": "门急诊诊疗检查报告",
+            "ruleType": "eq"
+          },
+          {
+            "colName": "record_type",
+            "value": "住院诊疗入院记录",
+            "ruleType": "eq"
+          },
+          {
+            "colName": "record_type",
+            "value": "住院诊疗医嘱信息",
+            "ruleType": "eq"
+          },
+          {
+            "colName": "record_type",
+            "value": "住院诊疗检验报告",
+            "ruleType": "eq"
+          }
+        ]
+        let req = {
+          "serviceName": "srvemr_record_count_by_hour_select",
+          "colNames": ["*"],
+          "group": [
+            {
+              "colName": "record_type",
+              "type": "by"
+            },
+            {
+              "colName": "hospital",
+              "type": "by"
+            }, {
+              "colName": "amount",
+              "type": "sum"
+            }, {
+              "colName": "count_hour",
+              "type": "by_hour"
+            }
+          ],
+        }
+        let reqPie3 = {
+          "serviceName": "srvemr_record_count_by_hour_select",
+          "colNames": ["*"],
+          "group": [
+            {
+              "colName": "hospital", // 医疗机构名称
+              "type": "by"
+            },
+            {
+              "colName": "record_type", // 记录类型
+              "type": "by"
+            },
+            {
+              "colName": "amount",
+              "type": "count"
+            }
+          ]
+        }
+        let url = this.getServiceUrl("select", req.serviceName, "emr")
+        if (type == "day") {
+          req["relation_condition"] = {
+            "relation": "AND",
+            "data": [
+              {
+                "relation": "or",
+                "data": cond
+              },
+              {
+                "relation": "AND",
+                "data": [
+                  {
+                    "colName": "count_hour",
+                    "value": moment().subtract(23, 'hours').format("YYYY-MM-DD HH"),
+                    "ruleType": "ge"
+                  },
+                  {
+                    "colName": "count_hour",
+                    "value": moment().format("YYYY-MM-DD HH"),
+                    "ruleType": "le"
+                  }
+                ]
+              }
+            ]
+          }
+        } else if (type == "week") {
+          req["relation_condition"] = {
+            "relation": "AND",
+            "data": [
+              {
+                "relation": "or",
+                "data": cond
+              },
+              {
+                "relation": "AND",
+                "data": [
+                  {
+                    "colName": "count_hour",
+                    "value": moment().subtract(6, 'days').format('YYYY-MM-DD'),
+                    "ruleType": "ge"
+                  },
+                  {
+                    "colName": "count_hour",
+                    "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+                    "ruleType": "le"
+                  }
+                ]
+              }
+            ]
+          }
+          req["group"][3] = {
+            "colName": "count_hour",
+            "type": "by_date"
+          }
+        } else if (type == "month") {
+          req["group"][3] = {
+            "colName": "count_hour",
+            "type": "by_date"
+          }
+          req["relation_condition"] = {
+            "relation": "AND",
+            "data": [
+              {
+                "relation": "or",
+                "data": cond
+              },
+              {
+                "relation": "AND",
+                "data": [
+                  {
+                    "colName": "count_hour",
+                    "value": moment().subtract(30, 'days').format('YYYY-MM-DD'),
+                    "ruleType": "ge"
+                  },
+                  {
+                    "colName": "count_hour",
+                    "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+                    "ruleType": "le"
+                  }
+                ]
+              }
+            ]
+          }
+        } else if (type == "year") {
+          req["group"][3] = {
+            "colName": "count_hour",
+            "type": "by_month_of_year"
+          }
+          req["relation_condition"] = {
+            "relation": "AND",
+            "data": [
+              {
+                "relation": "or",
+                "data": cond
+              },
+              {
+                "relation": "AND",
+                "data": [
+                  {
+                    "colName": "count_hour",
+                    "value": moment().subtract(11, 'month').format('YYYY-MM-DD'),
+                    "ruleType": "ge"
+                  },
+                  {
+                    "colName": "count_hour",
+                    "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+                    "ruleType": "le"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+        let res = this.axios.post(url, req)
+        let data = res.data.data
+        this.getCountData(data, type, currentPage)
+        let resb = this.axios.post(url, reqPie3)
+        let datab = resb.data.data
+        this.getCountData(datab, type, currentPage, "collectPie3")
+        if (resb.status == 200 && res.statusText == "OK") {
+          return { 'isRes': true, 'res': resb }
+        } else {
+          return { 'isRes': false, 'res': resb }
+        }
+      }
+    },
     async getAlldata() {
       let condition = []
       let timeGroupType = "by_hour"
       let type = this.checkDataType
       let currentPage = this.contentData.currentPage
       if (currentPage === 'oneCard') {
-        this.contentData.firstBar.title = "一卡通就诊次数"
-        this.contentData.firstPie.title = "各医院就诊分布"
-        this.contentData.secondPie.title = "就诊刷卡类型分布"
-        this.contentData.thirdPie.title = "就诊刷卡类型分布"
-        this.contentData.firstBar.type = 'bar'
+        // this.contentData.firstBar.title = "一卡通就诊次数"
+        // this.contentData.firstPie.title = "各医院就诊分布"
+        // this.contentData.secondPie.title = "就诊刷卡类型分布"
+        // this.contentData.thirdPie.title = "就诊刷卡类型分布"
+        // this.contentData.firstBar.type = 'bar'
         let serviceName = "srvcvs_medical_records_select"
         this.getTimeSection(type)
         condition = [
@@ -527,11 +1266,11 @@ export default {
         //     console.error(err)
         //   })
       } else if (currentPage === 'emrShare') {
-        this.contentData.firstBar.title = "电子病历查询统计"
-        this.contentData.firstPie.title = "各医院查询次数分布"
-        this.contentData.secondPie.title = "身份验证卡类型分布"
-        this.contentData.thirdPie.title = "身份验证卡类型分布"
-        this.contentData.firstBar.type = 'bar'
+        // this.contentData.firstBar.title = "电子病历查询统计"
+        // this.contentData.firstPie.title = "各医院查询次数分布"
+        // this.contentData.secondPie.title = "身份验证卡类型分布"
+        // this.contentData.thirdPie.title = "身份验证卡类型分布"
+        // this.contentData.firstBar.type = 'bar'
         let serviceNames = [
           "DI_ADI_REGISTER_INFO_select",//门诊诊疗挂号记录
           "DI_ADI_DRUREC_INFO_select",//门急诊诊疗医嘱
@@ -957,11 +1696,11 @@ export default {
         //   }).catch(err => { console.error(err); })
         // }).catch(err => { console.error(err); })
       } else if (currentPage === 'emrCollect') { // 电子病历采集电子病历采集
-        this.contentData.firstBar.title = "电子病历采集数量"
-        this.contentData.firstPie.title = "各医院采集数量分布"
-        this.contentData.secondPie.title = "各类型记录分布"
-        this.contentData.thirdPie.title = "各类型记录分布"
-        this.contentData.firstBar.type = 'line'
+        // this.contentData.firstBar.title = "电子病历采集数量"
+        // this.contentData.firstPie.title = "各医院采集数量分布"
+        // this.contentData.secondPie.title = "各类型记录分布"
+        // this.contentData.thirdPie.title = "各类型记录分布"
+        // this.contentData.firstBar.type = 'line'
         let cond = [
           {
             "colName": "record_type",
@@ -1821,8 +2560,7 @@ export default {
       if (TimeType) {
         this.checkDataType = TimeType
       }
-      let timeOutReq = new this.timeOut(30, 0, this.getAlldata)
-      timeOutReq.reqFun()
+      this.getAlldata()
     },
     toManangerment() {
       // 跳转到后台管理页面
@@ -1850,7 +2588,18 @@ export default {
       let timeOutReq = new this.timeOut(30, 0, this.getAlldata)
       timeOutReq.reqFun()
       timeOutReq.startTime()
-    }
+    },
+    async getBar1Data() {
+      let condition = []
+      let timeGroupType = "by_hour"
+      let type = this.checkDataType
+      let currentPage = this.contentData.currentPage
+    },
+    async getPie1Data() { },
+    async getPie2Data() { },
+    async getBar2Data() { },
+    async getPie3Data() { },
+    async getCountData() { }
   },
   data() {
     return {
@@ -1935,6 +2684,32 @@ export default {
     // this.getRunTime()
     this.autoRefresh()
     // this.autoChangeTab(10000) // 自动切换Tab
+  },
+  watch: {
+    contentData: {
+      deep: true,
+      handler(newValue, oldValue) {
+        if (newValue.currentPage === 'oneCard') {
+          this.contentData.firstBar.title = "一卡通就诊次数"
+          this.contentData.firstPie.title = "各医院就诊分布"
+          this.contentData.secondPie.title = "就诊刷卡类型分布"
+          this.contentData.thirdPie.title = "就诊刷卡类型分布"
+          this.contentData.firstBar.type = 'bar'
+        } else if (newValue.currentPage === 'emrShare') {
+          this.contentData.firstBar.title = "电子病历查询统计"
+          this.contentData.firstPie.title = "各医院查询次数分布"
+          this.contentData.secondPie.title = "身份验证卡类型分布"
+          this.contentData.thirdPie.title = "身份验证卡类型分布"
+          this.contentData.firstBar.type = 'bar'
+        } else if (newValue.currentPage === 'emrCollect') {
+          this.contentData.firstBar.title = "电子病历采集数量"
+          this.contentData.firstPie.title = "各医院采集数量分布"
+          this.contentData.secondPie.title = "各类型记录分布"
+          this.contentData.thirdPie.title = "各类型记录分布"
+          this.contentData.firstBar.type = 'line'
+        }
+      }
+    }
   }
 };
 </script>

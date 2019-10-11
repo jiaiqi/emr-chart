@@ -15,7 +15,7 @@ function init() {
     }
   } else {
     // 单vue页面使用配置的后台地址
-    if(sessionStorage.getItem("bx_auth_ticket") === null ){
+    if (sessionStorage.getItem("bx_auth_ticket") === null) {
       devSrv.dummy()
     }
     let server_cfg = devSrv.server_cfg
@@ -124,24 +124,31 @@ function init() {
     this.nTime = out // 计时 秒
     this.isLoad = false // 请求是否成功有效
     this.eNum = 0 // 请求失败次数
+    this.isDestroy = false //是否停止
     this.rFun = efun
     this.reqFun = async function () {
       let _this = this
       let reqPromise = await _this.rFun()
+      console.log('efun-------------', reqPromise)
+
       // reqPromise.then((res)=>{
       console.log('--------------------time out res', reqPromise)
       if (reqPromise.isRes) {
         this.isLoad = true
         this.nTime = 0
         this.eNum = 0
-        this.startTime()
+        if (this.isDestroy === false) {
+          this.startTime()
+        }
         // this.timeOut(10,0)
-      }else {
+      } else {
         this.isLoad = false
         if (this.eNum < 3) {
           this.nTime = 0
           this.eNum++
-          this.startTime()
+          if (this.isDestroy === false) {
+            this.startTime()
+          }
         }
       }
       // })
@@ -150,19 +157,24 @@ function init() {
       // $http 处理 发请求机制，多久发，
     }
     this.startTime = function () {
-      if (this.eNum < 3 && this.nTime === this.time) {
-        this.reqFun(this.nTime)
-      } else if (this.eNum === 3) {
-        console.error('-----请求数据失败----', this.nTime)
-        return false
-      } else {
-        let bTimeout = setTimeout(() => {
-          this.nTime++
-          console.log('---------', this.nTime)
-          this.startTime()
-        }, 1000)
+        if (this.eNum < 3 && this.nTime === this.time) {
+          this.reqFun(this.nTime)
+        } else if (this.eNum === 3) {
+          console.error('-----请求数据失败----', this.nTime)
+          return false
+        } else {
+          let bTimeout = setTimeout(() => {
+            this.nTime++
+            console.log('---------', this.nTime)
+            if (this.isDestroy === false) {
+              this.startTime()
+            }
+          }, 1000)
+        }
+      },
+      this.endTime = function () {
+        this.isDestroy = true
       }
-    }
   }
 }
 
