@@ -71,52 +71,52 @@ axios.interceptors.response.use(response => {
   return Promise.reject(error);
 });
 
-/**
- * 定时重复发送请求
- * @params t: 时间间隔
- * @params out: 倒计时
- * @params fun:请求数据的函数，必须是一个返回true/false的函数
- */
-Vue.prototype.timeOut =  function(t,out,fun){
-  fun()
-  this.time = t   // 定时间隔 秒
-  this.nTime = out  // 计时 秒
-  this.isLoad = false   // 请求是否成功有效
-  this.eNum = 0 // 请求失败次数
-  this.reqFun = function(e){
-    let s = fun
-    let http = s(e)
-    // fun() 请求方法 处理数据和业务逻辑
-    // $http 处理 发请求机制，多久发，
-    if(http){
-      this.isLoad = true
-      this.nTime = 0
-      this.eNum = 0
-      this.startTime()
-      // this.timeOut(10,0)
-    }else{
-      this.isLoad = false
-      if(this.eNum < 3){
-      this.nTime = 0
-        this.eNum++
-        this.startTime()
-      }
-    }
-  }
-  this.startTime = function(){
-    if(this.eNum < 3 && this.nTime === this.time) {
-      this.reqFun(this.nTime)
-    }else if(this.eNum === 3){
-      return false
-    }else{
-      let bTimeout = setTimeout(()=>{
-        this.nTime ++
-        console.log('---------',this.nTime)
-        this.startTime()
-      },1000)
-    }
-  }
-}
+// /**
+//  * 定时重复发送请求
+//  * @params t: 时间间隔
+//  * @params out: 倒计时
+//  * @params fun:请求数据的函数，必须是一个返回true/false的函数
+//  */
+// Vue.prototype.timeOut =  function(t,out,fun){
+//   fun()
+//   this.time = t   // 定时间隔 秒
+//   this.nTime = out  // 计时 秒
+//   this.isLoad = false   // 请求是否成功有效
+//   this.eNum = 0 // 请求失败次数
+//   this.reqFun = function(e){
+//     let s = fun
+//     let http = s(e)
+//     // fun() 请求方法 处理数据和业务逻辑
+//     // $http 处理 发请求机制，多久发，
+//     if(http){
+//       this.isLoad = true
+//       this.nTime = 0
+//       this.eNum = 0
+//       this.startTime()
+//       // this.timeOut(10,0)
+//     }else{
+//       this.isLoad = false
+//       if(this.eNum < 3){
+//       this.nTime = 0
+//         this.eNum++
+//         this.startTime()
+//       }
+//     }
+//   }
+//   this.startTime = function(){
+//     if(this.eNum < 3 && this.nTime === this.time) {
+//       this.reqFun(this.nTime)
+//     }else if(this.eNum === 3){
+//       return false
+//     }else{
+//       let bTimeout = setTimeout(()=>{
+//         this.nTime ++
+//         console.log('---------',this.nTime)
+//         this.startTime()
+//       },1000)
+//     }
+//   }
+// }
 
 new Vue({
   router,

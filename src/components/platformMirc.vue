@@ -17,7 +17,7 @@
           <div>API网关</div>
           <div class="plan-view">
             <span>请求次数</span>
-            <span>{{centerData.listwg?convert(centerData.listwg):0}}</span>
+            <span>{{sumApi?convert(sumApi):0}}</span>
           </div>
         </div>
       </div>
@@ -44,7 +44,7 @@
                 </div>
                 <div>
                   <span>请求次数:</span>
-                  <span>{{convert(centerData.regNum[0].num_of_calls)?convert(centerData.regNum[0].num_of_calls):0}}</span>
+                  <span>{{convert(regNum[0].num_of_calls)?convert(regNum[0].num_of_calls):0}}</span>
                   <!-- convert(centerData.regNum[0].num_of_calls) -->
                 </div>
               </li>
@@ -69,7 +69,7 @@
                 </div>
                 <div>
                   <span>请求次数:</span>
-                  <span>{{convert(centerData.regNum[1].num_of_calls)?convert(centerData.regNum[1].num_of_calls):0}}</span>
+                  <span>{{convert(regNum[1].num_of_calls)?convert(regNum[1].num_of_calls):0}}</span>
                   <!-- convert(centerData.regNum[1].num_of_calls) -->
                 </div>
               </li>
@@ -226,10 +226,20 @@ export default {
   props: ["platMirc"],
   data() {
     return {
+       ReqTimeOut:{
+        RunTimeOut:null,
+        TimeOutMethitem:null
+       },
       centerData: this.platMirc,
       microSer: [],
       memoryMean:null,
-      mean:null
+      mean:null,
+      Microservicesr:[] , //中间微服务请求次数
+     regNum:[
+                {num_of_calls:''},
+                {num_of_calls:''},
+              ],
+              sumApi:null  //api 请求次数
     };
   },
   watch: {
@@ -274,56 +284,56 @@ export default {
     },
    
  
-    converts(num) {
-      let nums = parseInt(num);
-      if (nums > 10000) {
-        if (nums % 10000 == 0) {
-          nums = num / 10000 + "万";
-        } else {
-          nums = Math.round((num / 10000) * 10) / 10 + "万";
-        }
-      } else {
-        nums = num;
-      }
-      return nums;
-    },
-    // 持续运行时长转换
-    periods(num) {
-      let nums = parseInt(num) / 60 / 60;
-      if (nums < 24) {
-        if (nums % parseInt(nums) == 0) {
-          nums = nums;
-        } else {
-          nums = Math.round(nums * 10) / 10 + "h";
-        }
-      } else {
-        nums = Math.round((nums / 24) * 10) / 10 + "天";
-      }
-      return nums;
-    },
+    // converts(num) {
+    //   let nums = parseInt(num);
+    //   if (nums > 10000) {
+    //     if (nums % 10000 == 0) {
+    //       nums = num / 10000 + "万";
+    //     } else {
+    //       nums = Math.round((num / 10000) * 10) / 10 + "万";
+    //     }
+    //   } else {
+    //     nums = num;
+    //   }
+    //   return nums;
+    // },
+    // // 持续运行时长转换
+    // periods(num) {
+    //   let nums = parseInt(num) / 60 / 60;
+    //   if (nums < 24) {
+    //     if (nums % parseInt(nums) == 0) {
+    //       nums = nums;
+    //     } else {
+    //       nums = Math.round(nums * 10) / 10 + "h";
+    //     }
+    //   } else {
+    //     nums = Math.round((nums / 24) * 10) / 10 + "天";
+    //   }
+    //   return nums;
+    // },
     //查询APP运行时长
-    operation() {
-      let req = {
-        serviceName: "srvlog_apps_onlie_time_select",
-        colNames: ["*"],
-        condition: []
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvlog_apps_onlie_time_select",
-        "monitor"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          let operat1 = res.data.data;
-          operat1 = Object.assign(...operat1);
-          this.operat = operat1;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
+    // operation() {
+    //   let req = {
+    //     serviceName: "srvlog_apps_onlie_time_select",
+    //     colNames: ["*"],
+    //     condition: []
+    //   };
+    //   let path = this.getServiceUrl(
+    //     "select",
+    //     "srvlog_apps_onlie_time_select",
+    //     "monitor"
+    //   );
+    //   this.axios
+    //     .post(path, req)
+    //     .then(res => {
+    //       let operat1 = res.data.data;
+    //       operat1 = Object.assign(...operat1);
+    //       this.operat = operat1;
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // },
     //查询中间微服务
       CenTiny() {
       let req = {
@@ -357,55 +367,66 @@ export default {
         .then(res => {
           // this.microSer[3].beg = res.data.data[0].num_of_calls;
           let micr = res.data.data;
+          
           // console.log("micr", micr);
-          // this.microSer
-          this.microSer = [];
-          // micr.forEach(item => {
-            for( let i=0; i<micr.length;i++){
-            let req1 = {
-              serviceName: "srvlog_call_statistics_select",
-              colNames: ["*"],
-              condition: [
-                {
-                  colName: "application",
-                  ruleType: "eq",
-                  value: micr[i].app_no
-                }
-              ],
-              group: [
-                {
-                  colName: "num_of_calls",
-                  type: "sum"
-                }
-              ]
-            };
-            let path1 = this.getServiceUrl(
-              "select",
-              "srvlog_call_statistics_select",
-              "log"
-            );
-            this.axios
-              .post(path1, req1)
-              .then(res1 => {
-                if (res1.data.data.length > 0) {
-                  // console.log(arr[0].app_nos)
+          // this.microSer = [];
+          //   for( let i=0; i<micr.length;i++){
+          //   let req1 = {
+          //     serviceName: "srvlog_call_statistics_select",
+          //     colNames: ["*"],
+          //     condition: [
+          //       {
+          //         colName: "application",
+          //         ruleType: "eq",
+          //         value: micr[i].app_no
+          //       }
+          //     ],
+          //     group: [
+          //       {
+          //         colName: "num_of_calls",
+          //         type: "sum"
+          //       }
+          //     ]
+          //   };
+          //   let path1 = this.getServiceUrl(
+          //     "select",
+          //     "srvlog_call_statistics_select",
+          //     "log"
+          //   );
+          //   this.axios
+          //     .post(path1, req1)
+          //     .then(res1 => {
+          //       if (res1.data.data.length > 0) {
+          //         // console.log(arr[0].app_nos)
+          //         for(let j = 0;j<micr.length;j++){
+          //           if(micr[j].app_no === req1.condition[0].value){
+          //             this.$set(micr[j],['ask_num'],res1.data.data[0].num_of_calls)
+          //             // micr[j]['ask_num']= res1.data.data[0].num_of_calls;
+          //             let appName = micr[j].app_no.toUpperCase();
+          //             // console.log(appName)
+          //             // micr[j].running = this.operat[appName];
+          //             this.$set(micr[j],'running',this.operat[appName])
+          //             // console.log('micr[j].ask_num--------',micr[j].ask_num,res1.data.data[0].num_of_calls,micr[j].running)
+          //           }
+          //         }
+          //       }
+          //     })
+          //     .catch(err => {
+          //       console.log(err);
+          //     });
+          // }
+                  // console.error("微服务中心总请求次数",this.Microservicesr)
                   for(let j = 0;j<micr.length;j++){
-                    if(micr[j].app_no === req1.condition[0].value){
-                      this.$set(micr[j],['ask_num'],res1.data.data[0].num_of_calls)
-                      // micr[j]['ask_num']= res1.data.data[0].num_of_calls;
                       let appName = micr[j].app_no.toUpperCase();
-                      // console.log(appName)
-                      // micr[j].running = this.operat[appName];
-                      this.$set(micr[j],'running',this.operat[appName])
-                      // console.log('micr[j].ask_num--------',micr[j].ask_num,res1.data.data[0].num_of_calls,micr[j].running)
+                      this.$set(micr[j],'running', this.platMirc.operat[appName])
+                   for(let i = 0;i<this.Microservicesr.length;i++){
+                      // let appName = micr[j].app_no.toUpperCase();
+                      // this.$set(micr[j],'running',this.operat[appName])
+                      if(micr[j].app_no==this.Microservicesr[i].application){
+                          this.$set(micr[j],['ask_num'],this.Microservicesr[i].num_of_calls)
+                      }
                     }
                   }
-                }
-              })
-              .catch(err => {
-                console.log(err);
-              });
-          }
           this.microSer = micr
           // console.log('micr=>2',this.microSer,this.microSer.app_name)
   
@@ -414,45 +435,116 @@ export default {
           console.log(err);
         });
     },
-    methitem(){
 
+
+  //查询总请求次数
+ async edmiens(){
+    let self = this 
+    let  path = this.getServiceUrl(
+        "select",
+        "srvlog_call_statistics_select",
+        "log"
+      );
+    let req = {
+          "serviceName":"srvlog_call_statistics_select",
+          "colNames":["*"],
+          "condition":[],
+          "group": [
+              {
+                "colName": "application",
+                "type": "by"
+              },
+      {
+                  "colName": "num_of_calls",
+                  "type": "sum"
+              }
+          ]
+      }
+          // this.axios.post(path,req).then(res=>{
+             let res = await self.axios.post(path,req)
+              // console.error("--------------发送请求--------------res",res);
+              if(res.status === 200){
+                  this.Microservicesr=res.data.data
+                  this.regNum[0].num_of_calls=this.Microservicesr[1].num_of_calls
+                  this.regNum[1].num_of_calls=this.Microservicesr[2].num_of_calls
+                  this.CenTiny();
+                  let sum = null
+                    for(let k = 0;k<res.data.data.length;k++){
+                      sum+=( res.data.data[k].num_of_calls)
+                    }
+                    this.sumApi=sum
+                  return { 'isRes': true, 'res': res }
+              }else{
+                return { 'isRes': false, 'res': res };
+              }
+          
+      // })
+  },
+  
+    
+ 
+   async methitem(){
+     let self = this       // 缓存管理
        let path= this.getServiceUrl(
               "",
               "redis",
               "monitor"
             );
-        this.axios.get(path).then(res=>{
-          console.log(res)
-          let space = null  //命中总数
-          let miss = null  //未命中总数
-          let mean = null  //命中率
+            let res = await self.axios.get(path)
 
-          let memory = null //已使用内存
-          let totalMemory = null //未使用内存
-          let memoryMean = null //内存使用率
-          // console.log(typeof )
-          let resa=res.data.data
-           for(var i=0;i<res.data.data.length;i++){
-             space+=Number(resa[i].itemsVos[0].val)
-             miss+=Number(resa[i].itemsVos[1].val)
-             memory+=Number(resa[i].itemsVos[2].val)
-             totalMemory+=Number(resa[i].itemsVos[3].val)
-           }
-         this.mean= mean=(((space/(space+miss))).toFixed(2)*100)+"%"
-         this.memoryMean= memoryMean= ((((memory/1024/1024)/(totalMemory/1024/1024))).toFixed(2)*100)+"%"
-           console.log(memory,totalMemory)
+              if(res.status === 200){        
+                      let space = null  //命中总数
+                let miss = null  //未命中总数
+                let mean = null  //命中率
 
-        }).catch(err=>{
-          console.log(err);
-        })
-    }
+                let memory = null //已使用内存
+                let totalMemory = null //未使用内存
+                let memoryMean = null //内存使用率
+                // console.log(typeof )
+                let resa=res.data.data
+                for(var i=0;i<res.data.data.length;i++){
+                  space+=Number(resa[i].itemsVos[0].val)
+                  miss+=Number(resa[i].itemsVos[1].val)
+                  memory+=Number(resa[i].itemsVos[2].val)
+                  totalMemory+=Number(resa[i].itemsVos[3].val)
+                }
+              this.mean= mean=(((space/(space+miss))).toFixed(2)*100)+"%"
+              this.memoryMean= memoryMean= ((((memory/1024/1024)/(totalMemory/1024/1024))).toFixed(2)*100)+"%"
+               return { 'isRes': true, 'res': res }
+              }else{
+                return { 'isRes': false, 'res': res };
+              }
+        // this.axios.get(path).then(res=>{
+          // console.log(res)
+        
+          //  console.log(memory,totalMemory)
+
+        // }).catch(err=>{
+        //   console.log(err);
+        // })
+    },
+
+    //查询总请求次---数定时刷新
+   RunTimeOut(){
+      let self = this
+      self.ReqTimeOut.RunTimeOut = new this.timeOut(30,0,self.edmiens)
+      self.ReqTimeOut.RunTimeOut.reqFun();
+      self.ReqTimeOut.RunTimeOut.startTime();
+    },
+
+    TimeOutMethitem(){
+      let self = this
+      self.ReqTimeOut.TimeOutMethitem = new this.timeOut(30,0,self.methitem)
+      self.ReqTimeOut.TimeOutMethitem.reqFun();
+      self.ReqTimeOut.TimeOutMethitem.startTime();
+    },
   },
   created() {
-    this.operation();
-    this.CenTiny();
-    this.methitem()
+    // this.edmiens()
   },
   mounted() {
+    this.RunTimeOut()
+    this.TimeOutMethitem()
     // setInterval(() => {
     //   this.getRegNum();
     //   this.getLog();
@@ -470,6 +562,10 @@ export default {
     //   this.operation();
     //   this.CenTiny();
     // }, 30000);
+  },
+  beforeDestroy(){
+    this.ReqTimeOut.RunTimeOut.endTime();
+    this.ReqTimeOut.TimeOutMethitem.endTime();
   }
 };
 </script>

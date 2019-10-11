@@ -13,10 +13,6 @@
             width="40vw"
             height="calc(100% - 50px)"
           ></ve-histogram>
-          <!-- <div
-            v-if="!contentData.firstBar||!contentData.firstBar.data||contentData.firstBar.data.length==0"
-            class="nodata"
-          >Loading</div>-->
         </div>
         <div class="content_left_right">
           <div class="content_left_right_item">
@@ -273,6 +269,33 @@ export default {
           }
         }
       },
+      chartExtendLine2: {
+        grid: {
+          top: "10%",
+          bottom: "0",
+          height: "auto"
+        },
+        legend: {
+          type: "scroll",
+          textStyle: {
+            color: "#fff"
+          },
+          pageTextStyle: {
+            color: "#fff"
+          },
+          pageIconColor: "#3399ff"
+        },
+        series: {
+          type: "bar",
+          itemStyle: {
+            normal: {
+              label: {
+                show: true
+              }
+            }
+          }
+        }
+      },
       chartExtendPie: {
         series: {
           type: "pie",
@@ -337,7 +360,7 @@ export default {
   methods: {
     selectHospital(index) {
       // 点击选择医院
-      this.currentHospital = index
+      this.currentHospital = index;
     },
     autoChangeHospital(interval) {
       // 医院轮播
@@ -384,12 +407,18 @@ export default {
       default: {}
     }
   },
+  // created() {
+  //   if (this.contentData.currentPage === "ETL" || this.contentData.currentPage === "emrCollect") {
+  //     this.chartExtendLine.series.type = "line";
+  //   }
+  // },
   watch: {
     contentData: {
       deep: true,
       handler(newValue, oldValue) {
         this.rightChartExtend.yAxis.interval = newValue.secondBar.interval;
-        this.countData = newValue.countData
+        this.countData = newValue.countData;
+        this.chartExtendLine.series.type = newValue.firstBar.type
       }
     },
     chartSetting: {

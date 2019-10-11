@@ -40,9 +40,10 @@ export default {
     };
   },
   methods: {
-    name() { },
+    name() {},
     CheckPage(item) {
       this.CurrPage = item.key;
+      console.log("loading-tip====++++++++", this.CurrPage);
       this.$emit("viewtabs", item);
     },
     BackCurrPage() {
@@ -67,21 +68,19 @@ export default {
     let first = this.tabsData.tabs[0];
     this.CheckPage(first);
     if (this.CurrPage === ("oneCard" || "emrShare" || "emrCollect")) {
-      this.isShow = true
+      this.isShow = true;
     }
   },
   watch: {
     tabsData: {
-      handler: function (newValue, oldValue) {
+      handler: function(newValue, oldValue) {
         return newValue;
       },
       deep: true //对象内部的属性监听，即深度监听
     },
     isShow: {
       deep: true,
-      handler(newValue, oldValue) {
-
-      }
+      handler(newValue, oldValue) {}
     }
   }
 };

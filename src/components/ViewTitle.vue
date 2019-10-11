@@ -44,11 +44,13 @@ export default {
       list_useno: "",
       user: {
         user_no: ""
-      }
+      },
+      regNumTimeOut: null,
+      usernoTimeOut: null
     };
   },
   methods: {
-    name() { },
+    name() {},
     toIndex(num) {
       if (num === "1") {
         sessionStorage.clear();
@@ -64,12 +66,12 @@ export default {
       }
     },
     toManangerment() {
-      let str = window.location.href
+      let str = window.location.href;
       let num = str.indexOf("?");
       str = str.substr(num + 1);
-      window.location.href = '../../main/index.html?' + str
+      window.location.href = "../../main/index.html?" + str;
     },
-    RegNum() {
+    async RegNum() {
       let self = this;
       let req = {
         serviceName: "srvsso_online_user_select",
@@ -81,18 +83,25 @@ export default {
         "srvsso_online_user_select",
         "sso"
       );
-      self.axios
-        .post(path, req)
-        .then(res => {
-          console.log(res)
-          self.regNum = res.data.data[0].number_of_online_users;
-          self.getData_userno();
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      let res = await self.axios.post(path, req);
+      if (res.status === 200) {
+        self.regNum = res.data.data[0].number_of_online_users;
+        return { isRes: true, res: res };
+      } else {
+        return { isRes: false, res: res };
+      }
+      // self.axios
+      //   .post(path, req)
+      //   .then(res => {
+      //     console.log(res)
+      //     self.regNum = res.data.data[0].number_of_online_users;
+      //     self.getData_userno();
+      //   })
+      //   .catch(err => {
+      //     console.log(err);
+      //   });
     },
-    getData_userno() {
+    async getData_userno() {
       let self = this;
       let req = {
         serviceName: "srvsso_user_select",
@@ -100,6 +109,13 @@ export default {
         condition: []
       };
       let path = self.getServiceUrl("select", "srvsso_user_select", "sso");
+      let res = await self.axios.post(path, req);
+      if (res.status === 200) {
+        self.list_useno = res.data.data.length;
+        return { isRes: true, res: res };
+      } else {
+        return { isRes: false, res: res };
+      }
       self.axios
         .post(path, req)
         .then(res => {
@@ -108,13 +124,27 @@ export default {
         .catch(err => {
           console.log(err);
         });
+    },
+    regNumTimeOuts() {
+      let self = this;
+      self.regNumTimeOut = new this.timeOut(30, 0, self.RegNum);
+      self.regNumTimeOut.reqFun();
+      self.regNumTimeOut.startTime();
+    },
+    usernoTimeOuts() {
+      let self = this;
+      self.usernoTimeOut = new this.timeOut(30, 0, self.getData_userno);
+      self.usernoTimeOut.reqFun();
+      self.usernoTimeOut.startTime();
     }
   },
   mounted() {
+    this.regNumTimeOuts();
+    this.usernoTimeOuts();
     setInterval(() => {
       this.date = moment().format("YYYY-MM-DD  HH:mm:ss");
     }, 1000);
-    sessionStorage.setItem("title", this.titleViewData.title)
+    sessionStorage.setItem("title", this.titleViewData.title);
   },
   created() {
     let user = sessionStorage.getItem("current_login_user");

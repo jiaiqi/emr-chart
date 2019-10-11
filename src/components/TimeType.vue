@@ -29,7 +29,7 @@ export default {
   name: "TimeType",
   data() {
     return {
-      checkDataType: "day"
+      checkDataType: 'day'
     };
   },
   methods: {
@@ -39,11 +39,19 @@ export default {
     }
   },
   props: {
-    // propName: {
-    //   type: Number,
-    //   default: ""
-    // },
-  }
+    timeType: {
+      type: String,
+      default: 'day'
+    },
+  },
+  watch: {
+    timeType(newValue, oldValue) {
+      this.checkDataType = newValue
+    }
+  },
+  mounted() {
+    // alert(this.timeType);
+  },
 };
 </script>
 

@@ -106,6 +106,9 @@ import ypIconPath from "../assets/images/yp.png";
 export default {
   data() {
     return {
+       ReqTimeOut:{
+        RunTimeOut:null,
+       },
       serIcon: serIconPath,
       cpuIcon: cpuIconPath,
       plIcon: plIconPath,
@@ -242,17 +245,25 @@ export default {
     };
   },
   methods: {
-    petition() {
-      console.log("==================================")
-      this.axios({
-        method: "get",
-        url: this.getServiceUrl(
+  async  petition() {
+      let self = this  
+      let path = this.getServiceUrl(
           "",
           "srvmonitor_apps_servernape_select",
           "monitor"
         )
-      }).then(res => {
-        this.timer();
+      // this.axios({
+      //   method: "get",
+      //   url: this.getServiceUrl(
+      //     "",
+      //     "srvmonitor_apps_servernape_select",
+      //     "monitor"
+      //   )
+       let res = await self.axios.get(path)
+
+
+        if(res.status===200){
+                   this.timer();
         let severdata = res.data.data;
         this.SerResData = res.data.data;
         let cpuCum = 0, //总cpu
@@ -344,7 +355,20 @@ export default {
         console.log(HDDsumUse, HDDsum);
         this.netIndata = (netInNum / this.severNum).toFixed(1) + "bps"; ////入网
         this.netOutdata = (netOutNum / this.severNum).toFixed(1) + "bps"; ////出网
-      })
+                                        
+         return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
+      // }).then(res => {
+     
+      // })
+    },
+     RunTimeOut(){
+      let self = this
+      self.ReqTimeOut.RunTimeOut = new this.timeOut(30,0,self.petition)
+      self.ReqTimeOut.RunTimeOut.reqFun();
+      self.ReqTimeOut.RunTimeOut.startTime();
     },
     toDetail() {
       let url = "http://10.120.119.30/zabbix";
@@ -352,7 +376,7 @@ export default {
     },
     timer() {
       setInterval(() => {
-        this.petition();
+        // this.petition();
       }, 300000);
     },
     // diskdatanum() {
@@ -375,8 +399,10 @@ export default {
     //     "-" +
     //     new Date().getDate();
     // },
-    cpuDataNums() {
+   cpuDataNums() {
+    
       this.cpuDataNumDefa = (5 * (1 + Math.random(1))).toFixed(1) + "%";
+      
     },
     memoryDataNums() {
       this.diskDataNumDefa = (8 * (1 + Math.random())).toFixed(1);
@@ -392,14 +418,20 @@ export default {
  
   created() {
     // this.currtenTime();
-    this.petition();
+    // this.petition();
     // this.diskdatanum();
     this.cpuDataNums();
     this.memoryDataNums();
     this.diskMemoryData();
   },
+  mounted(){
+      this.RunTimeOut()
+  },
+  
   destroyed() {
     clearInterval(this.timer);
+       this.ReqTimeOut.RunTimeOut.endTime();
+
   },
 //   components: {}
 // }

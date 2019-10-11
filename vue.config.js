@@ -9,7 +9,11 @@ module.exports = {
   outputDir: "../../../MS/front/chart",
   // 主目录
   publicPath:'/chart/',
-
+  configureWebpack: (config)=>{
+    if(process.env.NODE_ENV === 'production'){
+      config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
+    }
+  },
   // cli3 代理是从指定的target后面开始匹配的，不是任意位置；配置pathRewrite可以做替换
   devServer: {
     proxy: {

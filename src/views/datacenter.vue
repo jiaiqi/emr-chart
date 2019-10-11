@@ -3,10 +3,15 @@
     <view-title :titleViewData="titleViewData"></view-title>
     <div class="main">
       <view-tabs @viewtabs="viewtabs" :tabsData="tabsData"></view-tabs>
-      <top-indicator :indicatorData="indicatorData" :current="titleViewData.currentPage"></top-indicator>
+      <top-indicator :indicatorData="indicatorData" :current="titleViewData"></top-indicator>
       <time-type @showTimeType="getTimeType" v-if="contentData.currentPage !== 'DataMonitor'"></time-type>
       <data-monitor v-if="contentData.currentPage === 'DataMonitor'"></data-monitor>
-      <onecard-content v-else @checktask='checktask' :chartSetting="contentData.firstBar.set" :contentData="contentData"></onecard-content>
+      <onecard-content
+        v-else
+        @checktask="checktask"
+        :chartSetting="contentData.firstBar.set"
+        :contentData="contentData"
+      ></onecard-content>
     </div>
   </div>
 </template>
@@ -34,6 +39,14 @@ export default {
   },
   data() {
     return {
+      ReqTimeOut:{
+        RunTimeOut:null,
+        dataSizeTimeOut:null,
+        DataShareSizeTimeOut:null,
+        DataShareRecodTimeOut:null,
+        leftChartLegendTimeOut:null,
+        RightTaskTimeOut:null
+      },
       titleViewData: {
         title: "数据中心",
         date: "",
@@ -57,7 +70,7 @@ export default {
         runTime: ""
       },
       contentData: {
-        currentPage: "DataMonitor",
+        currentPage: 'dataShare',
         firstBar: {
           title: "数据共享",
           data: {
@@ -624,10 +637,32 @@ export default {
       this.getChartData(this.checkDataType)        
       }
      if(pageName.key === 'ETL'){
-        this.getRightTask()
+       this.contentData.firstBar.set.type = 'line'
+        // this.getRightTask()
+        this.RightTaskTimeOut()
+      }else{
+        if(this.ReqTimeOut.RightTaskTimeOut){
+          this.ReqTimeOut.RightTaskTimeOut.endTime()
+        }
+      }
+
+      if(pageName.key === 'dataShare'){
+        this.RunTimeOut()
+        this.dataSizeTimeOut()
+        this.DataShareSizeTimeOut()
+        this.DataShareRecodTimeOut()
+        this.leftChartLegendTimeOut()
+      }else{
+        this.ReqTimeOut.RunTimeOut.endTime()
+        this.ReqTimeOut.dataSizeTimeOut.endTime()
+        this.ReqTimeOut.DataShareSizeTimeOut.endTime()
+        this.ReqTimeOut.DataShareRecodTimeOut.endTime()
+        this.ReqTimeOut.leftChartLegendTimeOut.endTime()
+        // this.ReqTimeOut.RightTaskTimeOut.endTime()
       }
     },
-    getRunTime() {
+    async getRunTime() {
+      let self = this      
       let req = {
         serviceName: "srvlog_apps_onlie_time_select",
         colNames: ["*"],
@@ -644,19 +679,32 @@ export default {
         "srvlog_apps_onlie_time_select",
         "monitor"
       );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          let run = res.data.data;
-          run = Object.assign(...run);
-          this.indicatorData.runtime = run;
-          this.getDataSize();
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      let res = await self.axios.post(path,req)
+      
+      console.log("--------------发送请求--------------res",res);
+      let run = res.data.data
+      if(res.status === 200){        
+        run = Object.assign(...run)
+        self.indicatorData.runtime = run
+        return { 'isRes': true, 'res': res }
+      }else{
+        return { 'isRes': false, 'res': res };
+      }
+
+      // this.axios
+      //   .post(path, req)
+      //   .then(res => {
+      //     let run = res.data.data;
+      //     run = Object.assign(...run);
+      //     this.indicatorData.runtime = run;
+      //     // this.getDataSize();
+      //   })
+      //   .catch(err => {
+      //     console.log(err);
+      //   });
     },
-    getDataSize() {
+    async getDataSize() {
+      let self = this
       let params = {
         serviceName: "srvdc_rc_db_table_select",
         colNames: ["*"],
@@ -673,23 +721,31 @@ export default {
         ]
       };
       let url = this.getServiceUrl("select", params.serviceName, "datacenter");
-      this.axios({
-        method: "POST",
-        url: url,
-        data: params
-      })
-        .then(res => {
-          console.log("re123s", res.data.data);
-          if (res.data.data.length > 0) {
-            this.indicatorData.dataSize = res.data.data[0];
-            this.getDataShareSize();
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      let res = await self.axios.post(url,params)
+      if(res.status === 200){
+        self.indicatorData.dataSize = res.data.data[0];
+        return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
+      // this.axios({
+      //   method: "POST",
+      //   url: url,
+      //   data: params
+      // })
+      //   .then(res => {
+      //     console.log("re123s", res.data.data);
+      //     if (res.data.data.length > 0) {
+      //       this.indicatorData.dataSize = res.data.data[0];
+      //       this.getDataShareSize();
+      //     }
+      //   })
+      //   .catch(err => {
+      //     console.log(err);
+      //   });
     },
-    getDataShareSize() {
+    async getDataShareSize() {
+      let self = this
       let params = {
         serviceName: "srvdc_share_shared_table_select",
         colNames: ["*"],
@@ -706,19 +762,29 @@ export default {
         "srvdc_share_shared_table_select",
         "datashare"
       );
-      this.axios
-        .post(url, params)
-        .then(res => {
-          console.log("dataShareSize", res.data.data[0]);
-          this.indicatorData.dataShareSize.listNum =
+      let res = await self.axios.post(url,params)
+      
+      if(res.status === 200){
+        self.indicatorData.dataShareSize.listNum =
             res.data.data[0].table_name;
-          this.getDataShareRecod();
-        })
-        .catch(err => {
-          console.log(err);
-        });
+        return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
+      // this.axios
+      //   .post(url, params)
+      //   .then(res => {
+      //     console.log("dataShareSize", res.data.data[0]);
+      //     this.indicatorData.dataShareSize.listNum =
+      //       res.data.data[0].table_name;
+      //     this.getDataShareRecod();
+      //   })
+      //   .catch(err => {
+      //     console.log(err);
+      //   });
     },
-    getDataShareRecod() {
+    async getDataShareRecod() {
+      let self = this
       let params = {
         serviceName: "srvdc_share_serve_summary_select",
         colNames: ["*"],
@@ -739,21 +805,31 @@ export default {
         "srvdc_share_serve_summary_select",
         "datashare"
       );
-      this.axios
-        .post(url, params)
-        .then(res => {
-          // this.headerSecond.sheetLog = res.data.data[0].share_row_count
-          this.indicatorData.dataShareSize.record =
+      let res = await self.axios.post(url,params)
+      if(res.status===200){
+        self.indicatorData.dataShareSize.record =
             res.data.data[0].share_row_count;
-          this.indicatorData.dataShareSize.shareNum =
+          self.indicatorData.dataShareSize.shareNum =
             res.data.data[0].invoke_success_count;
-            if(this.contentData.currentPage ==='dataShare'){
-              this.getleftChartLegend()
-            }
-        })
-        .catch(err => {
-          console.log(err);
-        });
+        return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
+      // this.axios
+      //   .post(url, params)
+      //   .then(res => {
+      //     // this.headerSecond.sheetLog = res.data.data[0].share_row_count
+      //     this.indicatorData.dataShareSize.record =
+      //       res.data.data[0].share_row_count;
+      //     this.indicatorData.dataShareSize.shareNum =
+      //       res.data.data[0].invoke_success_count;
+      //       if(this.contentData.currentPage ==='dataShare'){
+      //         this.getleftChartLegend()
+      //       }
+      //   })
+      //   .catch(err => {
+      //     console.log(err);
+      //   });
     },
     getTimeType(TimeType) {
       //获取当前点击得时间（近一天/近一周。。。。）
@@ -787,7 +863,6 @@ export default {
         this.contentData.secondPie.data.rows = this.data03[type].rows;//最终的rows
 
       }else if(this.contentData.currentPage === 'ETL'){
-        this.contentData.firstBar.set.type = 'line'
         let rowData = []
         xValue.map(only=>{
           let rowItem = {}
@@ -833,7 +908,8 @@ export default {
         
     },
     //获取右边双Y轴图例
-    getleftChartLegend(){
+    async getleftChartLegend(){
+      let self = this
       let req = {
         serviceName: "srvdc_rc_db_table_uiconf_select",
         colNames: ["table_no","table_name","table_label"],
@@ -843,24 +919,44 @@ export default {
         "srvdc_rc_db_table_uiconf_select",
         "datacenter"
       );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          // this.deploy = res.data.data
-          let Odeploy = res.data.data
-          // Odeploy.map(item=>{
-          //   // this.chartData01.columns.push(item.table_label)
-          // })
-            let tabeNum = Odeploy.map(item => item.table_no)
+      // let res = self.axios.post(path,req)
+      // if(res.status === 200){
+      //   let Odeploy = res.data.data
+      //   let tabeNum = Odeploy.map(item => item.table_no)
+      //       tabeNum = tabeNum.join(',')
+        
+      // }
+      let res =  await self.axios.post(path,req)
+      if(res.status === 200 && res.data.data.length > 0){
+        let Odeploy = res.data.data
+        let tabeNum = Odeploy.map(item => item.table_no)
             tabeNum = tabeNum.join(',')
-            this.getLegend(tabeNum)       
-        })
-        .catch(err => {
-          console.log(err);
-        });
+            await self.getLegend(tabeNum)
+        return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
+      // this.axios
+      //   .post(path, req)
+      //   .then(res => {
+      //     // this.deploy = res.data.data
+      //     if(res.status === 200){
+      //       let Odeploy = res.data.data
+      //     // Odeploy.map(item=>{
+      //     //   // this.chartData01.columns.push(item.table_label)
+      //     // })
+      //       let tabeNum = Odeploy.map(item => item.table_no)
+      //       tabeNum = tabeNum.join(',')
+      //       self.getLegend(tabeNum)
+      //     }
+                
+      //   })
+      //   .catch(err => {
+      //     console.log(err);
+      //   });
     },
     //获取图例对应的数据
-    getLegend(tabe){
+    async getLegend(tabe){
       let self = this
       console.log('maxData',tabe)
       let req = {        
@@ -869,16 +965,17 @@ export default {
           "colNames": ["row_count","storage_size","table_no","table_label"],           
       }
       let path = this.getServiceUrl('select','srvdc_rc_db_table_select','datacenter');
-      this.axios.post(path,req).then(res=>{
+      let res = await self.axios.post(path,req)
+
+      if(res.status === 200){
         let barDatas = res.data.data
-        console.log('barDatas',barDatas)
+        console.log('barDatas-----------',barDatas)
         let rightDateStro = []
         let rightDataSize = []
         this.contentData.secondBar.data.columns = ['表','占用空间','数据量']
         barDatas.map((item,index)=>{
             //  { 表: "表1", 数据量: 51, 占用空间: 0.22 },
             let defaultObj = {}
-            
             
             defaultObj['占用空间'] = item.storage_size / 1024
             defaultObj['数据量'] = item.row_count
@@ -897,12 +994,44 @@ export default {
         this.maxData['数据量'] = ArgMax
         // console.log(this.rightData)
         this.getMaxNum(maxNum,ArgMax)
-        console.log('maxData',this.maxData,maxNum,ArgMax)
-      })
-    },
+        // console.log('maxData',this.maxData,maxNum,ArgMax)
+        return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
+      // this.axios.post(path,req).then(res=>{
+      //   let barDatas = res.data.data
+      //   console.log('barDatas',barDatas)
+      //   let rightDateStro = []
+      //   let rightDataSize = []
+      //   this.contentData.secondBar.data.columns = ['表','占用空间','数据量']
+      //   barDatas.map((item,index)=>{
+      //       //  { 表: "表1", 数据量: 51, 占用空间: 0.22 },
+      //       let defaultObj = {}
+            
+      //       defaultObj['占用空间'] = item.storage_size / 1024
+      //       defaultObj['数据量'] = item.row_count
+      //       defaultObj['表'] = item.table_label 
+      //       rightDateStro.push(defaultObj['占用空间'])
+      //       rightDataSize.push(defaultObj['数据量'])            
+      //       this.contentData.secondBar.data.rows.push(defaultObj)
+      //   })
 
+      //   console.log('this.secondBar.data',this.contentData.secondBar.data)
+      //   let maxNum = Math.max.apply(null, rightDateStro)
+      //   let ArgMax = Math.max.apply(null, rightDataSize)
+      //   this.maxData = {}
+      //   // console.log('this.maxData==>',this.maxData)
+      //   this.maxData['占用空间'] = maxNum
+      //   this.maxData['数据量'] = ArgMax
+      //   // console.log(this.rightData)
+      //   this.getMaxNum(maxNum,ArgMax)
+      //   console.log('maxData',this.maxData,maxNum,ArgMax)
+      // })
+    },
     //获取ETL右边记录
-    getRightTask (){
+   async getRightTask (){
+     let self = this
       let params = {
         "serviceName": "srvetl_job_history_select",
         "colNames": ["*"],
@@ -919,29 +1048,45 @@ export default {
         ]       
       }
       let url = this.getServiceUrl("select", params.serviceName, "etl")
-        this.axios({
-          method:"POST",url:url,data:params
-        }
-        )
-        .then(res => {
-
+      let res = await self.axios.post(url,params)
+      if(res.status === 200 && res.data.data.length > 0){
           let taskName = res.data.data
           let no = res.data.data[0].job_no
           this.contentData.secondBar.tableData.taskNo = no
           this.contentData.secondBar.tableData.title = taskName
 
           let initial = res.data.data[0]
-          this.checktask(initial)
-
+         let reqTime = await self.checktask(initial)
           console.log('taskName',taskName)
+          return reqTime
+      }else{
+        console.log('error-------',res.status,res.data.data.length)
+        return {'isRes':false,'res':res}
+      }
+        // this.axios({
+        //   method:"POST",url:url,data:params
+        // }
+        // )
+        // .then(res => {
 
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
+        //   let taskName = res.data.data
+        //   let no = res.data.data[0].job_no
+        //   this.contentData.secondBar.tableData.taskNo = no
+        //   this.contentData.secondBar.tableData.title = taskName
 
-    checktask(item){
+        //   let initial = res.data.data[0]
+        //   this.checktask(initial)
+
+        //   console.log('taskName',taskName)
+
+        // })
+        // .catch(err => {
+        //   console.log(err);
+        // });
+  },
+
+    async checktask(item){
+      let self = this
       let NewStep = []
       let value = item.job_no
       let name = item.job_name  
@@ -975,12 +1120,9 @@ export default {
                
       }
       let url = this.getServiceUrl("select", params.serviceName, "etl")
-        this.axios({
-          method:"POST",url:url,data:params
-        }
-        )
-        .then(res => {
-          let old = res.data.data
+      let res = await self.axios.post(url,params)
+      if(res.status === 200){
+        let old = res.data.data
           old.forEach(simple=>{
             if(name === simple.job_name){
               NewStep.push(simple)
@@ -990,17 +1132,36 @@ export default {
           console.log('/-/-/-/-/-//-/-/-/',NewStep)
            this.contentData.secondBar.tableData.taskNo = this.contentData.secondBar.tableData.step[0].job_no
           
-            this.getNewTask(this.contentData.secondBar.tableData.taskNo)
-          // this.taskName = res.data.data
-          // let no = res.data.data[0].job_no
-          // this.taskNo = no
+           await this.getNewTask(this.contentData.secondBar.tableData.taskNo)
+           return res
+      }
+        // this.axios({
+        //   method:"POST",url:url,data:params
+        // }
+        // )
 
-        })
-        .catch(err => {
-          console.log(err);
-        });
+        // .then(res => {
+        //   let old = res.data.data
+        //   old.forEach(simple=>{
+        //     if(name === simple.job_name){
+        //       NewStep.push(simple)
+        //     }
+        //   })
+        //   this.contentData.secondBar.tableData.step = NewStep
+        //   console.log('/-/-/-/-/-//-/-/-/',NewStep)
+        //    this.contentData.secondBar.tableData.taskNo = this.contentData.secondBar.tableData.step[0].job_no
+          
+        //     this.getNewTask(this.contentData.secondBar.tableData.taskNo)
+        //   // this.taskName = res.data.data
+        //   // let no = res.data.data[0].job_no
+        //   // this.taskNo = no
+
+        // })
+        // .catch(err => {
+        //   console.log(err);
+        // });
     },
-    getNewTask(str){
+    async getNewTask(str){
       console.log('121312')
       let params = {
         "serviceName": "srvetl_processor_history_select",
@@ -1016,18 +1177,25 @@ export default {
         },                        
       }
       let url = this.getServiceUrl("select", params.serviceName, "etl")
-        this.axios({
-          method:"POST",url:url,data:params
-        }
-        )
-        .then(res => {
-            this.contentData.secondBar.tableData.GanttData = res.data.data
-            // console.error('GanttData',res.data.data)
-            // this.taskNo = res.data.data[0].job_no
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      let res = this.axios.post(url,params)
+      if(res.status === 200){
+        this.contentData.secondBar.tableData.GanttData = res.data.data
+        return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
+        // this.axios({
+        //   method:"POST",url:url,data:params
+        // }
+        // )
+        // .then(res => {
+        //     this.contentData.secondBar.tableData.GanttData = res.data.data
+        //     // console.error('GanttData',res.data.data)
+        //     // this.taskNo = res.data.data[0].job_no
+        // })
+        // .catch(err => {
+        //   console.log(err);
+        // });
     },
     //双Y轴间隔设置
     getMaxNum(e, r) {
@@ -1072,7 +1240,7 @@ export default {
 
       console.log("ops", e, r, ops);
       return ops;
-    }
+    },
 
     // toIndex(num) {
     //   if (num === "1") {
@@ -1514,6 +1682,49 @@ export default {
     //   }
     //   return nums;
     // },
+
+    /*累计运行时长定时刷新*/
+    RunTimeOut(){
+      let self = this
+      self.ReqTimeOut.RunTimeOut = new this.timeOut(30,0,self.getRunTime)
+      self.ReqTimeOut.RunTimeOut.reqFun();
+      self.ReqTimeOut.RunTimeOut.startTime();
+    },
+    /**数据量定时刷新 */
+    dataSizeTimeOut(){
+      let self = this
+      self.ReqTimeOut.dataSizeTimeOut = new this.timeOut(30,0,self.getDataSize)
+      self.ReqTimeOut.dataSizeTimeOut.reqFun();
+      self.ReqTimeOut.dataSizeTimeOut.startTime();
+    },
+    /**共享数据量（表）定时刷新 */
+    DataShareSizeTimeOut(){
+      let self = this
+      self.ReqTimeOut.DataShareSizeTimeOut = new this.timeOut(30,0,self.getDataShareSize)
+      self.ReqTimeOut.DataShareSizeTimeOut.reqFun();
+      self.ReqTimeOut.DataShareSizeTimeOut.startTime();
+    },
+    /**共享数据量（记录）和 数据共享次数定时刷新 */
+    DataShareRecodTimeOut(){
+      let self = this
+      self.ReqTimeOut.DataShareRecodTimeOut = new this.timeOut(30,0,self.getDataShareRecod)
+      self.ReqTimeOut.DataShareRecodTimeOut.reqFun();
+      self.ReqTimeOut.DataShareRecodTimeOut.startTime();
+    },
+    /**数据资源右边柱状图定时刷新 */
+    leftChartLegendTimeOut(){
+      let self = this
+      self.ReqTimeOut.leftChartLegendTimeOut = new this.timeOut(30,0,self.getleftChartLegend)
+      self.ReqTimeOut.leftChartLegendTimeOut.reqFun();
+      self.ReqTimeOut.leftChartLegendTimeOut.startTime();
+    },
+    /**ETL右边任务定时刷新 */
+    RightTaskTimeOut(){
+      let self = this
+      self.ReqTimeOut.RightTaskTimeOut = new this.timeOut(30,0,self.getRightTask)
+      self.ReqTimeOut.RightTaskTimeOut.reqFun();
+      self.ReqTimeOut.RightTaskTimeOut.startTime();
+    }
   },
   name: "datacenter",
 
@@ -1523,7 +1734,7 @@ export default {
     }
   },
   created() {
-    this.getRunTime();
+    // this.getRunTime();
     // this.getRunTime();
     // this.getDataSize();
     // this.getDataShareSize();
@@ -1569,10 +1780,36 @@ export default {
     // this.user = top.user;
   },
   mounted() {
+    // this.RunTimeOut()
+    // this.dataSizeTimeOut()
+    // this.DataShareSizeTimeOut()
+    // this.DataShareRecodTimeOut()
+    // this.leftChartLegendTimeOut()
+    // let self = this
+    // self.ReqTimeOut.RunTimeOut = new this.timeOut(5,0,self.getRunTime)
+    // self.ReqTimeOut.RunTimeOut.reqFun();
+    // self.ReqTimeOut.RunTimeOut.startTime();
+
+
+
+
+
+
+
+
+
     setInterval(() => {
       this.date = moment().format("YYYY-MM-DD  HH:mm:ss");
     }, 1000);
     // this.timeCycle("day");
+  },
+  beforeDestroy(){
+    // this.ReqTimeOut.RunTimeOut.endTime()
+    // this.ReqTimeOut.dataSizeTimeOut.endTime()
+    // this.ReqTimeOut.DataShareSizeTimeOut.endTime()
+    // this.ReqTimeOut.DataShareRecodTimeOut.endTime()
+    // this.ReqTimeOut.leftChartLegendTimeOut.endTime()
+    // this.ReqTimeOut.RightTaskTimeOut.endTime()
   }
 };
 </script>

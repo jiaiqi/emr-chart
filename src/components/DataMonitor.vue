@@ -68,7 +68,8 @@ export default {
         total: 0,
         pageNo: 1,
         rownumber: 25
-      }
+      },
+      TimeOut: null
       // databox3list2: {
       //   item01: "MongoDB",
       //   item02: "√",
@@ -88,7 +89,7 @@ export default {
       this.page.pageNo = val;
       this.getDataBase();
     },
-    getDataBase() {
+    async getDataBase() {
       let req = {
         serviceName: "srvdc_rc_db_select",
         colNames: [
@@ -111,16 +112,24 @@ export default {
         "srvdc_rc_db_select",
         "datacenter"
       );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          console.log("222", res);
-          this.page = res.data.page;
-          this.databox3list1 = res.data.data;
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      let res = await this.axios.post(path, req);
+      if (res.status === 200) {
+        this.page = res.data.page;
+        this.databox3list1 = res.data.data;
+        return { isRes: true, res: res };
+      } else {
+        return { isRes: false, res: res };
+      }
+      // this.axios
+      //   .post(path, req)
+      //   .then(res => {
+      //     console.log("222", res);
+      //     this.page = res.data.page;
+      //     this.databox3list1 = res.data.data;
+      //   })
+      //   .catch(err => {
+      //     console.log(err);
+      //   });
     },
     ConvertStor(num) {
       if (parseFloat(num) < 1024) {
@@ -136,7 +145,15 @@ export default {
     }
   },
   mounted() {
-    this.getDataBase();
+    // this.getDataBase();
+    let self = this;
+    self.TimeOut = new this.timeOut(30, 0, self.getDataBase);
+    self.TimeOut.reqFun();
+    self.TimeOut.startTime();
+  },
+  beforeDestroy() {
+    console.log("this.TimeOut----", this.TimeOut);
+    this.TimeOut.endTime();
   }
 };
 </script>

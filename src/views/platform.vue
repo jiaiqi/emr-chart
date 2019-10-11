@@ -162,7 +162,7 @@ export default {
         platMirc: {
           operation: {}
         }
-      }
+      },
 
       // microSer: [
       //   {
@@ -184,6 +184,19 @@ export default {
       //   { staLabel: "", begLabel: "", name: "微服务9", status: "", beg: "" },
       //   { staLabel: "", begLabel: "", name: "更多", status: "", beg: "" }
       // ]
+      ReqTimeOut:{
+        RunTimeOut:null,
+        dataSizeTimeOut:null,
+        dataThree:null,
+         dataFour:null,
+          dataFive:null,
+          dataSix:null,
+          dataSeven:null,
+          dataEight:null,
+          dataNine:null,
+          dataTen:null,
+          dataEleven:null,
+      }
     };
   },
   created() {
@@ -197,67 +210,70 @@ export default {
     // this.autoChangeTab(10000)
   },
   methods: {
-     getData_one() { //请求次数
-    //  console.log(this.platMircData)
-      let req = {
+    //  getData_one() { //请求次数
+    // //  console.log(this.platMircData)
+    //   let req = {
         
-        serviceName: "srvlog_call_statistics_select",
-        colNames: ["*"],
-        condition: [],
-        group: [
-          {
-            colName: "num_of_calls",
-            type: "sum"
-          }
-        ]
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvlog_call_statistics_select",
-        "log"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.platMircData.listwg = res.data.data[0].num_of_calls;
-          // console.log(this.platMircData)
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-     getLog() {
-      let req = {
-        serviceName: "srvlog_operate_record_select",
-        colNames: ["*"],
-        condition: [],
-        group: [
-          {
-            colName: "id",
-            type: "count"
-          }
-        ],
-        page: {
-          pageNo: 1,
-          rownumber: 1
-        }
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvlog_operate_record_select",
-        "log"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.platMircData.logNum = res.data.page.total;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
+    //     serviceName: "srvlog_call_statistics_select",
+    //     colNames: ["*"],
+    //     condition: [],
+    //     group: [
+    //       {
+    //         colName: "num_of_calls",
+    //         type: "sum"
+    //       }
+    //     ]
+    //   };
+    //   let path = this.getServiceUrl(
+    //     "select",
+    //     "srvlog_call_statistics_select",
+    //     "log"
+    //   );
+    //   this.axios
+    //     .post(path, req)
+    //     .then(res => {
+    //       console.error(res)
+    //       this.platMircData.listwg = res.data.data[0].num_of_calls;
+    //       // console.log(this.platMircData)
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // },
+    //  getLog() {
+    //   let req = {
+    //     serviceName: "srvlog_operate_record_select",
+    //     colNames: ["*"],
+    //     condition: [],
+    //     group: [
+    //       {
+    //         colName: "id",
+    //         type: "count"
+    //       }
+    //     ],
+    //     page: {
+    //       pageNo: 1,
+    //       rownumber: 1
+    //     }
+    //   };
+    //   let path = this.getServiceUrl(
+    //     "select",
+    //     "srvlog_operate_record_select",
+    //     "log"
+    //   );
+    //   this.axios
+    //     .post(path, req)
+    //     .then(res => {
+    //       console.error(res)
+    //       this.platMircData.logNum = res.data.page.total;
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // },
      //文档管理 文档总数
-    getData_two() {
+   async  getData_two() {
+     let self = this  
       let req = {
         serviceName: "srvapprc_dev_wendang_select",
         colNames: ["*"],
@@ -268,60 +284,48 @@ export default {
         "srvapprc_dev_wendang_select",
         "apprc"
       );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          // console.log( res);
-          this.platMircData.listpz = res.data.data.length;
-          // console.log(this.platMircData)
-        })
-        .catch(err => {
-          console.log(err);
-        });
+       let res = await self.axios.post(path,req)
+       if(res.status === 200){        
+        this.platMircData.listpz = res.data.data.length;
+        return { 'isRes': true, 'res': res }
+      }else{
+        return { 'isRes': false, 'res': res };
+      }
+      // this.axios
+      //   .post(path, req)
+      //   .then(res => {
+      //     this.platMircData.listpz = res.data.data.length;
+      //     this.getData_three()
+      //   })
+      //   .catch(err => {
+      //     console.log(err);
+      //   });
     },
-    getData_three() {  //用户中心 用户总数
+
+
+
+  async getData_three() { 
+     console.warn("hahaha")
+      let self = this    //用户中心 用户总数
       let req = {
         serviceName: "srvsso_user_select",
         colNames: ["*"],
         condition: []
       };
       let path = this.getServiceUrl("select", "srvsso_user_select", "sso");
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.platMircData.list_userno = res.data.data.length;
-          // console.log('333',res)
-        })
-        .catch(err => {
-          console.log(err);
-        });
+       let res = await self.axios.post(path,req)
+         if(res.status === 200){        
+            this.platMircData.list_userno = res.data.data.length;
+           return { 'isRes': true, 'res': res }
+        }else{
+           return { 'isRes': false, 'res': res };
+      }
     },
-    
-
-    getData() {
-      console.log("haha")
-      let path = this.getServiceUrl(
-        "",
-        "monitor",
-        "redis"
-      );
-      this.axios
-        .get(path)
-        .then(res => {
-          // console.log(res)
-          console.log("hahahah"+res)
-          // this.listwg = res.data.data[0].num_of_calls;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-
-
-
 
      //任务管理 总任务数
-    getData_four() {
+  async getData_four() {
+    console.group("任务管理")
+     let self = this 
       let req = {
         serviceName: "srvtask_shedule_cfg_select",
         colNames: ["*"],
@@ -332,71 +336,49 @@ export default {
         "srvtask_shedule_cfg_select",
         "task"
       );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.platMircData.list_rw = res.data.data.length;
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      let res = await self.axios.post(path,req)
+      // this.axios
+      //   .post(path, req)
+       if(res.status === 200){        
+                  this.platMircData.list_rw = res.data.data.length;
+        return { 'isRes': true, 'res': res }
+      }else{
+        return { 'isRes': false, 'res': res };
+      }
+      //   .then(res => {
+        // })
+        // .catch(err => {
+        //   console.log(err);
+        // });
     },
-    //请求次数
-    getRegNum() {
-      let req = {
-        serviceName: "srvlog_call_statistics_select",
-        colNames: ["*"],
-        condition: [
-          {
-            colName: "application",
-            ruleType: "in",
-            value: "sso,config,log,auth"
-          }
-        ],
-        group: [
-          {
-            colName: "application",
-            type: "by"
-          },
-          {
-            colName: "num_of_calls",
-            type: "sum"
-          }
-        ]
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvlog_call_statistics_select",
-        "log"
-      );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.platMircData.regNum = res.data.data;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
+   
     //事件管理 事件总数
-    getData_five() {
+   async getData_five() {
+       let self = this 
       let req = {
         serviceName: "srvevent_reg_select",
         colNames: ["*"],
         condition: []
       };
       let path = this.getServiceUrl("select", "srvevent_reg_select", "event");
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.platMircData.list_sj = res.data.data.length;
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      // this.axios
+      //   .post(path, req)
+      //   .then(res => {
+         let res = await self.axios.post(path,req)
+         if(res.status===200){
+                 this.platMircData.list_sj = res.data.data.length;
+        return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
+        // })
+        // .catch(err => {
+        //   console.log(err);
+        // });
     },
     //测试中心 测试应用数量
-    getData_six() {
+  async  getData_six() {
+    let self = this 
       let req = {
         serviceName: "srvapprc_application_apply_dev_select",
         colNames: ["*"],
@@ -407,18 +389,26 @@ export default {
         "srvapprc_application_apply_dev_select",
         "apprc"
       );
-      this.axios
-        .post(path, req)
-        .then(res => {
+         let res = await self.axios.post(path,req)
+      // this.axios
+         if(res.status===200){
           this.platMircData.list_cs = res.data.data.length;
-          // console.log('555',res)
-        })
-        .catch(err => {
-          console.log(err);
-        });
+                //  this.platMircData.list_sj = res.data.data.length;
+        return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
+      //   .post(path, req)
+      //   .then(res => {
+        //   // console.log('555',res)
+        // })
+        // .catch(err => {
+        //   console.log(err);
+        // });
     },
         //测试中心 上线应用数量
-    getData_seven() {
+   async getData_seven() {
+     let self = this 
       let req = {
         serviceName: "srvapprc_online_apply_dev_select",
         colNames: ["*"],
@@ -435,18 +425,27 @@ export default {
         "srvapprc_online_apply_dev_select",
         "apprc"
       );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.platMircData.list_cssx = res.data.data.length;
+      // this.axios
+            let res = await self.axios.post(path,req)
+      // this.axios
+         if(res.status===200){
+                   this.platMircData.list_cssx = res.data.data.length;
+
+        return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
+      //   .post(path, req)
+      //   .then(res => {
           // console.log('555',res)
-        })
-        .catch(err => {
-          console.log(err);
-        });
+        // })
+        // .catch(err => {
+        //   console.log(err);
+        // });
     },
     //开发中心 工单个数
-    getData_eight() {
+  async  getData_eight() {
+     let self = this 
       let req = {
         serviceName: "srvapprc_issue_info_select",
         colNames: ["*"],
@@ -457,18 +456,25 @@ export default {
         "srvapprc_issue_info_select",
         "apprc"
       );
-      this.axios
-        .post(path, req)
-        .then(res => {
-            this.platMircData.list_kfgd = res.data.data.length;
+      // this.axios
+      //   .post(path, req)
+      //   .then(res => {
+      let res = await self.axios.post(path,req)
+         if(res.status===200){
+            this.platMircData.list_kfgd = res.data.data.length;                   
+         return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
           // console.log('888',res)
-        })
-        .catch(err => {
-          console.log(err);
-        });
+        // })
+        // .catch(err => {
+        //   console.log(err);
+        // });
     },
     //开发中心 处理工单个数
-    getData_nine() {
+   async getData_nine() {
+      let self = this 
       let req = {
         serviceName: "srvapprc_issue_info_select",
         colNames: ["*"],
@@ -485,48 +491,72 @@ export default {
         "srvapprc_issue_info_select",
         "apprc"
       );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          this.platMircData.list_kfcl = res.data.data.length;
+      // this.axios
+      //   .post(path, req)
+        let res = await self.axios.post(path,req)
+         if(res.status===200){
+           this.platMircData.list_kfcl = res.data.data.length;                         
+         return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
+      //   .then(res => {
           // console.log('999',res)
-        })
-        .catch(err => {
-          console.log(err);
-        });
+        // })
+        // .catch(err => {
+        //   console.log(err);
+        // });
     },
     //注册中心 应用总数量
-    getData_ten() {
+  async  getData_ten() {
+     let self = this 
       let req = {
         serviceName: "srvapprc_issue_info_select",
         colNames: ["*"],
         condition: []
       };
       let path = "http://192.168.0.192:8101/monitor/applications";
-      this.axios
-        .get(path, req)
-        .then(res => {
-          this.platMircData.list_zcyy = res.data.length;
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      // this.axios
+      //   .get(path, req)
+      //   .then(res => {
+          let res = await self.axios.get(path,req)
+
+         if(res.status===200){
+          this.platMircData.list_zcyy = res.data.length;                                  
+         return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
+        // })
+        // .catch(err => {
+        //   console.log(err);
+        // });
     },
     //监控中心 监控应用个数
-    getData_eleven() {
+   async getData_eleven() {
+     let self = this 
       let path = "http://192.168.0.192:8101/monitor/applications";
-      this.axios
-        .get(path)
-        .then(res => {
+      // this.axios
+      //   .get(path)
+           let res = await self.axios.get(path)
+         if(res.status===200){
           this.platMircData.list_jkyygs = res.data.length;
+                                        
+         return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
+      //   .then(res => {
           // console.log('aaa',res.data.length)
-        })
-        .catch(err => {
-          console.log(err);
-        });
+          
+        // })
+        // .catch(err => {
+        //   console.log(err);
+        // });
     },
     //查询APP运行时长
-    operation() {
+   async operation() {
+     let self = this 
       // console.log(this.platMircData)
       let req = {
         serviceName: "srvlog_apps_onlie_time_select",
@@ -538,158 +568,146 @@ export default {
         "srvlog_apps_onlie_time_select",
         "monitor"
       );
-      this.axios
-        .post(path, req)
-        .then(res => {
-          let operat1 = res.data.data;
+        let res = await self.axios.post(path,req)
+         if(res.status === 200){        
+           let operat1 = res.data.data;
           operat1 = Object.assign(...operat1);
           this.platMircData.operat = operat1;
-          // console.log(this.operat)
-        })
-        .catch(err => {
-          console.log(err);
-        });
+        return { 'isRes': true, 'res': res }
+      }else{
+        return { 'isRes': false, 'res': res };
+      }
+      // this.axios
+      //   .post(path, req)
+      //   .then(res => {
+      //     let operat1 = res.data.data;
+      //     operat1 = Object.assign(...operat1);
+      //     this.platMircData.operat = operat1;
+      //   })
+      //   .catch(err => {
+      //     console.log(err);
+      //   });
     },
 
      
     viewtabs(pageName) {
       this.contentData.currentPage = pageName.key;
-      console.log(this.contentData.currentPage)
-    }
-    //
+      // console.log(this.contentData.currentPage)
+    },
 
-    //   //转换数字
-    //   convert(num) {
-    //     let nums = parseInt(num);
-    //     if (nums > 10000) {
-    //       if (nums % 10000 == 0) {
-    //         nums = num / 10000 + "万";
-    //       } else {
-    //         nums = Math.round((num / 10000) * 10) / 10 + "万";
-    //       }
-    //     } else {
-    //       nums = num;
-    //     }
-    //     return nums;
-    //   },
-    //   // 持续运行时长转换
-    //   period(num) {
-    //     let nums = parseInt(num) / 60 / 60;
-    //     if (nums < 24) {
-    //       if (nums % parseInt(nums) == 0) {
-    //         nums = nums;
-    //       } else {
-    //         nums = Math.round(nums * 10) / 10 + "h";
-    //       }
-    //     } else {
-    //       nums = Math.round((nums / 24) * 10) / 10 + "天";
-    //     }
-    //     return nums;
-    //   },
-    //   toIndex(num) {
-    //     if (num === "1") {
-    //       sessionStorage.clear();
-    //       window.location.href = "/main/login_pages/login-fw.html";
-    //       // this.$router.push({ name: "login" });
-    //     }
-    //     if (num === "2") {
-    //       this.$router.push({ name: "navs" });
-    //     }
-    //   },
-    //   init() { },
-    //   changeTab(num) {
-    //     this.tabsShow = num;
-    //     if (this.tabsShow == 1) {
-    //       this.showComponent = platMirc;
-    //     } else if (this.tabsShow == 2) {
-    //       this.showComponent = platServe;
-    //     }
-    //   },
-    //   autoChangeTab(interval) {
-    //     setInterval(() => {
-    //       if (this.tabsShow >= 2) {
-    //         this.tabsShow = 1;
-    //         this.tabsShow++;
-    //       } else {
-    //         this.tabsShow++;
-    //       }
-    //       this.changeTab(this.tabsShow);
-    //     }, interval);
-    //   },
-    //   toManangerment() {
-    //     let str = window.location.href;
-    //     let num = str.indexOf("?");
-    //     str = str.substr(num + 1);
-    //     // console.log(str);
-    //     window.location.href = "../../main/index.html?" + str;
-    //   },
-    //   // toSecplat() {
-    //   //   this.$router.push("/secplat");
-    //   // }
-    //   //当前用户数
-    //   getData_userno() {
-    //     let req = {
-    //       serviceName: "srvsso_online_user_select",
-    //       colNames: ["*"],
-    //       condition: []
-    //     };
-    //     let path = this.getServiceUrl(
-    //       "select",
-    //       "srvsso_online_user_select",
-    //       "sso"
-    //     );
-    //     this.axios
-    //       .post(path, req)
-    //       .then(res => {
-    //         this.list_useno = res.data.data[0].number_of_online_users;
-    //       })
-    //       .catch(err => {
-    //         console.log(err);
-    //       });
-    //   },
-    //   //注册用户数
-    //   CurrRegNum() {
-    //     let req = {
-    //       serviceName: "srvsso_user_select",
-    //       colNames: ["*"],
-    //       condition: []
-    //     };
-    //     let path = this.getServiceUrl("select", "srvsso_user_select", "sso");
-    //     this.axios
-    //       .post(path, req)
-    //       .then(res => {
-    //         // this.list_useno = res.data.data[0].number_of_online_users;
-    //         this.regNum = res.data.data.length;
-    //       })
-    //       .catch(err => {
-    //         console.log(err);
-    //       });
-    //   }
-    // },
-    // computed: {},
-    // created() {
-    //   let user = sessionStorage.getItem("current_login_user");
-    //   this.user = JSON.parse(user);
-    //   // this.user = top.user.user_no;
-    //   // this.getData_userno();
-    //   // this.CurrRegNum();
+      /**定时刷新 */
+    RunTimeOut(){
+      let self = this
+      self.ReqTimeOut.RunTimeOut = new this.timeOut(30,0,self.getData_two)
+      self.ReqTimeOut.RunTimeOut.reqFun();
+      self.ReqTimeOut.RunTimeOut.startTime();
+    },
+  /**定时刷新 */
+    dataSizeTimeOut(){
+      let self = this
+      self.ReqTimeOut.dataSizeTimeOut = new this.timeOut(30,0,self.operation)
+      self.ReqTimeOut.dataSizeTimeOut.reqFun();
+      self.ReqTimeOut.dataSizeTimeOut.startTime();
+    },
+    dataThree(){
+      let self = this
+      self.ReqTimeOut.dataThree = new this.timeOut(30,0,self.getData_three)
+      self.ReqTimeOut.dataThree.reqFun();
+      self.ReqTimeOut.dataThree.startTime();
+    },
+    dataFour(){
+      let self = this
+      self.ReqTimeOut.dataFour = new this.timeOut(30,0,self.getData_four)
+      self.ReqTimeOut.dataFour.reqFun();
+      self.ReqTimeOut.dataFour.startTime();
+    },
+    dataFive(){
+      let self = this
+      self.ReqTimeOut.dataFive = new this.timeOut(30,0,self.getData_five)
+      self.ReqTimeOut.dataFive.reqFun();
+      self.ReqTimeOut.dataFive.startTime();
+    },
+    dataSix(){  
+      let self = this
+      self.ReqTimeOut.dataSix = new this.timeOut(30,0,self.getData_six)
+      self.ReqTimeOut.dataSix.reqFun();
+      self.ReqTimeOut.dataSix.startTime();
+    },
+    dataSeven(){ 
+       let self = this
+      self.ReqTimeOut.dataSeven = new this.timeOut(30,0,self.getData_seven)
+      self.ReqTimeOut.dataSeven.reqFun();
+      self.ReqTimeOut.dataSeven.startTime();
+    },
+    dataEight(){
+       let self = this
+      self.ReqTimeOut.dataEight = new this.timeOut(30,0,self.getData_eight)
+      self.ReqTimeOut.dataEight.reqFun();
+      self.ReqTimeOut.dataEight.startTime();
+    },
+    dataNine(){
+      let self = this
+      self.ReqTimeOut.dataNine = new this.timeOut(30,0,self.getData_nine)
+      self.ReqTimeOut.dataNine.reqFun();
+      self.ReqTimeOut.dataNine.startTime();
+    },
+    dataTen(){ 
+         let self = this
+      self.ReqTimeOut.dataTen = new this.timeOut(30,0,self.getData_ten)
+      self.ReqTimeOut.dataTen.reqFun();
+      self.ReqTimeOut.dataTen.startTime();
+    },
+    dataEleven(){ 
+         let self = this
+      self.ReqTimeOut.dataEleven = new this.timeOut(30,0,self.getData_eleven)
+      self.ReqTimeOut.dataEleven.reqFun();
+      self.ReqTimeOut.dataEleven.startTime();
+    }
+   
   },
   created(){
-    this.getData_one()
-    this.getData_two()
-    this.getData_three()
-    this.getData_four()
-    this.getData_five()
-    this.getData_six()
-    this.getData_seven()
-    this.getData_eight()
-    this.getData_nine()
-    this.getData_ten()
-    this.getData_eleven()
-    this.getRegNum()
-    this.operation()
-    // this.getData()
-    // this.CenTiny()
+
+    // this.getData_one()
+    // this.getData_two()
+    // this.operation()
+    
+    // this.getData_four()
+    // this.getData_five()
+    // this.getData_six()
+    // this.getData_seven()
+    // this.getData_eight()
+    // this.getData_nine()
+    // this.getData_ten()
+    // this.getData_eleven()
+    // this.operation()
+  
+  },
+  mounted(){
+    
+    this.RunTimeOut()
+    this.dataSizeTimeOut()
+    this.dataThree()
+    this.dataFour()
+    this.dataFive()
+    this.dataSix()
+    this.dataSeven()
+    this.dataEight()
+    this.dataNine()
+    this.dataTen()
+    this.dataEleven()
+  },
+  destroyed(){
+     this.ReqTimeOut.RunTimeOut.endTime();
+     this.ReqTimeOut.dataSizeTimeOut.endTime();
+     this.ReqTimeOut.dataThree.endTime();
+     this.ReqTimeOut.dataFour.endTime();
+     this.ReqTimeOut.dataFive.endTime();
+     this.ReqTimeOut.dataSix.endTime();
+     this.ReqTimeOut.dataSeven.endTime();
+     this.ReqTimeOut.dataEight.endTime();
+     this.ReqTimeOut.dataNine.endTime();
+     this.ReqTimeOut.dataTen.endTime();
+     this.ReqTimeOut.dataEleven.endTime();
   }
 };
 </script>

@@ -138,6 +138,9 @@ export default {
       }
     }
     return {
+      ReqTimeOut:{
+        RunTimeOut:null,
+      },
         chartExtendLine:{        
         grid: {
           top: '20%',
@@ -212,7 +215,7 @@ export default {
   props:['secplatdata'],
   methods:{
      //获取图例
-    getLegend(){
+   async getLegend(){
       // this.dateLine=JSON.stringify(this.secplatdata)
       let self = this
       let req = {
@@ -225,11 +228,12 @@ export default {
         }]
       };
       let path = this.getServiceUrl("select", "srvlog_srv_indicator_cfg_select", "log");
-      this.axios
-        .post(path, req)
-        .then(res => {
-          // console.log( res)
-          let NewCharData = res.data.data
+
+      let res = await this.axios.post(path,req)
+      // console.error(res)
+      // this.axios
+       if(res.status===200){
+               let NewCharData = res.data.data
           // console.log('NewCharData',this.chartData)
           let srvUrlName = NewCharData.map(item => item.srv_url)
           self.srvKeyArr = NewCharData.map((item) => {
@@ -249,12 +253,20 @@ export default {
           this.chartSettings.showLine =srvName.map(item => item + '-')
           this.chartSettings.axisSite.right = srvName.map(item => item + '-')
           self.legendData(self.srvUrlName,self.srvName,self.dateLine)
+        return {'isRes':true,'res':res}
+      }else{
+        return {'isRes':false,'res':res}
+      }
+      //   .post(path, req)
+      //   .then(res => {
+          // console.log( res)
+       
           // console.log(self.dateLine[0].key)
           // console.log(self.dateLine.key)
-        })
-        .catch(err => {
-          console.log(err);
-        });
+        // })
+        // .catch(err => {
+        //   console.log(err);
+        // });
     },   
     
     //获取图例对应的数据
@@ -597,6 +609,12 @@ export default {
       console.log('ops',e,r,ops)
       return ops
     },
+     RunTimeOut(){
+      let self = this
+      self.ReqTimeOut.RunTimeOut = new this.timeOut(30,0,self.getLegend)
+      self.ReqTimeOut.RunTimeOut.reqFun();
+      self.ReqTimeOut.RunTimeOut.startTime();
+    },
      
   },
   created(){
@@ -629,9 +647,15 @@ export default {
       month_end: month_end,
       year_start: year_start
     }
-    this.getLegend()
+    // this.getLegend()
     //  this.$cookie.set('appNo', this.appNo);
     //  console.log("________"+this.$route.params.appNo)
+  },
+  mounted(){
+    this.RunTimeOut()
+  },
+  beforeDestroy(){
+    this.ReqTimeOut.RunTimeOut.endTime();
   }
 };
 </script>

@@ -163,7 +163,7 @@ function init() {
           console.error('-----请求数据失败----', this.nTime)
           return false
         } else {
-          let bTimeout = setTimeout(() => {
+          setTimeout(() => {
             this.nTime++
             console.log('---------', this.nTime)
             if (this.isDestroy === false) {
