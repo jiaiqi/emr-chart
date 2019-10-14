@@ -569,6 +569,7 @@ export default {
         "monitor"
       );
         let res = await self.axios.post(path,req)
+        // console.error(res)
          if(res.status === 200){        
            let operat1 = res.data.data;
           operat1 = Object.assign(...operat1);
@@ -683,7 +684,6 @@ export default {
   
   },
   mounted(){
-    
     this.RunTimeOut()
     this.dataSizeTimeOut()
     this.dataThree()

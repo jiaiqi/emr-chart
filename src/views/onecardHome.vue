@@ -48,6 +48,19 @@ export default {
     }
 
     return {
+      ReqTimeOuty:{
+              dataoney:null,
+              datatwoy:null,
+              dataThreey:null,
+              dataFoury:null,
+              dataFivey:null,
+              dataSixy:null,
+              dataSeveny:null,
+              dataEighty:null,
+              dataNiney:null,
+              dataTeny:null,
+              dataEleveny:null,
+         },
       lineOne: [
         {
           "title": '卡机个数',
@@ -113,7 +126,8 @@ export default {
   },
   methods: {
     //卡机个数
-    getData_one() {
+  async  getData_one() {
+    let self = this 
       let req = {
         "serviceName": "srvcvs_device_cfg_select",
         "colNames": ["*"],
@@ -122,16 +136,24 @@ export default {
         "group": [{ "colName": "card_id", "type": "count" }]
       }
       let path = this.getServiceUrl("select", 'srvcvs_device_cfg_select', "cvs");
-      axios.post(
-        path, req,
-      ).then(res => {
-        this.lineOne[0].value = res.data.data[0].card_id
-      }).catch(err => {
-        console.log(err)
-      })
+
+       let res = await self.axios.post(path,req)
+      // axios.post(
+      //   path, req,
+      if(res.status === 200){  
+          this.lineOne[0].value = res.data.data[0].card_id
+          return { 'isRes': true, 'res': res }
+      }else{
+          return { 'isRes': false, 'res': res };
+      }
+      // ).then(res => {
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //住院记录数
-    getLineData() {
+  async  getLineData() {
+    let self = this 
       let req2 = {
         "serviceName": "srvcvs_medical_records_select",
         "colNames": ["*"],
@@ -152,11 +174,11 @@ export default {
 
       }
       let path = this.getServiceUrl("select", 'srvcvs_medical_records_select', "cvs");
-      axios.post(
-        path, req2,
-      ).then(res => {
-        // this.lineOne[1].value = res.data.data.length
-        let timeData = res.data.data
+
+        let res = await self.axios.post(path,req2)
+
+             if(res.status === 200){        
+                     let timeData = res.data.data
         let hours = []
         for (let i = 1; i <= 24; i++) {
           hours.push(moment().subtract(24 - i, 'hours').format("HH"))
@@ -192,14 +214,24 @@ export default {
           }
           rows.push(dataMap)
         })
-        this.chartData.rows = rows
+        this.chartData.rows = rows                                
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+      // axios.post(
+      //   path, req2,
+      // ).then(res => {
+        // this.lineOne[1].value = res.data.data.length
+       
         // console.log('22222222__111111',this.chartData)
-      }).catch(err => {
-        console.log(err)
-      })
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //门诊记录数
-    getData_two3() {
+   async getData_two3() {
+      let self = this 
       let req9 = {
         "serviceName": "srvcvs_medical_records_select",
         "colNames": ["*"],
@@ -213,16 +245,25 @@ export default {
 
       }
       let path = this.getServiceUrl("select", 'srvcvs_medical_records_select', "cvs");
-      axios.post(
-        path, req9,
-      ).then(res => {
-        this.lineOne[1].value = res.data.data[0].bizno
-      }).catch(err => {
-        console.log(err)
-      })
+
+       let res = await self.axios.post(path,req9)
+
+             if(res.status === 200){        
+                this.lineOne[1].value = res.data.data[0].bizno                                                    
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+      // axios.post(
+      //   path, req9,
+      // ).then(res => {
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //住院记录数
-    getData_two2() {
+  async  getData_two2() {
+    let self = this 
       let req9 = {
         "serviceName": "srvcvs_medical_records_select",
         "colNames": ["*"],
@@ -236,13 +277,20 @@ export default {
 
       }
       let path = this.getServiceUrl("select", 'srvcvs_medical_records_select', "cvs");
-      axios.post(
-        path, req9,
-      ).then(res => {
-        this.lineOne[2].value = res.data.data[0].bizno
-      }).catch(err => {
-        console.log(err)
-      })
+         let res = await self.axios.post(path,req9)
+
+             if(res.status === 200){        
+                this.lineOne[2].value = res.data.data[0].bizno                                                      
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+      // axios.post(
+      //   path, req9,
+      // ).then(res => {
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
      homeHref(item){
       if(item=="卡机个数"){
@@ -316,7 +364,8 @@ export default {
       // }
     },
     //卡机设备心跳数
-    getData_kj() {
+   async getData_kj() {
+      let self = this 
       let req = {
         "serviceName": "srvcvs_device_heart_record_select",
         "colNames": ["*"],
@@ -325,16 +374,26 @@ export default {
         "group": [{ "colName": "id", "type": "count" }]
       }
       let path = this.getServiceUrl("select", 'srvcvs_device_heart_record_select', "cvs");
-      axios.post(
-        path, req,
-      ).then(res => {
+
+        let res = await self.axios.post(path,req)
+
+             if(res.status === 200){        
         this.lineOne[3].value = res.data.data[0].id
-      }).catch(err => {
-        console.log(err)
-      })
+                                                   
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+      // axios.post(
+      //   path, req,
+      // ).then(res => {
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //患者总数
-    getData_three() {
+   async getData_three() {
+     let self = this
       let req3 = {
         "serviceName": "DI_MPI_REGISTERINFO_select",
         "colNames": ["*"],
@@ -344,17 +403,27 @@ export default {
         "group": [{ "colName": "id", "type": "count" }]
       }
       let path = this.getServiceUrl("select", 'DI_MPI_REGISTERINFO_select', "emr");
-      axios.post(
-        path, req3,
-      ).then(res => {
+
+      let res = await self.axios.post(path,req3)
+
+             if(res.status === 200){        
         this.lineTwo[0].value = res.data.data[0].id
-        // console.log('3333333',res.data.data)
-      }).catch(err => {
-        console.log(err)
-      })
+                                                     
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+      // axios.post(
+      //   path, req3,
+      // ).then(res => {
+      //   // console.log('3333333',res.data.data)
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //门诊挂号
-    getData_four() {
+   async getData_four() {
+     let self = this 
       let req4 = {
         "serviceName": "DI_ADI_REGISTER_INFO_select",
         "colNames": ["*"],
@@ -364,16 +433,25 @@ export default {
         "group": [{ "colName": "AP01_00_027_00", "type": "count" }]
       }
       let path = this.getServiceUrl("select", 'DI_ADI_REGISTER_INFO_select', "emr");
-      axios.post(
-        path, req4,
-      ).then(res => {
-        this.lineTwo[1].value = res.data.data[0].AP01_00_027_00
-      }).catch(err => {
-        console.log(err)
-      })
+
+        let res = await self.axios.post(path,req4)
+
+             if(res.status === 200){        
+                 this.lineTwo[1].value = res.data.data[0].AP01_00_027_00                                                      
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+      // axios.post(
+      //   path, req4,
+      // ).then(res => {
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //入院记录
-    getData_five() {
+   async getData_five() {
+     let self = this 
       let req5 = {
         "serviceName": "DI_HDI_INRECORD_INFO_select",
         "colNames": ["*"],
@@ -383,16 +461,24 @@ export default {
         "group": [{ "colName": "BATCH_NUM_NEW", "type": "count" }]
       }
       let path = this.getServiceUrl("select", 'DI_HDI_INRECORD_INFO_select', "emr");
-      axios.post(
-        path, req5,
-      ).then(res => {
+        let res = await self.axios.post(path,req5)
+
+             if(res.status === 200){        
         this.lineTwo[2].value = res.data.data[0].BATCH_NUM_NEW
-      }).catch(err => {
-        console.log(err)
-      })
+                                                    
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+      // axios.post(
+      //   path, req5,
+      // ).then(res => {
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //检验报告
-    getData_six() {
+   async getData_six() {
       let self = this
       let req6 = {
         "serviceName": "DI_ADI_LAREXA_INFO_select",
@@ -438,7 +524,8 @@ export default {
       })
     },
     //医嘱
-    getData_eight() {
+   async getData_eight() {
+     let self = this 
       let req8 = {
         "serviceName": "DI_ADI_DRUREC_INFO_select",
         "colNames": ["*"],
@@ -446,18 +533,29 @@ export default {
         ]
       }
       let path = this.getServiceUrl("select", 'DI_ADI_DRUREC_INFO_select', "emr");
-      axios.post(
-        path, req8,
-      ).then(res => {
-        if (res.data.data.length > 0) {
+      // axios.post(
+      //   path, req8,
+       let res = await self.axios.post(path,req8)
+
+             if(res.status === 200){        
+                  if (res.data.data.length > 0) {
           this.lineTwodif_three = res.data.data.length
-        }
+        }                                     
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+      // ).then(res => {
+      
         // console.log('888888',res.data.data.length)
-      }).catch(err => {
-        console.log(err)
-      })
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
-    getData_nine() {
+
+
+  async  getData_nine() {
+    let self = this 
       let req9 = {
         "serviceName": "DI_HDI_DRUREC_INFO_select",
         "colNames": ["*"],
@@ -466,33 +564,127 @@ export default {
         "group": [{ "colName": "LOCAL_ID", "type": "count" }]
       }
       let path = this.getServiceUrl("select", 'DI_HDI_DRUREC_INFO_select', "emr");
-      axios.post(
-        path, req9,
-      ).then(res => {
-        // console.log(res.data.data[0].LOCAL_ID)
-        this.lineTwodif_four = res.data.data[0].LOCAL_ID
+
+       let res = await self.axios.post(path,req9)
+            
+             if(res.status === 200){        
+                  this.lineTwodif_four = res.data.data[0].LOCAL_ID
         if (res.data.data[0].LOCAL_ID > 0) {
           this.lineTwo[4].value = this.lineTwodif_four + this.lineTwodif_four
-        }
+        }                                                   
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+      // axios.post(
+      //   path, req9,
+      // ).then(res => {
+        // console.log(res.data.data[0].LOCAL_ID)
+      
         // console.log('99999999',res.data.data.length)
-      }).catch(err => {
-        console.log(err)
-      })
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
+    dataoney(){
+      let self = this
+      self.ReqTimeOuty.dataoney = new this.timeOut(30,0,self.getData_one)
+      self.ReqTimeOuty.dataoney.reqFun();
+      self.ReqTimeOuty.dataoney.startTime();
+    },
+  /**定时刷新 */
+    datatwoy(){
+      let self = this
+      self.ReqTimeOuty.datatwoy = new this.timeOut(30,0,self.getLineData)
+      self.ReqTimeOuty.datatwoy.reqFun();
+      self.ReqTimeOuty.datatwoy.startTime();
+    },
+    dataThreey(){
+      let self = this
+      self.ReqTimeOuty.dataThreey = new this.timeOut(60,0,self.getData_two2)
+      self.ReqTimeOuty.dataThreey.reqFun();
+      self.ReqTimeOuty.dataThreey.startTime();
+    },
+    dataFoury(){
+      let self = this
+      self.ReqTimeOuty.dataFoury = new this.timeOut(60,0,self.getData_two3)
+      self.ReqTimeOuty.dataFoury.reqFun();
+      self.ReqTimeOuty.dataFoury.startTime();
+    },
+    dataFivey(){
+      let self = this
+      self.ReqTimeOuty.dataFivey = new this.timeOut(60,0,self.getData_kj)
+      self.ReqTimeOuty.dataFivey.reqFun();
+      self.ReqTimeOuty.dataFivey.startTime();
+    },
+    dataSixy(){  
+      let self = this
+      self.ReqTimeOuty.dataSixy = new this.timeOut(60,0,self.getData_three)
+      self.ReqTimeOuty.dataSixy.reqFun();
+      self.ReqTimeOuty.dataSixy.startTime();
+    },
+    dataSeveny(){ 
+       let self = this
+      self.ReqTimeOuty.dataSeveny = new this.timeOut(60,0,self.getData_four)
+      self.ReqTimeOuty.dataSeveny.reqFun();
+      self.ReqTimeOuty.dataSeveny.startTime();
+    },
+    dataEighty(){
+       let self = this
+      self.ReqTimeOuty.dataEighty = new this.timeOut(60,0,self.getData_five)
+      self.ReqTimeOuty.dataEighty.reqFun();
+      self.ReqTimeOuty.dataEighty.startTime();
+    },
+    dataNiney(){
+      let self = this
+      self.ReqTimeOuty.dataNiney= new this.timeOut(60,0,self.getData_eight)
+      self.ReqTimeOuty.dataNiney.reqFun();
+      self.ReqTimeOuty.dataNiney.startTime();
+    },
+    dataTeny(){ 
+         let self = this
+      self.ReqTimeOuty.dataTeny = new this.timeOut(60,0,self.getData_nine)
+      self.ReqTimeOuty.dataTeny.reqFun();
+      self.ReqTimeOuty.dataTeny.startTime();
+    },
+
   },
   created() {
-    this.getData_one()
-    this.getLineData()
-    this.getData_two2()
-    this.getData_two3()
-    this.getData_three()
-    this.getData_four()
-    this.getData_five()
+    // this.getData_one()
+    // this.getLineData()
+    // this.getData_two2()
+    // this.getData_two3()
+    // this.getData_three()
+    // this.getData_four()
+    // this.getData_five()
     this.getData_six()
-    // this.getData_seven()
-    this.getData_eight()
-    this.getData_nine()
-    this.getData_kj()
+    // this.getData_eight()
+    // this.getData_nine()
+    // this.getData_kj()
+  },
+    mounted(){
+        this.dataoney()
+        this.datatwoy()
+        this.dataThreey()
+        this.dataFoury()
+        this.dataFivey()
+        this.dataSixy()
+        this.dataSeveny()
+        this.dataEighty()
+        this.dataNiney()
+        this.dataTeny()
+    },
+     destroyed(){
+     this.ReqTimeOut.dataoney.endTime();
+     this.ReqTimeOut.datatwoy.endTime();
+     this.ReqTimeOut.dataThreey.endTime();
+     this.ReqTimeOut.dataFoury.endTime();
+     this.ReqTimeOut.dataFivey.endTime();
+     this.ReqTimeOut.dataSixy.endTime();
+     this.ReqTimeOut.dataSeveny.endTime();
+     this.ReqTimeOut.dataEighty.endTime();
+     this.ReqTimeOut.dataNiney.endTime();
+     this.ReqTimeOut.dataTeny.endTime();
   }
 
 }  

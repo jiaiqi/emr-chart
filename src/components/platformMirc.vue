@@ -70,6 +70,7 @@
                 <div>
                   <span>请求次数:</span>
                   <span>{{convert(regNum[1].num_of_calls)?convert(regNum[1].num_of_calls):0}}</span>
+                  <!-- <span>{{regNum[1]['num_of_calls']}}</span> -->
                   <!-- convert(centerData.regNum[1].num_of_calls) -->
                 </div>
               </li>
@@ -226,19 +227,16 @@ export default {
   props: ["platMirc"],
   data() {
     return {
-       ReqTimeOut:{
-        RunTimeOut:null,
-        TimeOutMethitem:null
+       ReqTimeOuts:{
+        RunTimeOuts:null,
+        TimeOutMethitems:null
        },
       centerData: this.platMirc,
       microSer: [],
       memoryMean:null,
       mean:null,
       Microservicesr:[] , //中间微服务请求次数
-     regNum:[
-                {num_of_calls:''},
-                {num_of_calls:''},
-              ],
+     regNum:[{'num_of_calls':0},{'num_of_calls':0},],
               sumApi:null  //api 请求次数
     };
   },
@@ -462,17 +460,20 @@ export default {
       }
           // this.axios.post(path,req).then(res=>{
              let res = await self.axios.post(path,req)
-              // console.error("--------------发送请求--------------res",res);
+
+              // console.error("--------------发送请求--------------res",res);z
               if(res.status === 200){
                   this.Microservicesr=res.data.data
-                  this.regNum[0].num_of_calls=this.Microservicesr[1].num_of_calls
-                  this.regNum[1].num_of_calls=this.Microservicesr[2].num_of_calls
-                  this.CenTiny();
+                  let asd = res.data.data
+                  this.regNum[0].num_of_calls=asd[1].num_of_calls
+                  this.regNum[1].num_of_calls=asd[2].num_of_calls
                   let sum = null
                     for(let k = 0;k<res.data.data.length;k++){
                       sum+=( res.data.data[k].num_of_calls)
                     }
                     this.sumApi=sum
+                  this.CenTiny();
+                  console.log('--regNum----',this.regNum[0].num_of_calls)
                   return { 'isRes': true, 'res': res }
               }else{
                 return { 'isRes': false, 'res': res };
@@ -491,7 +492,6 @@ export default {
               "monitor"
             );
             let res = await self.axios.get(path)
-
               if(res.status === 200){        
                       let space = null  //命中总数
                 let miss = null  //未命中总数
@@ -525,47 +525,30 @@ export default {
     },
 
     //查询总请求次---数定时刷新
-   RunTimeOut(){
+   RunTimeOuts(){
       let self = this
-      self.ReqTimeOut.RunTimeOut = new this.timeOut(30,0,self.edmiens)
-      self.ReqTimeOut.RunTimeOut.reqFun();
-      self.ReqTimeOut.RunTimeOut.startTime();
+      this.ReqTimeOuts.RunTimeOuts = new this.timeOut(30,0,self.edmiens)
+      this.ReqTimeOuts.RunTimeOuts.reqFun();
+      this.ReqTimeOuts.RunTimeOuts.startTime();
     },
 
-    TimeOutMethitem(){
+    TimeOutMethitems(){
       let self = this
-      self.ReqTimeOut.TimeOutMethitem = new this.timeOut(30,0,self.methitem)
-      self.ReqTimeOut.TimeOutMethitem.reqFun();
-      self.ReqTimeOut.TimeOutMethitem.startTime();
+      self.ReqTimeOuts.TimeOutMethitems = new this.timeOut(30,0,self.methitem)
+      self.ReqTimeOuts.TimeOutMethitems.reqFun();
+      self.ReqTimeOuts.TimeOutMethitems.startTime();
     },
   },
   created() {
     // this.edmiens()
   },
   mounted() {
-    this.RunTimeOut()
-    this.TimeOutMethitem()
-    // setInterval(() => {
-    //   this.getRegNum();
-    //   this.getLog();
-    //   this.getData_one();
-    //   this.getData_two();
-    //   this.getData_three();
-    //   this.getData_four();
-    //   this.getData_five();
-    //   this.getData_six();
-    //   this.getData_seven();
-    //   this.getData_eight();
-    //   this.getData_nine();
-    //   this.getData_ten();
-    //   this.getData_eleven();
-    //   this.operation();
-    //   this.CenTiny();
-    // }, 30000);
+    this.RunTimeOuts()
+    this.TimeOutMethitems()
   },
-  beforeDestroy(){
-    this.ReqTimeOut.RunTimeOut.endTime();
-    this.ReqTimeOut.TimeOutMethitem.endTime();
+  destroyed(){
+    this.ReqTimeOuts.RunTimeOuts.endTime();
+    this.ReqTimeOuts.TimeOutMethitems.endTime();
   }
 };
 </script>

@@ -46,11 +46,25 @@ import VeLine from 'v-charts/lib/line'
 
 export default {
     data () {
+      
         this.chartSettings = {
             metrics: ['总共享次数','时间'],
             dimension: ['时间']
         }
         return {
+           ReqTimeOutys:{
+              dataoneys:null,
+              datatwoys:null,
+              dataThreeys:null,
+              dataFourys:null,
+              dataFiveys:null,
+              dataSixys:null,
+              dataSevenys:null,
+              dataEightys:null,
+              dataNineys:null,
+              dataTenys:null,
+              dataElevenys:null,
+         },
             lineOne:[
             {
                 "title":'数据库个数',
@@ -221,7 +235,8 @@ export default {
       }
     },
         //数据库个数
-        getData_one() {
+      async  getData_one() {
+        let self = this  
             let req1 = {
                 "serviceName": "srvdc_rc_db_select",
                 "colNames": ["*"],
@@ -230,17 +245,24 @@ export default {
                 "group": [ { "colName": "id", "type": "count" }]
             }
             let path = this.getServiceUrl("select", 'srvdc_rc_db_select', "datacenter");
-            axios.post(
-                path, req1,
-            ).then(res => {
-                this.lineOne[0].value = res.data.data[0].id        
+            // axios.post(
+            //     path, req1,
+            let res = await self.axios.post(path,req1)
+            // ).then(res => {
+               if(res.status === 200){        
+                 this.lineOne[0].value = res.data.data[0].id                    
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
                 // console.log('11111111',res.data.data[0].id)
-            }).catch(err => {
-                console.log(err)
-            })
+            // }).catch(err => {
+            //     console.log(err)
+            // })
         },
         //表个数
-        getData_two() {
+      async  getData_two() {
+        let self = this 
             let req2 = {
                 "serviceName": "srvdc_rc_db_table_select",
                 "colNames": ["*"],
@@ -250,17 +272,24 @@ export default {
 
             }
             let path = this.getServiceUrl("select", 'srvdc_rc_db_table_select', "datacenter");
-            axios.post(
-                path, req2,
-            ).then(res => {
-                this.lineOne[1].value = res.data.data[0].id      
+            // axios.post(
+            let res = await self.axios.post(path,req2)
+
+             if(res.status === 200){        
+                this.lineOne[1].value = res.data.data[0].id                                       
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+            // ).then(res => {
                 // console.log('222',res.data.data[0].id)
-            }).catch(err => {
-                console.log(err)
-            })
+            // }).catch(err => {
+            //     console.log(err)
+            // })
         },
         //记录数
-        getData_three() {
+      async  getData_three() {
+        let self = this 
             let req3 = {
                 "serviceName": "srvdc_rc_db_table_select",
                 "colNames": ["*"],
@@ -274,17 +303,25 @@ export default {
                 ]
             }
             let path = this.getServiceUrl("select", 'srvdc_rc_db_table_select', "datacenter");
-            axios.post(
-                path, req3,
-            ).then(res => {
-                this.lineOne[2].value = res.data.data[0].row_count
-                console.log('333',res.data.data)
-            }).catch(err => {
-                console.log(err)
-            })
+            // axios.post(
+            //     path, req3,
+             let res = await self.axios.post(path,req3)
+            
+             if(res.status === 200){        
+                this.lineOne[2].value = res.data.data[0].row_count                                                    
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+            // ).then(res => {
+                // console.log('333',res.data.data)
+            // }).catch(err => {
+            //     console.log(err)
+            // })
         },
         //共享表个数
-        getData_four() {
+      async  getData_four() {
+         let self = this 
             let req4 = {
                 "serviceName": "srvdc_share_serve_summary_select",
                 "colNames": ["*"],
@@ -299,17 +336,25 @@ export default {
                 ]
             }
             let path = this.getServiceUrl("select", 'srvdc_share_serve_summary_select', "datashare");
-            axios.post(
-                path, req4,
-            ).then(res => {
-                this.lineOne[3].value = res.data.data[0].id    
+            // axios.post(
+            //     path, req4,
+               let res = await self.axios.post(path,req4)
+            
+             if(res.status === 200){        
+                this.lineOne[3].value = res.data.data[0].id                                                                       
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+            // ).then(res => {
                 // console.log('444',res.data.data[0].id)
-            }).catch(err => {
-                console.log(err)
-            })
+            // }).catch(err => {
+            //     console.log(err)
+            // })
         },
         //作业数
-        getData_five() {
+       async getData_five() {
+         let self = this 
             let req5 = {
                 "serviceName": "srvetl_job_select",
                 "colNames": ["*"],
@@ -319,17 +364,20 @@ export default {
 
             }
             let path = this.getServiceUrl("select", 'srvetl_job_select', "etl");
-            axios.post(
-                path, req5,
-            ).then(res => {
-                this.lineTwo[0].value = res.data.data[0].state       
-                // console.log('5555',res.data.data[0].state)
-            }).catch(err => {
-                console.log(err)
-            })
+            // axios.post(
+            //     path, req5,
+              let res = await self.axios.post(path,req5)
+            
+             if(res.status === 200){        
+                this.lineTwo[0].value = res.data.data[0].state                                                                                             
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
         },
         //执行次数
-        getData_six() {
+       async getData_six() {
+         let self = this 
             let req6 = {
                 "serviceName": "srvetl_job_history_select",
                 "colNames": ["*"],
@@ -338,17 +386,26 @@ export default {
                 "group": [ { "colName": "id", "type": "count" }]
             }
             let path = this.getServiceUrl("select", 'srvetl_job_history_select', "etl");
-            axios.post(
-                path, req6,
-            ).then(res => {
+            // axios.post(
+            //     path, req6,
+              let res = await self.axios.post(path,req6)
+            
+             if(res.status === 200){        
                 this.lineTwo[1].value = res.data.data[0].id       
+                                                                                                          
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+            // ).then(res => {
                 // console.log('6666666',res)
-            }).catch(err => {
-                console.log(err)
-            })
+            // }).catch(err => {
+            //     console.log(err)
+            // })
         },
         //抽取记录数
-        getData_seven() {
+      async  getData_seven() {
+         let self = this 
             let req7 = {
                 "serviceName": "srvetl_processor_history_select",
                 "colNames": ["*"],
@@ -367,17 +424,22 @@ export default {
                 ]
             }
             let path = this.getServiceUrl("select", 'srvetl_processor_history_select', "etl");
-            axios.post(
-                path, req7,
-            ).then(res => {
+            // axios.post(
+            //     path, req7,
+              let res = await self.axios.post(path,req7)
+            
+             if(res.status === 200){        
                 this.lineTwo[2].value = res.data.data[0].ok_records_count     
-                // console.log('7777',res.data.data)
-            }).catch(err => {
-                console.log(err)
-            })
+                   
+                                                                                                          
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
         },
         //加载表个数
-        getData_eight() {
+       async getData_eight() {
+          let self = this 
             let req8 = {
                 "serviceName": "srvetl_processor_history_select",
                 "colNames": ["*"],
@@ -396,17 +458,25 @@ export default {
                 ]
             }
             let path = this.getServiceUrl("select", 'srvetl_processor_history_select', "etl");
-            axios.post(
-                path, req8,
-            ).then(res => {
-                this.lineTwo[3].value = res.data.data[0].dst_table_name    
+            // axios.post(
+            //     path, req8,
+             let res = await self.axios.post(path,req8)
+            
+             if(res.status === 200){        
+                this.lineTwo[3].value = res.data.data[0].dst_table_name                                                                                        
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+            // ).then(res => {
                 // console.log('888',res.data.data)
-            }).catch(err => {   
-                console.log(err)
-            })
+            // }).catch(err => {   
+            //     console.log(err)
+            // })
         },
         //加载记录数
-        getData_nine() {
+       async getData_nine() {
+         let self = this 
             let req9 = {
                 "serviceName": "srvetl_processor_history_select",
                 "colNames": ["*"],
@@ -426,17 +496,25 @@ export default {
 
             }
             let path = this.getServiceUrl("select", 'srvetl_processor_history_select', "etl");
-            axios.post(
-                path, req9,
-            ).then(res => {
-                this.lineTwo[4].value = res.data.data[0].ok_records_count      
+            // axios.post(
+            //     path, req9,
+             let res = await self.axios.post(path,req9)
+            
+             if(res.status === 200){        
+                this.lineTwo[4].value = res.data.data[0].ok_records_count                                                                                                             
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+            // ).then(res => {
                 // console.log('999',res.data.data)
-            }).catch(err => {
-                console.log(err)
-            })
+            // }).catch(err => {
+            //     console.log(err)
+            // })
         },
         //总共享次数
-        getData_ten() {
+      async  getData_ten() {
+          let self = this 
             let dates = new Date()
             let time = moment().format('YYYY-MM-DD')
             // console.log("time",time)
@@ -468,47 +546,125 @@ export default {
                 ]
             }
             let path = this.getServiceUrl("select", 'srvdc_share_serve_summary_select', "datashare");
-            axios.post(
-                path, req,
-            ).then(res => {
-              console.log(res)
+            // axios.post(
+            //     path, req,
+              let res = await self.axios.post(path,req)
+            
+             if(res.status === 200){        
+                this.chartData.rows = this.getCollectData(res.data.data,'day')                                                                                                                           
+                 return { 'isRes': true, 'res': res }
+              }else{
+                 return { 'isRes': false, 'res': res };
+              }
+            // ).then(res => {
+            //   console.log(res)
                 // this.chartData =  res.data.data[0].invoke_success_count
-                this.chartData.rows = this.getCollectData(res.data.data,'day')
-                console.log('999',res.data)
-            }).catch(err => {
-                console.log(err)
-            })
+                // console.log('999',res.data)
+            // }).catch(err => {
+            //     console.log(err)
+            // })
         },
-         Automatically(){
-          setInterval(()=>{
-              this.getData_one()
-        this.getData_two()
-        this.getData_three()
-        this.getData_four()
-        this.getData_five()
-        this.getData_six()
-        this.getData_seven()
-        this.getData_eight()
-        this.getData_nine() 
-        this.getData_ten()
-          },50000)
+
+    dataoneys(){
+      let self = this
+      self.ReqTimeOutys.dataoneys = new this.timeOut(60,0,self.getData_one)
+      self.ReqTimeOutys.dataoneys.reqFun();
+      self.ReqTimeOutys.dataoneys.startTime();
     },
+  /**定时刷新 */
+    datatwoys(){
+      let self = this
+      self.ReqTimeOutys.datatwoys = new this.timeOut(60,0,self.getData_two)
+      self.ReqTimeOutys.datatwoys.reqFun();
+      self.ReqTimeOutys.datatwoys.startTime();
+    },
+    dataThreeys(){
+      let self = this
+      self.ReqTimeOutys.dataThreeys = new this.timeOut(60,0,self.getData_three)
+      self.ReqTimeOutys.dataThreeys.reqFun();
+      self.ReqTimeOutys.dataThreeys.startTime();
+    },
+    dataFourys(){
+      let self = this
+      self.ReqTimeOutys.dataFourys = new this.timeOut(60,0,self.getData_four)
+      self.ReqTimeOutys.dataFourys.reqFun();
+      self.ReqTimeOutys.dataFourys.startTime();
+    },
+    dataFiveys(){
+      let self = this
+      self.ReqTimeOutys.dataFiveys = new this.timeOut(60,0,self.getData_five)
+      self.ReqTimeOutys.dataFiveys.reqFun();
+      self.ReqTimeOutys.dataFiveys.startTime();
+    },
+    dataSixys(){  
+      let self = this
+      self.ReqTimeOutys.dataSixys = new this.timeOut(60,0,self.getData_six)
+      self.ReqTimeOutys.dataSixys.reqFun();
+      self.ReqTimeOutys.dataSixys.startTime();
+    },
+    dataSevenys(){ 
+       let self = this
+      self.ReqTimeOutys.dataSevenys = new this.timeOut(60,0,self.getData_seven)
+      self.ReqTimeOutys.dataSevenys.reqFun();
+      self.ReqTimeOutys.dataSevenys.startTime();
+    },
+    dataEightys(){
+       let self = this
+      self.ReqTimeOutys.dataEightys = new this.timeOut(60,0,self.getData_eight)
+      self.ReqTimeOutys.dataEightys.reqFun();
+      self.ReqTimeOutys.dataEightys.startTime();
+    },
+    dataNineys(){
+      let self = this
+      self.ReqTimeOutys.dataNineys = new this.timeOut(60,0,self.getData_nine)
+      self.ReqTimeOutys.dataNineys.reqFun();
+      self.ReqTimeOutys.dataNineys.startTime();
+    },
+    dataTenys(){ 
+         let self = this
+      self.ReqTimeOutys.dataTenys = new this.timeOut(60,0,self.getData_ten)
+      self.ReqTimeOutys.dataTenys.reqFun();
+      self.ReqTimeOutys.dataTenys.startTime();
+    },
+
+    
     },
     created() {
-        this.getData_one()
-        this.getData_two()
-        this.getData_three()
-        this.getData_four()
-        this.getData_five()
-        this.getData_six()
-        this.getData_seven()
-        this.getData_eight()
-        this.getData_nine() 
-        this.getData_ten()
+        // this.getData_one()
+        // this.getData_two()
+        // this.getData_three()
+        // this.getData_four()
+        // this.getData_five()
+        // this.getData_six()
+        // this.getData_seven()
+        // this.getData_eight()
+        // this.getData_nine() 
+        // this.getData_ten()
         // this.Automatically()
     },
-     destroyed() {
-      clearInterval(this.Automatically);
+    mounted(){
+        this.dataoneys()
+        this.datatwoys()
+        this.dataThreeys()
+        this.dataFourys()
+        this.dataFiveys()
+        this.dataSixys()
+        this.dataSevenys()
+        this.dataEightys()
+        this.dataNineys()
+        this.dataTenys()
+    },
+    destroyed(){
+     this.ReqTimeOut.dataoneys.endTime();
+     this.ReqTimeOut.datatwoys.endTime();
+     this.ReqTimeOut.dataThreeys.endTime();
+     this.ReqTimeOut.dataFourys.endTime();
+     this.ReqTimeOut.dataFiveys.endTime();
+     this.ReqTimeOut.dataSixys.endTime();
+     this.ReqTimeOut.dataSevenys.endTime();
+     this.ReqTimeOut.dataEightys.endTime();
+     this.ReqTimeOut.dataNineys.endTime();
+     this.ReqTimeOut.dataTenys.endTime();
   }
 }  
 </script>

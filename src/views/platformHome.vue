@@ -43,6 +43,18 @@ import VeLine from 'v-charts/lib/line'
 export default {
   data() {
     return {
+       ReqTimeOut:{
+              dataone:null,
+              datatwo:null,
+              dataThree:null,
+              dataFour:null,
+              dataFive:null,
+              dataSix:null,
+              dataSeven:null,
+              dataEight:null,
+              dataNine:null,
+             
+         },
       sData1: '', //当前计算时间
       sData2: '', //计算后时间-24小时
       lineOne: [
@@ -273,7 +285,8 @@ export default {
       // console.log( this.sData2)
     },
     //用户数
-    getData_one() {
+  async  getData_one() {
+    let self = this 
       let req1 = {
         "serviceName": "srvapprc_personal_basic_info_select",
         "colNames": ["*"],
@@ -282,17 +295,25 @@ export default {
         "group": [{ "colName": "birth_date", "type": "count" }]
       }
       let path = this.getServiceUrl("select", 'srvapprc_personal_basic_info_select', "apprc");
-      axios.post(
-        path, req1,
-      ).then(res => {
-        this.lineOne[0].value = res.data.data[0].birth_date
+      // axios.post(
+      //   path, req1,
+      let res = await self.axios.post(path,req1)
+
+      if(res.status === 200){       
+            this.lineOne[0].value = res.data.data[0].birth_date
+            return { 'isRes': true, 'res': res }
+        }else{
+            return { 'isRes': false, 'res': res };
+        }
+      // ).then(res => {
         // console.log('11111111',res.data.data[0].birth_date)
-      }).catch(err => {
-        console.log(err)
-      })
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //应用个数
-    getData_two() {
+   async getData_two() {
+     let self = this 
       let req2 = {
         "serviceName": "srvconfig_app_list_select",
         "colNames": ["*"],
@@ -302,17 +323,25 @@ export default {
 
       }
       let path = this.getServiceUrl("select", 'srvconfig_app_list_select', "config");
-      axios.post(
-        path, req2,
-      ).then(res => {
-        this.lineOne[1].value = res.data.data[0].app_class
+      // axios.post(
+      //   path, req2,
+      let res = await self.axios.post(path,req2)
+
+      if(res.status === 200){       
+        this.lineOne[1].value = res.data.data[0].app_class            
+            return { 'isRes': true, 'res': res }
+        }else{
+            return { 'isRes': false, 'res': res };
+        }
+      // ).then(res => {
         // console.log('2222',res.data.data[0].app_class  )
-      }).catch(err => {
-        console.log(err)
-      })
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //服务器个数
-    getData_three() {
+   async getData_three() {
+     let self = this 
       let req3 = {
         "serviceName": "srvapprc_env_apply_select",
         "colNames": ["*"],
@@ -321,17 +350,26 @@ export default {
         "group": [{ "colName": "id", "type": "count" }]
       }
       let path = this.getServiceUrl("select", 'srvapprc_env_apply_select', "apprc");
-      axios.post(
-        path, req3,
-      ).then(res => {
+      // axios.post(
+      //   path, req3,
+        let res = await self.axios.post(path,req3)
+
+      if(res.status === 200){       
         this.lineOne[2].value = res.data.data[0].id
+                  
+            return { 'isRes': true, 'res': res }
+        }else{
+            return { 'isRes': false, 'res': res };
+        }
+      // ).then(res => {
         // console.log('3333',res.data.data[0].id)
-      }).catch(err => {
-        console.log(err)
-      })
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //累计服务次数
-    getData_four() {
+   async getData_four() {
+      let self = this 
       let req4 = {
         "serviceName": "srvlog_call_statistics_select",
         "colNames": [
@@ -355,19 +393,22 @@ export default {
 
 
       let path = this.getServiceUrl("select", 'srvlog_call_statistics_select', "log");
-      axios.post(
-        path, req4,
-      ).then(res => {
+      // axios.post(
+      //   path, req4,
+         let res = await self.axios.post(path,req4)
+
+      if(res.status === 200){       
         this.lineOne[3].value = res.data.data[0].num_of_calls
-        // console.log(44444,res.data.data[0].num_of_calls  )
-      }).catch(err => {
-        console.log(err)
-      })
+            return { 'isRes': true, 'res': res }
+        }else{
+            return { 'isRes': false, 'res': res };
+        }
     },
 
 
     //工单个数
-    getData_five() {
+   async getData_five() {
+     let self = this 
       let req5 = {
         "serviceName": "srvapprc_issue_info_select",
         "colNames": ["*"],
@@ -378,17 +419,25 @@ export default {
 
       }
       let path = this.getServiceUrl("select", 'srvapprc_issue_info_select', "apprc");
-      axios.post(
-        path, req5,
-      ).then(res => {
-        this.lineTwo[0].value = res.data.data[0].id
+      // axios.post(
+      //   path, req5,
+        let res = await self.axios.post(path,req5)
+
+      if(res.status === 200){       
+            this.lineTwo[0].value = res.data.data[0].id
+            return { 'isRes': true, 'res': res }
+        }else{
+            return { 'isRes': false, 'res': res };
+        }
+      // ).then(res => {
         // console.log('555555',res.data.data[0].id)
-      }).catch(err => {
-        console.log(err)
-      })
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //文档个数
-    getData_six() {
+   async getData_six() {
+     let self = this 
       let req6 = {
         "serviceName": "srvapprc_dev_wendang_select",
         "colNames": ["*"],
@@ -397,17 +446,25 @@ export default {
         "group": [{ "colName": "id", "type": "count" }]
       }
       let path = this.getServiceUrl("select", 'srvapprc_dev_wendang_select', "apprc");
-      axios.post(
-        path, req6,
-      ).then(res => {
-        this.lineTwo[1].value = res.data.data[0].id
+      // axios.post(
+      //   path, req6,
+        let res = await self.axios.post(path,req6)
+
+      if(res.status === 200){       
+            this.lineTwo[1].value = res.data.data[0].id            
+            return { 'isRes': true, 'res': res }
+        }else{
+            return { 'isRes': false, 'res': res };
+        }
+      // ).then(res => {
         // console.log('666666',res.data.data[0].id)
-      }).catch(err => {
-        console.log(err)
-      })
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //开发包个数
-    getData_seven() {
+   async getData_seven() {
+     let self = this
       let req7 = {
         "serviceName": "srvapprc_kit_components_select",
         "colNames": ["*"],
@@ -417,17 +474,25 @@ export default {
         "group": [{ "colName": "no", "type": "count" }]
       }
       let path = this.getServiceUrl("select", 'srvapprc_kit_components_select', "apprc");
-      axios.post(
-        path, req7,
-      ).then(res => {
-        this.lineTwo[2].value = res.data.data[0].no
+      // axios.post(
+      //   path, req7,
+       let res = await self.axios.post(path,req7)
+
+      if(res.status === 200){       
+         this.lineTwo[2].value = res.data.data[0].no                       
+            return { 'isRes': true, 'res': res }
+        }else{
+            return { 'isRes': false, 'res': res };
+        }
+      // ).then(res => {
         // console.log('777',res.data.data[0].no)
-      }).catch(err => {
-        console.log(err)
-      })
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //申请中应用
-    getData_eight() {
+   async getData_eight() {
+     let self = this
       let req8 = {
         "serviceName": "srvapprc_application_apply_select",
         "colNames": ["*"],
@@ -437,17 +502,25 @@ export default {
 
       }
       let path = this.getServiceUrl("select", 'srvapprc_application_apply_select', "apprc");
-      axios.post(
-        path, req8,
-      ).then(res => {
-        this.lineTwo[3].value = res.data.data[0].appid
+      // axios.post(
+      //   path, req8,
+      let res = await self.axios.post(path,req8)
+
+      if(res.status === 200){       
+          this.lineTwo[3].value = res.data.data[0].appid                               
+            return { 'isRes': true, 'res': res }
+        }else{
+            return { 'isRes': false, 'res': res };
+        }
+      // ).then(res => {
         // console.log('88888',res.data.data[0].appid)
-      }).catch(err => {
-        console.log(err)
-      })
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //上线应用个数
-    getData_nine() {
+   async getData_nine() {
+      let self = this
       let req9 = {
         "serviceName": "srvapprc_online_apply_select",
         "colNames": ["*"],
@@ -461,66 +534,138 @@ export default {
         ]
       }
       let path = this.getServiceUrl("select", 'srvapprc_online_apply_select', "apprc");
-      axios.post(
-        path, req9,
-      ).then(res => {
-        this.Automatically()
-        this.lineTwo[4].value = res.data.data[0].appid
+      // axios.post(
+      //   path, req9,
+      // ).then(res => {
+        // this.Automatically()
+        let res = await self.axios.post(path,req9)
+
+      if(res.status === 200){       
+          this.lineTwo[4].value = res.data.data[0].appid                                         
+            return { 'isRes': true, 'res': res }
+        }else{
+            return { 'isRes': false, 'res': res };
+        }
         // console.log('999999',res.data.data)
-      }).catch(err => {
-        console.log(err)
-      })
+      // }).catch(err => {
+      //   console.log(err)
+      // })
     },
     //5s自动刷新
     Automatically() {
       setInterval(() => {
-        this.nowTime()
-        this.getData_one()
-        this.getData_two()
-        this.getData_three()
-        this.getData_four()
-        this.getData_five()
-        this.getData_six()
-        this.getData_seven()
-        this.getData_eight()
-        this.getData_nine()
-        this.nowTimeMinus()
-        this.serverNum()
+        // this.nowTime()
+        // this.getData_one()
+        // this.getData_two()
+        // this.getData_three()
+        // this.getData_four()
+        // this.getData_five()
+        // this.getData_six()
+        // this.getData_seven()
+        // this.getData_eight()
+        // this.getData_nine()
+        // this.nowTimeMinus()
+        // this.serverNum()
       }, 100000)
-    }
+    },
+     dataone(){
+      let self = this
+      self.ReqTimeOut.dataone = new this.timeOut(60,0,self.getData_one)
+      self.ReqTimeOut.dataone.reqFun();
+      self.ReqTimeOut.dataone.startTime();
+    },
+  /**定时刷新 */
+    datatwo(){
+      let self = this
+      self.ReqTimeOut.datatwo = new this.timeOut(60,0,self.getData_two)
+      self.ReqTimeOut.datatwo.reqFun();
+      self.ReqTimeOut.datatwo.startTime();
+    },
+    dataThree(){
+      let self = this
+      self.ReqTimeOut.dataThree = new this.timeOut(60,0,self.getData_three)
+      self.ReqTimeOut.dataThree.reqFun();
+      self.ReqTimeOut.dataThree.startTime();
+    },
+    dataFour(){
+      let self = this
+      self.ReqTimeOut.dataFour = new this.timeOut(60,0,self.getData_four)
+      self.ReqTimeOut.dataFour.reqFun();
+      self.ReqTimeOut.dataFour.startTime();
+    },
+    dataFive(){
+      let self = this
+      self.ReqTimeOut.dataFive = new this.timeOut(60,0,self.getData_five)
+      self.ReqTimeOut.dataFive.reqFun();
+      self.ReqTimeOut.dataFive.startTime();
+    },
+    dataSix(){  
+      let self = this
+      self.ReqTimeOut.dataSix = new this.timeOut(60,0,self.getData_six)
+      self.ReqTimeOut.dataSix.reqFun();
+      self.ReqTimeOut.dataSix.startTime();
+    },
+    dataSeven(){ 
+       let self = this
+      self.ReqTimeOut.dataSeven = new this.timeOut(60,0,self.getData_seven)
+      self.ReqTimeOut.dataSeven.reqFun();
+      self.ReqTimeOut.dataSeven.startTime();
+    },
+    dataEight(){
+       let self = this
+      self.ReqTimeOut.dataEight = new this.timeOut(60,0,self.getData_eight)
+      self.ReqTimeOut.dataEight.reqFun();
+      self.ReqTimeOut.dataEight.startTime();
+    },
+    dataNine(){
+      let self = this
+      self.ReqTimeOut.dataNine = new this.timeOut(60,0,self.getData_nine)
+      self.ReqTimeOut.dataNine.reqFun();
+      self.ReqTimeOut.dataNine.startTime();
+    },
 
   },
 
   created() {
     this.nowTime()
-    this.getData_one()
-    this.getData_two()
-    this.getData_three()
-    this.getData_four()
-    this.getData_five()
-    this.getData_six()
-    this.getData_seven()
-    this.getData_eight()
-    this.getData_nine()
+
+    // this.getData_one()
+    // this.getData_two()
+    // this.getData_three()
+    // this.getData_four()
+    // this.getData_five()
+    // this.getData_six()
+    // this.getData_seven()
+    // this.getData_eight()
+    // this.getData_nine()
+
     this.nowTimeMinus()
     this.serverNum()
-    //模拟数据
-
-    // this.chartExtendLine = {
-    //     grid: {
-    //         top: '0',
-    //         bottom: "0",
-    //         height: "auto"
-    //     },
-    //     series: {
-    //         center: ["50%", "50%"]
-    //     }
-    // }
-
-    components: { VeLine }
+    
   },
+  mounted(){
+        this.dataone()
+        this.datatwo()
+        this.dataThree()
+        this.dataFour()
+        this.dataFive()
+        this.dataSix()
+        this.dataSeven()
+        this.dataEight()
+        this.dataNine()
+    },
+  components: { VeLine },
   destroyed() {
-    clearInterval(this.Automatically);
+    // clearInterval(this.Automatically);
+     this.ReqTimeOut.dataone.endTime();
+     this.ReqTimeOut.datatwo.endTime();
+     this.ReqTimeOut.dataThree.endTime();
+     this.ReqTimeOut.dataFour.endTime();
+     this.ReqTimeOut.dataFive.endTime();
+     this.ReqTimeOut.dataSix.endTime();
+     this.ReqTimeOut.dataSeven.endTime();
+     this.ReqTimeOut.dataEight.endTime();
+     this.ReqTimeOut.dataNine.endTime();
   },
 }
 

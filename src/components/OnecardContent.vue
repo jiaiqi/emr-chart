@@ -366,9 +366,9 @@ export default {
       // 医院轮播
       setInterval(() => {
         if (this.currentHospital >= 5) {
-          this.currentHospital = 0
+          this.currentHospital = 0;
         } else {
-          this.currentHospital += 1
+          this.currentHospital += 1;
         }
       }, interval);
     },
@@ -407,18 +407,21 @@ export default {
       default: {}
     }
   },
-  // created() {
-  //   if (this.contentData.currentPage === "ETL" || this.contentData.currentPage === "emrCollect") {
-  //     this.chartExtendLine.series.type = "line";
-  //   }
-  // },
+  created() {
+    if (
+      this.contentData.currentPage === "ETL" ||
+      this.contentData.currentPage === "emrCollect"
+    ) {
+      this.chartExtendLine.series.type = "line";
+    }
+  },
   watch: {
     contentData: {
       deep: true,
       handler(newValue, oldValue) {
         this.rightChartExtend.yAxis.interval = newValue.secondBar.interval;
         this.countData = newValue.countData;
-        this.chartExtendLine.series.type = newValue.firstBar.type
+        this.chartExtendLine.series.type = newValue.firstBar.type;
       }
     },
     chartSetting: {
@@ -429,7 +432,7 @@ export default {
     }
   },
   mounted() {
-    this.autoChangeHospital(3000)
+    this.autoChangeHospital(3000);
   }
 };
 </script>

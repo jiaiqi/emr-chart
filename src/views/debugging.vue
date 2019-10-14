@@ -88,142 +88,145 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 export default {
   data() {
     return {
       //elementui组件
-      value8: '应用分类查询',
+      value8: "应用分类查询",
       app_no: [],
       app_name: [],
-      data_change: '配置监控',
-      api: '',
+      data_change: "配置监控",
+      api: "",
       show: true,
-      data_one: '',
-      serviceName: '',
-      serviceType: '',
+      data_one: "",
+      serviceName: "",
+      serviceType: "",
       data: [],
       appSecret: "",
       appId: "",
       data_return: [],
-      data_state: '',
+      data_state: "",
       requestUrl: "",
       appIdData: []
     };
   },
   methods: {
     getData_one() {
-      //选择服务应用  
+      //选择服务应用
       let req = {
         colNames: ["*"],
         condition: [],
         order: [],
         page: { pageNo: 1, rownumber: 10 },
         serviceName: "srvconfig_app_list_select"
-      }
+      };
       let url = this.getServiceUrl("select", req.serviceName, "config");
-      axios.post(
-        url, req
-      ).then(res => {
-        this.app_name = res.data.data
-        console.log(this.app_name);
-        this.data_change = this.app_name[4].app_name
-        this.api = this.app_name[4].app_no
-      }).catch(err => {
-        console.error(err)
-      })
+      axios
+        .post(url, req)
+        .then(res => {
+          this.app_name = res.data.data;
+          console.log(this.app_name);
+          this.data_change = this.app_name[4].app_name;
+          this.api = this.app_name[4].app_no;
+        })
+        .catch(err => {
+          console.error(err);
+        });
     },
     changeAppId() {
       // 选择appid
-      let appIdData = this.appIdData
-      let appid = this.appId
+      let appIdData = this.appIdData;
+      let appid = this.appId;
       // console.log(appid, appIdData)
       for (let i = 0; i < appIdData.length; i++) {
         if (appid == appIdData[i].appid) {
-          console.log(appid, appIdData[i].appid)
-          this.appSecret = appIdData[i].secret_key
+          console.log(appid, appIdData[i].appid);
+          this.appSecret = appIdData[i].secret_key;
         }
       }
     },
     getData_sec() {
       //选择接口列表
       let req2 = {
-        "serviceName": "srvsys_service_select",
-        "colNames": [
-          "*"
-        ],
-        "condition": [
+        serviceName: "srvsys_service_select",
+        colNames: ["*"],
+        condition: [
           {
-            "colName": "permission_type",
-            "ruleType": "ne",
-            "value": "内部访问"
+            colName: "permission_type",
+            ruleType: "ne",
+            value: "内部访问"
           },
           {
-            "colName": "is_leaf",
-            "ruleType": "eq",
-            "value": "是"
+            colName: "is_leaf",
+            ruleType: "eq",
+            value: "是"
           }
         ],
-        "page": {
-        },
-        "order": []
-      }
+        page: {},
+        order: []
+      };
       let url = this.getServiceUrl("select", req2.serviceName, this.api);
-      axios.post(url, req2)
+      axios
+        .post(url, req2)
         .then(res => {
-          this.app_no = res.data.data
-          this.value8 = res.data.data[0].service_view_name
+          this.app_no = res.data.data;
+          this.value8 = res.data.data[0].service_view_name;
           // console.log(res.data.data)
-        }).catch(err => {
-          // console.log(err)  
         })
+        .catch(err => {
+          // console.log(err)
+        });
     },
     getData_three() {
-      let req3 = this.data_one
+      let req3 = this.data_one;
       let appNo = this.api;
       let service = this.serviceName;
       let type = this.serviceType;
-      let str = `{"serviceName": "${service}", ${req3}}`
-      str = JSON.parse(str.replace(/\s+/g, ""))
-      this.data[0] = str
+      let str = `{"serviceName": "${service}", ${req3}}`;
+      str = JSON.parse(str.replace(/\s+/g, ""));
+      this.data[0] = str;
       // console.log('+++++++++', this.data)
-      let data1 = []
-      let data2 = []
+      let data1 = [];
+      let data2 = [];
       let map = {
-        "serviceName": "srvonline_interface_deubg",
-        "data": data2
-      }
+        serviceName: "srvonline_interface_deubg",
+        data: data2
+      };
       let map1 = {
-        "req_app": appNo,
-        "operate_type": type,
-        "app_Id": this.appId,
-        "app_secret": this.appSecret,
-        "param": str
-      }
-      data1.push(map)
-      data2.push(map1)
+        req_app: appNo,
+        operate_type: type,
+        app_Id: this.appId,
+        app_secret: this.appSecret,
+        param: str
+      };
+      data1.push(map);
+      data2.push(map1);
       // console.log('+++++++++', data1)
       let url = this.getServiceUrl("operate", map.serviceName, "apprc");
-      axios.post(url, data1).then(res => {
-        this.data_return = JSON.stringify(res.data.response)
-        this.data_state = res.data.state
-      }).catch(err => {
-        console.error(err)
-      })
+      axios
+        .post(url, data1)
+        .then(res => {
+          this.data_return = JSON.stringify(res.data.response);
+          this.data_state = res.data.state;
+        })
+        .catch(err => {
+          console.error(err);
+        });
     },
     adm() {
       // console.log(this.data_change)
       this.app_name.forEach(item => {
         if (this.data_change === item.app_name) {
-          this.api = item.app_no
+          this.api = item.app_no;
         }
-      })
-      this.getData_sec()
+      });
+      this.getData_sec();
     },
     getAppId() {
       let req = {
-        "serviceName": "srvapprc_application_apply_select",
-        "colNames": [
+        serviceName: "srvapprc_application_apply_select",
+        colNames: [
           "apply_no",
           "appid",
           "secret_key",
@@ -231,46 +234,52 @@ export default {
           "proc_status",
           "create_time"
         ],
-        "condition": [
+        condition: [
           {
-            "colName": "proc_status",
-            "value": "完成",
-            "ruleType": "eq"
+            colName: "proc_status",
+            value: "完成",
+            ruleType: "eq"
           }
         ]
-      }
+      };
 
       let url = this.getServiceUrl("select", req.serviceName, "apprc");
-      this.axios.post(url, req)
+      this.axios
+        .post(url, req)
         .then(res => {
-          console.log("appidData:", res.data.data)
-          this.appIdData = res.data.data
-        }).catch((err) => {
-          console.error()
+          console.log("appidData:", res.data.data);
+          this.appIdData = res.data.data;
         })
+        .catch(err => {
+          console.error();
+        });
     },
     serviceChange() {
       this.app_no.forEach(item => {
         if (this.value8 === item.service_view_name) {
-          this.serviceName = item.service_name
-          this.serviceType = item.service_type
+          this.serviceName = item.service_name;
+          this.serviceType = item.service_type;
         }
-      })
+      });
     },
     debuggs() {
-      this.getData_three()
+      this.getData_three();
     }
   },
   mounted() {
-    this.getData_one()
+    this.getData_one();
     setTimeout(() => {
-      this.getData_sec()
-      let requestUrl = this.getServiceUrl("select", "srvsys_service_select", this.api)
-      this.requestUrl = requestUrl
-    }, 1000)
-    this.getAppId()
+      this.getData_sec();
+      let requestUrl = this.getServiceUrl(
+        "select",
+        "srvsys_service_select",
+        this.api
+      );
+      this.requestUrl = requestUrl;
+    }, 1000);
+    this.getAppId();
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -279,7 +288,7 @@ export default {
   margin: 0;
   list-style: none;
   box-sizing: border-box;
-  color: black;
+  color: black !important;
 }
 .home {
   width: 100%;

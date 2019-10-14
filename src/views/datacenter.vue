@@ -637,6 +637,9 @@ export default {
       this.getChartData(this.checkDataType)        
       }
      if(pageName.key === 'ETL'){
+       this.contentData.firstBar.title = 'ETL任务执行情况'
+       this.contentData.firstPie.title = '任务执行时间分布'
+       this.contentData.secondPie.title = '任务处理记录数分布'
        this.contentData.firstBar.set.type = 'line'
         // this.getRightTask()
         this.RightTaskTimeOut()
@@ -647,6 +650,9 @@ export default {
       }
 
       if(pageName.key === 'dataShare'){
+        this.contentData.firstBar.title = '数据共享'
+       this.contentData.firstPie.title = '数据共享比例'
+       this.contentData.secondPie.title = '数据共享用户资源'
         this.RunTimeOut()
         this.dataSizeTimeOut()
         this.DataShareSizeTimeOut()
@@ -720,7 +726,7 @@ export default {
           }
         ]
       };
-      let url = this.getServiceUrl("select", params.serviceName, "datacenter");
+      let url = this.getServiceUrl("select", params.serviceName, "etl");
       let res = await self.axios.post(url,params)
       if(res.status === 200){
         self.indicatorData.dataSize = res.data.data[0];

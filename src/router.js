@@ -6,8 +6,7 @@ Vue.use(Router);
 const router = new Router({
   // mode: "history",
   base: process.env.BASE_URL,
-  routes: [
-    {
+  routes: [{
       path: '/',
       redirect: '/navs'
     },
@@ -44,17 +43,17 @@ const router = new Router({
       name: "navs",
       component: () =>
         import( /* webpackChunkName: "navs" */ "./views/navs.vue")
-    },{
+    }, {
       path: "/onecardHome",
       name: "onecardHome",
       component: () =>
         import( /* webpackChunkName: "onecardHome" */ "./views/onecardHome.vue")
-    },{
+    }, {
       path: "/platformHome",
       name: "platformHome",
       component: () =>
         import( /* webpackChunkName: "platformHome" */ "./views/platformHome.vue")
-    },{
+    }, {
       path: "/datacenterHome",
       name: "datacenterHome",
       component: () =>
@@ -64,13 +63,25 @@ const router = new Router({
       path: '/debugging',
       name: 'debugging',
       component: () =>
-      import( /* webpackChunkName: "debugging" */ "./views/debugging.vue")
+        import( /* webpackChunkName: "debugging" */ "./views/debugging.vue")
+    },
+    // {
+    //   path: '/vChartView',
+    //   name: 'vChartView',
+    //   component: () =>
+    //     import( /* webpackChunkName: "debugging" */ "./views/vChartView.vue")
+    // },
+    {
+      path: '/viewData/:num',
+      name: 'viewData',
+      component: () =>
+        import( /* webpackChunkName: "debugging" */ "./views/viewData.vue")
     },
     {
-      path: '/vChartView',
-      name: 'vChartView',
+      path: '/viewPort',
+      name: 'viewPort',
       component: () =>
-      import( /* webpackChunkName: "debugging" */ "./views/vChartView.vue")
+        import( /* webpackChunkName: "debugging" */ "./views/viewPort.vue")
     }
   ]
 });
