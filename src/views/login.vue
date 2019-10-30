@@ -34,8 +34,8 @@
 export default {
   data() {
     return {
-      userName: "",
-      pwd: "",
+      userName: "admin",
+      pwd: "1",
       saveAccount: false,
       userNameFocus: false,
       pwdFocus: false,

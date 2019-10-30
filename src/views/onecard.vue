@@ -258,7 +258,7 @@ export default {
         } else if (currentPage === 'emrShare') {
 
         } else if (currentPage === 'emrCollect') { }
-        console.log("countArr:", countArr)
+        // console.log("countArr:", countArr)
         this.contentData.countData = countArr
       }
     },
@@ -284,7 +284,6 @@ export default {
       } else if (this.contentData.currentPage === 'emrShare' || this.contentData.currentPage === "emrCollect") {
         this.tabsData.runTime = this.secondToTime(runTime.EMR)
       }
-      // console.log("\n\n\n\n", res, "\n\n\n\n")
       if (res.status == 200 && res.statusText == "OK") {
         return { 'isRes': true, 'res': res }
       } else {
@@ -599,12 +598,12 @@ export default {
                 "data": [
                   {
                     "colName": "statistics_time",
-                    "value": moment().subtract(23, 'hours').format("YYYY-MM-DD HH"),
+                    "value": this.timeSection.start,
                     "ruleType": "ge"
                   },
                   {
                     "colName": "statistics_time",
-                    "value": moment().format("YYYY-MM-DD HH"),
+                    "value": this.timeSection.end,
                     "ruleType": "le"
                   }
                 ]
@@ -615,24 +614,24 @@ export default {
           req2.condition = [
             {
               "colName": "cert_time",
-              "value": moment().subtract(23, 'hours').format("YYYY-MM-DD HH"),
+              "value": this.timeSection.start,
               "ruleType": "ge"
             },
             {
               "colName": "cert_time",
-              "value": moment().format("YYYY-MM-DD HH"),
+              "value": this.timeSection.end,
               "ruleType": "le"
             }
           ]
           req4.condition = [
             {
               "colName": "cert_time",
-              "value": moment().subtract(23, 'hours').format("YYYY-MM-DD HH"),
+              "value": this.timeSection.start,
               "ruleType": "ge"
             },
             {
               "colName": "cert_time",
-              "value": moment().format("YYYY-MM-DD HH"),
+              "value": this.timeSection.end,
               "ruleType": "le"
             }
           ]
@@ -649,12 +648,12 @@ export default {
                 "data": [
                   {
                     "colName": "statistics_time",
-                    "value": moment().subtract(6, 'days').format('YYYY-MM-DD'),
+                    "value": this.timeSection.start,
                     "ruleType": "ge"
                   },
                   {
                     "colName": "statistics_time",
-                    "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+                    "value": this.timeSection.end,
                     "ruleType": "le"
                   }
                 ]
@@ -664,12 +663,12 @@ export default {
           req2.condition = [
             {
               "colName": "cert_time",
-              "value": moment().subtract(6, 'days').format('YYYY-MM-DD'),
+              "value": this.timeSection.start,
               "ruleType": "ge"
             },
             {
               "colName": "cert_time",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+              "value": this.timeSection.end,
               "ruleType": "le"
             }
           ]
@@ -677,12 +676,12 @@ export default {
           req4.condition = [
             {
               "colName": "cert_time",
-              "value": moment().subtract(6, 'days').format('YYYY-MM-DD'),
+              "value": this.timeSection.start,
               "ruleType": "ge"
             },
             {
               "colName": "cert_time",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+              "value": this.timeSection.end,
               "ruleType": "le"
             }
           ]
@@ -699,12 +698,12 @@ export default {
                 "data": [
                   {
                     "colName": "statistics_time",
-                    "value": moment().subtract(30, 'days').format('YYYY-MM-DD'),
+                    "value": this.timeSection.start,
                     "ruleType": "ge"
                   },
                   {
                     "colName": "statistics_time",
-                    "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+                    "value": this.timeSection.end,
                     "ruleType": "le"
                   }
                 ]
@@ -715,24 +714,24 @@ export default {
           req2.condition = [
             {
               "colName": "cert_time",
-              "value": moment().subtract(30, 'days').format('YYYY-MM-DD'),
+              "value": this.timeSection.start,
               "ruleType": "ge"
             },
             {
               "colName": "cert_time",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+              "value": this.timeSection.end,
               "ruleType": "le"
             }
           ]
           req4.condition = [
             {
               "colName": "cert_time",
-              "value": moment().subtract(30, 'days').format('YYYY-MM-DD'),
+              "value": this.timeSection.start,
               "ruleType": "ge"
             },
             {
               "colName": "cert_time",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+              "value": this.timeSection.end,
               "ruleType": "le"
             }
           ]
@@ -762,12 +761,12 @@ export default {
                 "data": [
                   {
                     "colName": "statistics_time",
-                    "value": moment().subtract(11, 'month').format('YYYY-MM-DD'),
+                    "value": this.timeSection.start,
                     "ruleType": "ge"
                   },
                   {
                     "colName": "statistics_time",
-                    "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+                    "value": this.timeSection.end,
                     "ruleType": "le"
                   }
                 ]
@@ -778,24 +777,24 @@ export default {
           req2.condition = [
             {
               "colName": "cert_time",
-              "value": moment().subtract(11, 'month').format('YYYY-MM-DD'),
+              "value": this.timeSection.start,
               "ruleType": "ge"
             },
             {
               "colName": "cert_time",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+              "value": this.timeSection.end,
               "ruleType": "le"
             }
           ]
           req4.condition = [
             {
               "colName": "cert_time",
-              "value": moment().subtract(11, 'month').format('YYYY-MM-DD'),
+              "value": this.timeSection.start,
               "ruleType": "ge"
             },
             {
               "colName": "cert_time",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+              "value": this.timeSection.end,
               "ruleType": "le"
             }
           ]
@@ -819,7 +818,6 @@ export default {
           }
         })
         this.getCountData(dataa, type, currentPage)
-
         let url2 = this.getServiceUrl("select", req2.serviceName, "emr")
         let resb = await this.axios.post(url2, req2)
         let datab = resb.data.data
@@ -942,12 +940,12 @@ export default {
                 "data": [
                   {
                     "colName": "count_hour",
-                    "value": moment().subtract(23, 'hours').format("YYYY-MM-DD HH"),
+                    "value": this.timeSection.start,
                     "ruleType": "ge"
                   },
                   {
                     "colName": "count_hour",
-                    "value": moment().format("YYYY-MM-DD HH"),
+                    "value": this.timeSection.end,
                     "ruleType": "le"
                   }
                 ]
@@ -967,12 +965,12 @@ export default {
                 "data": [
                   {
                     "colName": "count_hour",
-                    "value": moment().subtract(6, 'days').format('YYYY-MM-DD'),
+                    "value": this.timeSection.start,
                     "ruleType": "ge"
                   },
                   {
                     "colName": "count_hour",
-                    "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+                    "value": this.timeSection.end,
                     "ruleType": "le"
                   }
                 ]
@@ -1000,12 +998,12 @@ export default {
                 "data": [
                   {
                     "colName": "count_hour",
-                    "value": moment().subtract(30, 'days').format('YYYY-MM-DD'),
+                    "value": this.timeSection.start,
                     "ruleType": "ge"
                   },
                   {
                     "colName": "count_hour",
-                    "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+                    "value": this.timeSection.end,
                     "ruleType": "le"
                   }
                 ]
@@ -1029,12 +1027,12 @@ export default {
                 "data": [
                   {
                     "colName": "count_hour",
-                    "value": moment().subtract(11, 'month').format('YYYY-MM-DD'),
+                    "value": this.timeSection.start,
                     "ruleType": "ge"
                   },
                   {
                     "colName": "count_hour",
-                    "value": moment().add(1, 'days').format('YYYY-MM-DD'),
+                    "value": this.timeSection.end,
                     "ruleType": "le"
                   }
                 ]
@@ -1044,9 +1042,11 @@ export default {
         }
         let res = await this.axios.post(url, req)
         let data = res.data.data
+        console.log("TCL: getAlldata -> data", data)
         this.getCountData(data, type, currentPage)
         let resb = await this.axios.post(url, reqPie3)
         let datab = resb.data.data
+        console.log("TCL: getAlldata -> datab", datab)
         this.getCountData(datab, type, currentPage, "collectPie3")
         if (resb.status == 200 && res.statusText == "OK") {
           return { 'isRes': true, 'res': resb }
@@ -1236,7 +1236,6 @@ export default {
                 itemData[cmdType[n]] = getDataCount(yljgmcName[i], ywfssjTime[j], cmdType[n], datas, 'line')
                 itemData['时间'] = ywfssjTime[j] + "点"
               }
-              // allChartData[yljgmcName[i]].rows.push(itemData)
               if (itemData && itemData.门诊) {
                 allChartData[yljgmcName[i]].rows.push(itemData)
               }
@@ -1384,15 +1383,15 @@ export default {
               } else {
                 dataMap.时间 = hour + "点"
               }
-              types.map(item => {
+              types.map(item => { // 遍历就诊类型
                 let count = 0
-                datas.map(dataItem => {
+                datas.map(dataItem => { // 遍历原始数据
                   let dateHour = dataItem.statistics_time
                   if (dateHour == hour && dataItem.name == item) {
-                    count++
+                    count += dataItem.num_of_calls
                   }
-                  dataMap[item] = count
                 })
+                dataMap[item] = count
               })
             } if (type === "week" || type === "month" || type === 'year') {
               dataMap.时间 = hour
@@ -1401,10 +1400,12 @@ export default {
                 datas.map(dataItem => {
                   let dateHour = dataItem.statistics_time
                   if (dateHour == hour && dataItem.name == item) {
-                    count++
+                    console.log("TCL: getCountData -> dateHour", dateHour, 'dataItem', dataItem)
+
+                    count += dataItem.num_of_calls
                   }
-                  dataMap[item] = count
                 })
+                dataMap[item] = count
               })
             }
           })
@@ -1414,6 +1415,7 @@ export default {
           }
           // this.shareBar1Data = bra1Data
           this.contentData.firstBar.data = bar1Data
+          console.log("TCL: getCountData -> bar1Data", bar1Data)
           // emr-share 左上饼图
           let InTypes = datas.map(item => item.name) //就诊类型
           InTypes = Array.from(new Set(InTypes))
@@ -1458,12 +1460,12 @@ export default {
             columns: ["时间", "门诊诊疗挂号记录", "门急诊诊疗医嘱", "门急诊诊疗检查报告", "住院诊疗入院记录", "住院诊疗医嘱信息", "住院诊疗检验报告"],
             rows: rows
           }
-          console.log("shareBar2Data", shareBar2Data)
+          // console.log("shareBar2Data", shareBar2Data)
           this.contentData.secondBar.data = shareBar2Data
         }
       } else if (currentPage == 'emrCollect') {
         let timeType = type
-        console.log(data, type)
+        // console.log(data, type)
         let types = datas.map(item => item.record_type)
         types = Array.from(new Set(types))
         types = ["门急诊诊疗医嘱", "门急诊诊疗医嘱", "门诊诊疗挂号记录", "住院诊疗医嘱信息", "住院诊疗入院记录", "住院诊疗检验报告"]
@@ -1570,12 +1572,12 @@ export default {
                 dataPie['记录次数'] += dataItem.amount
               }
               dataPie['记录名'] = item
-              console.log("---记录名记录名记录名记录名记录名", item)
+              // console.log("---记录名记录名记录名记录名记录名", item)
             })
           }
           pie2Datas.rows.push(dataPie)
         })
-        console.log("collectPie2Data", pie2Datas)
+        // console.log("collectPie2Data", pie2Datas)
         this.contentData.secondPie.data = pie2Datas
         /**
          *  右侧柱状图分医院
@@ -1631,7 +1633,7 @@ export default {
           bar2Arr.push(obj)
         })
         this.contentData.secondBar.data = bar2Arr
-        console.log('CollectBar2Data----------------\n:', bar2Arr)
+        // console.log('CollectBar2Data----------------\n:', bar2Arr)
         // 右侧下方饼图
         let collectPie3Data = []
         if (dataType && dataType === 'collectPie3') {
@@ -1658,7 +1660,7 @@ export default {
           })
         }
         this.contentData.thirdPie.data = collectPie3Data
-        console.log("collectPie3Data", collectPie3Data)
+        // console.log("collectPie3Data", collectPie3Data)
         // 右侧下方门诊总数、住院总数
         let treatmentCount = {
           mz: 0,
@@ -1681,9 +1683,150 @@ export default {
           })
         })
         this.contentData.countData = countArr
-        console.log("countArr", countArr)
+        // console.log("countArr", countArr)
       }
     },
+    async getShareOriginData() {
+      let serviceName = "srvlog_call_statistics_select"
+      let url = this.getServiceUrl('select', serviceName, 'log')
+      let params1 = {
+        serviceName: serviceName,
+        colNames: ["*"],
+
+      }
+    },
+    async getCollectOriginData() {
+      let serviceName = "srvemr_record_count_by_hour_select"
+      let url = this.getServiceUrl('select', serviceName, 'emr')
+      let params1 = {
+        serviceName: serviceName,
+        colNames: ["*"],
+        "relation_condition": {
+          "relation": "AND",
+          "data": [
+            {
+              "relation": "or",
+              "data": this.recordCollectList
+            },
+            {
+              "relation": "AND",
+              "data": [
+                {
+                  "colName": "count_hour",
+                  "value": this.timeSection.start,
+                  "ruleType": "ge"
+                },
+                {
+                  "colName": "count_hour",
+                  "value": this.timeSection.end,
+                  "ruleType": "le"
+                }]
+            }
+          ]
+        },
+        group: [
+          {
+            "colName": "record_type",
+            "type": "by"
+          },
+          {
+            "colName": "amount",
+            "type": "sum"
+          },
+          {
+            "colName": "count_hour",
+            "type": this.byValue
+          }
+        ]
+      }
+      let res1 = await this.axios.post(url, params1)
+      this.contentData.firstBar.data = res1.data.data ? res1.data.data : [] // 左侧折线图数据
+      let params2 = {
+        serviceName: serviceName,
+        colNames: ["*"],
+        relation_condition: params1.relation_condition,
+        group: [
+          {
+            "colName": "hospital",
+            "type": "by"
+          },
+          {
+            "colName": "amount",
+            "type": "sum"
+          }
+        ]
+      }
+      let res2 = await this.axios.post(url, params2)
+      this.contentData.firstPie.data = res2.data.data ? res2.data.data : [] // 左侧上方饼图数据
+
+      let params3 = {
+        serviceName: serviceName,
+        colNames: ["*"],
+        relation_condition: params1.relation_condition,
+        group: [
+          {
+            "colName": "record_type",
+            "type": "by"
+          },
+          {
+            "colName": "amount",
+            "type": "sum"
+          }
+        ]
+      }
+      let res3 = await this.axios.post(url, params3)
+      if (res3.data.data) {
+        this.contentData.secondPie.data = res3.data.data // 左侧下方饼图数据
+      }
+      let params4 = {
+        serviceName: serviceName,
+        colNames: ["*"],
+        relation_condition: params1.relation_condition,
+        group: [
+          {
+            "colName": "record_type",
+            "type": "by"
+          },
+          {
+            "colName": "hospital",
+            "type": "by"
+          },
+          {
+            "colName": "amount",
+            "type": "sum"
+          },
+          {
+            "colName": "count_hour",
+            "type": "by_hour"
+          }
+        ]
+      }
+      let res4 = await this.axios.post(url, params4)
+      this.contentData.secondBar.data = res4.data.data ? res4.data.data : [] // 右侧折线图数据
+      let params6 = {
+        serviceName: serviceName,
+        colNames: ["*"],
+        relation_condition: params1.relation_condition,
+        group: [
+          {
+            "colName": "record_type",
+            "type": "by"
+          },
+          {
+            "colName": "hospital",
+            "type": "by"
+          },
+          {
+            "colName": "amount",
+            "type": "sum"
+          }
+        ]
+      }
+      let res6 = await this.axios.post(url, params6)
+      this.contentData.thirdPie.data = res6.data.data ? res6.data.data : [] // 右侧折线图数据
+      console.log("TCL: getCollectOriginData ->  this.contentData", this.contentData)
+    },
+
     viewtabs(pageName) {
       this.contentData.currentPage = pageName.key;
       console.log("当前页：", pageName.value);
@@ -1700,8 +1843,28 @@ export default {
     },
     async getTimeType(TimeType) {
       // 获取时间区间类型
+      let byValue = ""
       if (TimeType) {
         this.checkDataType = TimeType
+        switch (TimeType) {
+          case 'day':
+            byValue = 'by_hour'
+            break;
+          case 'week':
+            byValue = 'by_date'
+            break;
+          case 'month':
+            byValue = 'by_date'
+            break;
+          case 'year':
+            byValue = 'by_month_of_year'
+            break;
+          default:
+            byValue = 'by_hour'
+            break;
+        }
+        this.byValue = byValue
+        // this.getCollectOriginData()
         this.refresh.RunTime.endTime()
         this.refresh.timeOutReq.endTime()
         this.autoRefresh()
@@ -1728,14 +1891,14 @@ export default {
       }, interval);
     },
     autoRefresh() {
-      this.refresh.RunTime = new this.timeOut(30, 0, this.getRunTime)
+      this.refresh.RunTime = new this.timeOut(300, 0, this.getRunTime)
       this.refresh.RunTime.reqFun()
       this.refresh.RunTime.startTime()
-      this.refresh.timeOutReq = new this.timeOut(30, 0, this.getAlldata)
+      this.refresh.timeOutReq = new this.timeOut(300000, 0, this.getAlldata)
       this.refresh.timeOutReq.reqFun()
       this.refresh.timeOutReq.startTime()
     },
-    autoRefreshEnd(){
+    autoRefreshEnd() {
       this.refresh.RunTime.endTime()
       this.refresh.timeOutReq.endTime()
     }
@@ -1803,10 +1966,11 @@ export default {
         },
         countData: []
       },
-      timeSection: {
+      timeSection: { // 数据起止时间
         start: "",
         end: ""
       },
+      byValue: "hour", // group by什么
       allData: {},
       checkDataType: 'day',
       chartSetting1: {
@@ -1814,7 +1978,39 @@ export default {
           用户: ['市人民医院', '中医医院', '博爱医院', '妇幼医院', "市中医医院", "市妇幼医院", "门诊", "住院", "门诊诊疗挂号记录"
             , "门急诊诊疗医嘱", "门急诊诊疗检查报告", "住院诊疗入院记录", "住院诊疗医嘱信息", "住院诊疗检验报告"]
         }
-      }
+      },
+      recordCollectList: [
+        {
+          "colName": "record_type",
+          "value": "门诊诊疗挂号记录",
+          "ruleType": "eq"
+        },
+        {
+          "colName": "record_type",
+          "value": "门急诊诊疗医嘱",
+          "ruleType": "eq"
+        },
+        {
+          "colName": "record_type",
+          "value": "门急诊诊疗检查报告",
+          "ruleType": "eq"
+        },
+        {
+          "colName": "record_type",
+          "value": "住院诊疗入院记录",
+          "ruleType": "eq"
+        },
+        {
+          "colName": "record_type",
+          "value": "住院诊疗医嘱信息",
+          "ruleType": "eq"
+        },
+        {
+          "colName": "record_type",
+          "value": "住院诊疗检验报告",
+          "ruleType": "eq"
+        }
+      ]
     };
   },
   created() {
@@ -1828,7 +2024,7 @@ export default {
     this.autoRefresh()
     // this.autoChangeTab(10000) // 自动切换Tab
   },
-  destroyed(){
+  destroyed() {
     this.autoRefreshEnd()
   }
 };
