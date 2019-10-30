@@ -13,7 +13,7 @@
     "echarts": "^4.2.1",
     "element-ui": "^2.12.0",
     "font-awesome": "^4.7.0",
-    "jquery": "^2.1.4",
+    "jquery": "^3.4.0",
     "mockjs": "^1.0.1-beta3",
     "moment": "^2.24.0",
     "v-charts": "^1.19.0",
