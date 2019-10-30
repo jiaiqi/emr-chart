@@ -3,7 +3,7 @@
     <div v-if="current.currentPage=='secplat'" class="secplat_indic">
       <span>{{(douTitle.title)}}</span>
     </div>
-    <div v-if="current.currentPage === 'datacenter'" class="dataCenter_indic">
+    <div v-if="current === 'datacenter'" class="dataCenter_indic">
       <div class="content_cen_left">
         <p>
           <span>累计运行时间：</span>
@@ -11,7 +11,7 @@
         </p>
         <p>
           <span>数据量(表/记录)：</span>
-          <span>{{indicatorData.dataSize.table_name}}/{{this.convert(indicatorData.dataSize.row_count)}}</span>
+          <span>{{indicatorData.dataSize.table_name}}/{{this.convert(indicatorData.dataSize.row_count?indicatorData.dataSize.row_count : 0) }}</span>
         </p>
         <p>
           <span>共享数据量(表/记录)：</span>
@@ -47,23 +47,23 @@ export default {
   data() {
     return {
       isSecplat: 1,
-      douTitle: []
+      douTitle:[]
     };
   },
   // components: {},
   created() {
-    console.log(this.current);
-    this.douTitle = JSON.parse(JSON.stringify(this.current));
-    console.log(this.douTitle);
+    console.log(this.current)
+    this.douTitle=JSON.parse(JSON.stringify (this.current));
+    console.error(this.douTitle)
   },
-  mounted() {
+  mounted(){
     // console.log("____________________indicatorData");
   },
   watch: {
-    current: function(newdata, olddata) {
-      this.douTitle = newdata;
-    }
-  }
+  current: function (newdata,olddata) {
+     this.douTitle=newdata
+   }
+ },
 };
 </script>
 

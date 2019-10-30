@@ -21,7 +21,7 @@
             :value="item.service_view_name"
           ></el-option>
         </el-select>
-        <span class="box_two_method">方法：GET</span>
+        <!-- <span class="box_two_method">方法：GET</span> -->
       </div>
       <div class="box_three">
         <p>三. 参数列表</p>
@@ -61,7 +61,7 @@
           <p class="box_three_foot_p">填写appsecret</p>
           <p class="box_three_foot_p2">校验通过</p>
         </div>
-        <input @click="debuggs" type="submit" value="在线调试" />
+        <button @click="debuggs" class="debugger">在线调试</button>
       </div>
       <div class="box_four" v-if="show">
         <div class="box_four_a">
@@ -72,7 +72,6 @@
         <div class="box_four_b">
           <span>请求地址：</span>
           <span>{{requestUrl}}</span>
-          <!-- <span>'http://192.168.0.192:8101/{{this.api}}/select/srvsys_service_select'</span> -->
         </div>
         <div class="box_four_c">
           <p>返回结果：</p>
@@ -149,23 +148,29 @@ export default {
     getData_sec() {
       //选择接口列表
       let req2 = {
-        serviceName: "srvsys_service_select",
-        colNames: ["*"],
-        condition: [
+        "serviceName": "srvsys_service_select",
+        "colNames": [
+          "*"
+        ],
+        "condition": [
           {
-            colName: "permission_type",
-            ruleType: "ne",
-            value: "内部访问"
+            "colName": "module",
+            "value": "syscore",
+            "ruleType": "ne"
           },
           {
-            colName: "is_leaf",
-            ruleType: "eq",
-            value: "是"
+            "colName": "service_name",
+            "value": "process",
+            "ruleType": "ne"
+          },
+          {
+            "colName": "permission_type",
+            "value": "内部访问",
+            "ruleType": "ne"
           }
         ],
-        page: {},
-        order: []
-      };
+        "order": []
+      }
       let url = this.getServiceUrl("select", req2.serviceName, this.api);
       axios
         .post(url, req2)
@@ -179,40 +184,44 @@ export default {
         });
     },
     getData_three() {
-      let req3 = this.data_one;
-      let appNo = this.api;
-      let service = this.serviceName;
-      let type = this.serviceType;
-      let str = `{"serviceName": "${service}", ${req3}}`;
-      str = JSON.parse(str.replace(/\s+/g, ""));
-      this.data[0] = str;
-      // console.log('+++++++++', this.data)
-      let data1 = [];
-      let data2 = [];
-      let map = {
-        serviceName: "srvonline_interface_deubg",
-        data: data2
-      };
-      let map1 = {
-        req_app: appNo,
-        operate_type: type,
-        app_Id: this.appId,
-        app_secret: this.appSecret,
-        param: str
-      };
-      data1.push(map);
-      data2.push(map1);
-      // console.log('+++++++++', data1)
-      let url = this.getServiceUrl("operate", map.serviceName, "apprc");
-      axios
-        .post(url, data1)
-        .then(res => {
-          this.data_return = JSON.stringify(res.data.response);
-          this.data_state = res.data.state;
-        })
-        .catch(err => {
-          console.error(err);
-        });
+      try {
+        let req3 = this.data_one;
+        let appNo = this.api;
+        let service = this.serviceName;
+        let type = this.serviceType;
+        let str = `{"serviceName": "${service}", ${req3}}`;
+        str = JSON.parse(str.replace(/\s+/g, ""));
+        this.data[0] = str;
+        // console.log('+++++++++', this.data)
+        let data1 = [];
+        let data2 = [];
+        let map = {
+          serviceName: "srvonline_interface_deubg",
+          data: data2
+        };
+        let map1 = {
+          req_app: appNo,
+          operate_type: type,
+          app_Id: this.appId,
+          app_secret: this.appSecret,
+          param: str
+        };
+        data1.push(map);
+        data2.push(map1);
+        // console.log('+++++++++', data1)
+        let url = this.getServiceUrl("operate", map.serviceName, "apprc");
+        axios
+          .post(url, data1)
+          .then(res => {
+            this.data_return = JSON.stringify(res.data.response);
+            this.data_state = res.data.state;
+          })
+          .catch(err => {
+            console.error(err);
+          });
+      } catch (error) {
+        alert(error + "请求参数未填写或填写格式有误")
+      }
     },
     adm() {
       // console.log(this.data_change)
@@ -288,7 +297,7 @@ export default {
   margin: 0;
   list-style: none;
   box-sizing: border-box;
-  color: black !important;
+  // color: black !important;
 }
 .home {
   width: 100%;
@@ -297,6 +306,7 @@ export default {
 .home_content {
   width: 96%;
   margin: 0 auto;
+  color: #000;
 }
 .box_one {
   padding-top: 20px;
@@ -313,6 +323,20 @@ export default {
 }
 .box_three > textarea {
   margin-left: 180px;
+}
+.box_three {
+  .debugger {
+    width: 100px;
+    line-height: 40px;
+    color: #fff;
+    background-color: #198edc;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    &:active {
+      transform: translate(3px, 3px);
+    }
+  }
 }
 .box_pone {
   margin-top: 10px;

@@ -343,6 +343,7 @@ export default {
         }
       },
       rightChartExtend: {
+        series: { type: "bar" },
         xAxis: {
           axisLabel: {
             margin: 10,
@@ -421,7 +422,11 @@ export default {
       handler(newValue, oldValue) {
         this.rightChartExtend.yAxis.interval = newValue.secondBar.interval;
         this.countData = newValue.countData;
-        this.chartExtendLine.series.type = newValue.firstBar.type;
+        if (this.contentData.currentPage === "dataShare") {
+          this.chartExtendLine.series.type = newValue.firstBar.set.type;
+        } else {
+          this.chartExtendLine.series.type = newValue.firstBar.type;
+        }
       }
     },
     chartSetting: {

@@ -3,11 +3,11 @@
   <div class="wrap_t">
     <view-title :titleViewData="titleViewData"></view-title>
     <div class="wrap">
-      <top-indicator  :current="titleViewData"></top-indicator>
+      <top-indicator :current="titleViewData"></top-indicator>
       <div class="timeType">
-      <time-type v-on:showTimeType="showTimeType"></time-type>
+        <time-type v-on:showTimeType="showTimeType"></time-type>
       </div>
-      <secplat-content :secplatdata='secplatdata'></secplat-content>
+      <secplat-content :secplatdata="secplatdata"></secplat-content>
     </div>
   </div>
 </template>
@@ -40,28 +40,24 @@ export default {
       });
     return {
       titleViewData: {
-        title: this.$route.params.title,
-        appNo:this.$route.params.appNo,
+        title: this.$route.query.title,
+        appNo: this.$route.query.appNo,
         date: "",
         currentPage: "secplat"
       },
-      secplatdata:''
+      secplatdata: ""
     };
-    
   },
-  computed:{
-      
-    },
-  mounted() {
-  },
+  computed: {},
+  mounted() {},
 
   methods: {
-     showTimeType(item){
-        this.secplatdata=item
-        // this.
-        console.log(this.secplatdata)
+    showTimeType(item) {
+      this.secplatdata = item;
+      // this.
+      console.log(this.secplatdata);
     },
-    
+
     //转换数字
     converts(num) {
       let nums = parseInt(num);
@@ -156,7 +152,8 @@ export default {
           // this.regNum = res.data.data.length;
           // this.chartData.push(res.data.data.srv_name)
           let NewCharData = res.data.data;
-          console.log("NewCharData", this.chartData);
+          let a = vChartInfo.getVchartColums(NewCharData, "srv_name", true);
+          console.log("NewCharData-------------------", this.chartData, a);
           let srvUrlName = NewCharData.map(item => item.srv_url);
           self.srvKeyArr = NewCharData.map(item => {
             let srvKeys = {};
@@ -680,7 +677,7 @@ export default {
       year_start: year_start
     };
     // this.timeCycle('近一天')
-  //  console.log(this.$route.params.askNum)
+    //  console.log(this.$route.params.askNum)
     // this.$router.push({
     //   name:"",
     //   params:{
@@ -692,22 +689,21 @@ export default {
     // this.CurrRegNum()
     // this.getData_userno()
     // this.sustain()
-    
+
     // this.accRun()
   },
   mounted() {
-    
     setInterval(() => {
       // this.CurrRegNum()
       // this.getLegend()
       // this.sustain()
     }, 30000);
-    sessionStorage.setItem('title', this.$route.params.title)
+    sessionStorage.setItem("title", this.$route.params.title);
   },
-  watch:{
-      showTimeType:function(newdata,olddata){
-          this.secplatdata.items=newdata
-      }
+  watch: {
+    showTimeType: function(newdata, olddata) {
+      this.secplatdata.items = newdata;
+    }
   }
 };
 </script>
@@ -715,7 +711,7 @@ export default {
 body {
   margin: 0;
 }
-.timeType{
+.timeType {
   // margin-top: 1.5rem;
 }
 .wrap_t {

@@ -79,7 +79,7 @@
         </div>
         <div class="main_cen_cen">
           <div class="main_cen_cen_top">
-            <ul >
+            <ul>
               <li @click="toSecplat(item)" v-for="(item,index) in microSer" :key="index">
                 <p class="title">{{item ? item.app_name:0 }}</p>
                 <div>
@@ -150,11 +150,11 @@
                   <div>
                     <div>
                       <span>应用命中率</span>
-                      <span>{{mean?mean:(0+"%")}}</span>
+                      <span>{{mean==NaN || mean==null || mean=="NaN"?0+"%":(mean+"%")}}</span>
                     </div>
                     <div>
                       <span>内存使用率</span>
-                      <span>{{memoryMean?memoryMean:(0+"%")}}</span>
+                      <span>{{memoryMean==NaN ||memoryMean==null || memoryMean=="NaN"?0+"%":(memoryMean+"%")}}</span>
                     </div>
                   </div>
                 </li>
@@ -227,17 +227,17 @@ export default {
   props: ["platMirc"],
   data() {
     return {
-       ReqTimeOuts:{
-        RunTimeOuts:null,
-        TimeOutMethitems:null
-       },
+      ReqTimeOuts: {
+        RunTimeOuts: null,
+        TimeOutMethitems: null
+      },
       centerData: this.platMirc,
       microSer: [],
-      memoryMean:null,
-      mean:null,
-      Microservicesr:[] , //中间微服务请求次数
-     regNum:[{'num_of_calls':0},{'num_of_calls':0},],
-              sumApi:null  //api 请求次数
+      memoryMean: null,
+      mean: null,
+      Microservicesr: [], //中间微服务请求次数
+      regNum: [{ num_of_calls: 0 }, { num_of_calls: 0 }],
+      sumApi: null //api 请求次数
     };
   },
   watch: {
@@ -253,8 +253,8 @@ export default {
 
     toSecplat(item) {
       this.$router.push({
-        name: "secplat",
-        params: {
+        path: "/secplat",
+        query: {
           title: item.app_name,
           askNum: item.ask_num,
           appNo: item.app_no,
@@ -280,8 +280,7 @@ export default {
       // });
       // console.log(item.app_name)
     },
-   
- 
+
     // converts(num) {
     //   let nums = parseInt(num);
     //   if (nums > 10000) {
@@ -333,7 +332,7 @@ export default {
     //     });
     // },
     //查询中间微服务
-      CenTiny() {
+    CenTiny() {
       let req = {
         serviceName: "srvconfig_app_list_select",
         colNames: ["*"],
@@ -365,7 +364,7 @@ export default {
         .then(res => {
           // this.microSer[3].beg = res.data.data[0].num_of_calls;
           let micr = res.data.data;
-          
+
           // console.log("micr", micr);
           // this.microSer = [];
           //   for( let i=0; i<micr.length;i++){
@@ -413,140 +412,142 @@ export default {
           //       console.log(err);
           //     });
           // }
-                  // console.error("微服务中心总请求次数",this.Microservicesr)
-                  for(let j = 0;j<micr.length;j++){
-                      let appName = micr[j].app_no.toUpperCase();
-                      this.$set(micr[j],'running', this.platMirc.operat[appName])
-                   for(let i = 0;i<this.Microservicesr.length;i++){
-                      // let appName = micr[j].app_no.toUpperCase();
-                      // this.$set(micr[j],'running',this.operat[appName])
-                      if(micr[j].app_no==this.Microservicesr[i].application){
-                          this.$set(micr[j],['ask_num'],this.Microservicesr[i].num_of_calls)
-                      }
-                    }
-                  }
-          this.microSer = micr
+          // console.error("微服务中心总请求次数",this.Microservicesr)
+          for (let j = 0; j < micr.length; j++) {
+            let appName = micr[j].app_no.toUpperCase();
+            this.$set(micr[j], "running", this.platMirc.operat[appName]);
+            for (let i = 0; i < this.Microservicesr.length; i++) {
+              // let appName = micr[j].app_no.toUpperCase();
+              // this.$set(micr[j],'running',this.operat[appName])
+              if (micr[j].app_no == this.Microservicesr[i].application) {
+                this.$set(
+                  micr[j],
+                  ["ask_num"],
+                  this.Microservicesr[i].num_of_calls
+                );
+              }
+            }
+          }
+          this.microSer = micr;
           // console.log('micr=>2',this.microSer,this.microSer.app_name)
-  
         })
         .catch(err => {
           console.log(err);
         });
     },
 
-
-  //查询总请求次数
- async edmiens(){
-    let self = this 
-    let  path = this.getServiceUrl(
+    //查询总请求次数
+    async edmiens() {
+      let self = this;
+      let path = this.getServiceUrl(
         "select",
         "srvlog_call_statistics_select",
         "log"
       );
-    let req = {
-          "serviceName":"srvlog_call_statistics_select",
-          "colNames":["*"],
-          "condition":[],
-          "group": [
-              {
-                "colName": "application",
-                "type": "by"
-              },
-      {
-                  "colName": "num_of_calls",
-                  "type": "sum"
-              }
-          ]
+      let req = {
+        serviceName: "srvlog_call_statistics_select",
+        colNames: ["*"],
+        condition: [],
+        group: [
+          {
+            colName: "application",
+            type: "by"
+          },
+          {
+            colName: "num_of_calls",
+            type: "sum"
+          }
+        ]
+      };
+      // this.axios.post(path,req).then(res=>{
+      let res = await self.axios.post(path, req);
+
+      // console.error("--------------发送请求--------------res",res);z
+      if (res.status === 200) {
+        this.Microservicesr = res.data.data;
+        let asd = res.data.data;
+        this.regNum[0].num_of_calls = asd[1].num_of_calls;
+        this.regNum[1].num_of_calls = asd[2].num_of_calls;
+        let sum = null;
+        for (let k = 0; k < res.data.data.length; k++) {
+          sum += res.data.data[k].num_of_calls;
+        }
+        this.sumApi = sum;
+        this.CenTiny();
+        console.log("--regNum----", this.regNum[0].num_of_calls);
+        return { isRes: true, res: res };
+      } else {
+        return { isRes: false, res: res };
       }
-          // this.axios.post(path,req).then(res=>{
-             let res = await self.axios.post(path,req)
 
-              // console.error("--------------发送请求--------------res",res);z
-              if(res.status === 200){
-                  this.Microservicesr=res.data.data
-                  let asd = res.data.data
-                  this.regNum[0].num_of_calls=asd[1].num_of_calls
-                  this.regNum[1].num_of_calls=asd[2].num_of_calls
-                  let sum = null
-                    for(let k = 0;k<res.data.data.length;k++){
-                      sum+=( res.data.data[k].num_of_calls)
-                    }
-                    this.sumApi=sum
-                  this.CenTiny();
-                  console.log('--regNum----',this.regNum[0].num_of_calls)
-                  return { 'isRes': true, 'res': res }
-              }else{
-                return { 'isRes': false, 'res': res };
-              }
-          
       // })
-  },
-  
-    
- 
-   async methitem(){
-     let self = this       // 缓存管理
-       let path= this.getServiceUrl(
-              "",
-              "redis",
-              "monitor"
-            );
-            let res = await self.axios.get(path)
-              if(res.status === 200){        
-                      let space = null  //命中总数
-                let miss = null  //未命中总数
-                let mean = null  //命中率
+    },
 
-                let memory = null //已使用内存
-                let totalMemory = null //未使用内存
-                let memoryMean = null //内存使用率
-                // console.log(typeof )
-                let resa=res.data.data
-                for(var i=0;i<res.data.data.length;i++){
-                  space+=Number(resa[i].itemsVos[0].val)
-                  miss+=Number(resa[i].itemsVos[1].val)
-                  memory+=Number(resa[i].itemsVos[2].val)
-                  totalMemory+=Number(resa[i].itemsVos[3].val)
-                }
-              this.mean= mean=(((space/(space+miss))).toFixed(2)*100)+"%"
-              this.memoryMean= memoryMean= ((((memory/1024/1024)/(totalMemory/1024/1024))).toFixed(2)*100)+"%"
-               return { 'isRes': true, 'res': res }
-              }else{
-                return { 'isRes': false, 'res': res };
-              }
-        // this.axios.get(path).then(res=>{
-          // console.log(res)
-        
-          //  console.log(memory,totalMemory)
+    async methitem() {
+      let self = this; // 缓存管理
+      let path = this.getServiceUrl("", "redis", "monitor");
+      let res = await self.axios.get(path);
+      if (res.status === 200) {
+        let space = null; //命中总数
+        let miss = null; //未命中总数
+        let mean = null; //命中率
 
-        // }).catch(err=>{
-        //   console.log(err);
-        // })
+        let memory = null; //已使用内存
+        let totalMemory = null; //未使用内存
+        let memoryMean = null; //内存使用率
+        // console.log(typeof )
+        let resa = res.data.data;
+        for (var i = 0; i < res.data.data.length; i++) {
+          space += Number(resa[i].itemsVos[0].val);
+          miss += Number(resa[i].itemsVos[1].val);
+          memory += Number(resa[i].itemsVos[2].val);
+          totalMemory += Number(resa[i].itemsVos[3].val);
+        }
+
+        this.mean = mean = (space / (space + miss)).toFixed(2) * 100;
+        this.memoryMean = memoryMean =
+          (memory / 1024 / 1024 / (totalMemory / 1024 / 1024)).toFixed(2) * 100;
+        return { isRes: true, res: res };
+      } else {
+        return { isRes: false, res: res };
+      }
+      // this.axios.get(path).then(res=>{
+      // console.log(res)
+
+      //  console.log(memory,totalMemory)
+
+      // }).catch(err=>{
+      //   console.log(err);
+      // })
     },
 
     //查询总请求次---数定时刷新
-   RunTimeOuts(){
-      let self = this
-      this.ReqTimeOuts.RunTimeOuts = new this.timeOut(30,0,self.edmiens)
+    RunTimeOuts() {
+      let self = this;
+      this.ReqTimeOuts.RunTimeOuts = new this.timeOut(30, 0, self.edmiens);
       this.ReqTimeOuts.RunTimeOuts.reqFun();
       this.ReqTimeOuts.RunTimeOuts.startTime();
     },
 
-    TimeOutMethitems(){
-      let self = this
-      self.ReqTimeOuts.TimeOutMethitems = new this.timeOut(30,0,self.methitem)
+    TimeOutMethitems() {
+      let self = this;
+      self.ReqTimeOuts.TimeOutMethitems = new this.timeOut(
+        30,
+        0,
+        self.methitem
+      );
       self.ReqTimeOuts.TimeOutMethitems.reqFun();
       self.ReqTimeOuts.TimeOutMethitems.startTime();
-    },
+    }
   },
   created() {
     // this.edmiens()
   },
   mounted() {
-    this.RunTimeOuts()
-    this.TimeOutMethitems()
+    this.RunTimeOuts();
+    this.TimeOutMethitems();
   },
-  destroyed(){
+  destroyed() {
     this.ReqTimeOuts.RunTimeOuts.endTime();
     this.ReqTimeOuts.TimeOutMethitems.endTime();
   }

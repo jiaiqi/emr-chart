@@ -20,8 +20,8 @@ export default {
   name: "BotNorm",
   data() {
     return {
-      title: this.$route.params.askNum,
-        appNo:this.$route.params.runtime,
+      title: this.$route.query.askNum,
+      appNo: this.$route.query.runtime
     };
   },
   components: {}

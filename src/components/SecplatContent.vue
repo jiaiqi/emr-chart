@@ -6,17 +6,17 @@
           <span>微服务服务请求次数</span>
         </div>
         <div class="bar_content">
-          <ve-histogram 
-              :data="chartData"
-               height="60vh"
-              :legend="legend"
-              :textStyle="legend.textStyle"
-              :extend="chartExtendLine"
-              :settings="chartSettings"
-              :log="true"
-              ></ve-histogram>
-              <!-- :textStyle="legend.textStyle" -->
-               <!-- :legend="legend" -->
+          <ve-histogram
+            :data="chartData"
+            height="60vh"
+            :legend="legend"
+            :textStyle="legend.textStyle"
+            :extend="chartExtendLine"
+            :settings="chartSettings"
+            :log="true"
+          ></ve-histogram>
+          <!-- :textStyle="legend.textStyle" -->
+          <!-- :legend="legend" -->
         </div>
       </dv-border-box-10>
       <!-- <li
@@ -34,20 +34,20 @@
         <div class="pie_content">
           <div class="pie_content_top">
             <dv-border-box-8 style>
-                <!-- <div class="main_left_cen_right"> -->
-                <ve-pie 
-                  :legend-visible="false"
-                  height="30vh"
-                  :extend="chartExtendPie"
-                  width="100%"
-                  :data="RigPieData"
-                  :textStyle="legend.textStyle"
-                  :settings="pieSetting"
-             ></ve-pie>
-             <!-- </div> -->
-               </dv-border-box-8>
+              <!-- <div class="main_left_cen_right"> -->
+              <ve-pie
+                :legend-visible="false"
+                height="30vh"
+                :extend="chartExtendPie"
+                width="100%"
+                :data="RigPieData"
+                :textStyle="legend.textStyle"
+                :settings="pieSetting"
+              ></ve-pie>
+              <!-- </div> -->
+            </dv-border-box-8>
           </div>
-             <!-- :legend-visible="false"  -->
+          <!-- :legend-visible="false"  -->
 
           <bot-norm></bot-norm>
         </div>
@@ -114,287 +114,320 @@
 </template>
 
 <script>
-let moment = require('moment');
+let moment = require("moment");
 import BotNorm from "../components/BotNorm";
 export default {
   name: "SecplatContent",
   data() {
-    this.pieSetting = {},
-      this.chartExtendPie = {
-      grid: {
-        top: '10',
-        bottom: "20",
-        height: "200"
-      },      
-      series: {
-        center: ["50%", "50%"],
-        radius: ["0%", '50%'],
-        label:{
-          normal:{
-            show:true,
-            formatter:'{b}:{c}({d})'
+    (this.pieSetting = {}),
+      (this.chartExtendPie = {
+        grid: {
+          top: "10",
+          bottom: "20",
+          height: "200"
+        },
+        series: {
+          center: ["50%", "50%"],
+          radius: ["0%", "50%"],
+          label: {
+            normal: {
+              show: true,
+              formatter: "{b}:{c}({d})"
+            }
           }
         }
-      }
-    }
+      });
     return {
-      ReqTimeOut:{
-        RunTimeOut:null,
+      ReqTimeOut: {
+        RunTimeOut: null
       },
-        chartExtendLine:{        
+      chartExtendLine: {
         grid: {
-          top: '20%',
+          top: "20%",
           bottom: "0",
           height: "auto"
         },
-        yAxis : {
+        yAxis: {
           // min: 0,
           // max: 5000,
           // splitNumber:5
-          interval: 200,
+          interval: 200
         },
         CurrAct: 0,
-      series: [{
-        type:'bar',
-        center: ["50%", "55%"],
-
-      },{
-        type:'line',
-        center: ["50%", "55%"],
-      },     
-      ]
-    },
-    legend: {
+        series: [
+          {
+            type: "bar",
+            center: ["50%", "55%"]
+          },
+          {
+            type: "line",
+            center: ["50%", "55%"]
+          }
+        ]
+      },
+      legend: {
         textStyle: {
-          color: '#fff'
-        },
+          color: "#fff"
+        }
       },
       legendCake: {
         textStyle: {
-          color: '#fff'
+          color: "#fff"
         },
         // orient: 'vertical',
-        top: 30,
+        top: 30
       },
-  
+
       chartData: {
-        columns: ['时间'],
+        columns: ["时间"],
         rows: []
       },
-       srvKeyArr:[],
-      
+      srvKeyArr: [],
+
       RigPieData: {
-        columns: ['服务', '请求次数'],
+        columns: ["服务", "请求次数"],
         rows: []
       },
-       chartSettings:{
-        stack: { '服务': ['服务1', '服务2', '服务3', '服务4', '服务5'] },
+      chartSettings: {
+        stack: { 服务: ["服务1", "服务2", "服务3", "服务4", "服务5"] },
         showLine: [],
-         itemStyle : { normal: {label : {show: true,formatter:function(c){return  JSON.stringify(parseInt(c.value));}}}},
-       
+        itemStyle: {
+          normal: {
+            label: {
+              show: true,
+              formatter: function(c) {
+                return JSON.stringify(parseInt(c.value));
+              }
+            }
+          }
+        },
+
         axisSite: { right: [] },
-        yAxisType: ['normal', 'normal'],
-        yAxisName: ['请求次数', '平均时延/ms'],
-        max:[1300,2600]
+        yAxisType: ["normal", "normal"],
+        yAxisName: ["请求次数", "平均时延/ms"],
+        max: [1300, 2600]
       },
-      appNo:this.$route.params.appNo,
-       dateLine:this.secplatdata==''?'day':this.secplatdata
+      appNo: this.$route.query.appNo,
+      dateLine: this.secplatdata == "" ? "day" : this.secplatdata
     };
   },
   components: {
     BotNorm
   },
-  watch:{
-    secplatdata:function(newdata,olddata){
-      this.dateLine=newdata
+  watch: {
+    secplatdata: function(newdata, olddata) {
+      this.dateLine = newdata;
     },
-    dateLine:function(newdatas,olddatas){
-      this.getLegend()
+    dateLine: function(newdatas, olddatas) {
+      this.getLegend();
     }
   },
-  props:['secplatdata'],
-  methods:{
-     //获取图例
-   async getLegend(){
+  props: ["secplatdata"],
+  methods: {
+    //获取图例
+    async getLegend() {
       // this.dateLine=JSON.stringify(this.secplatdata)
-      let self = this
+      let self = this;
       let req = {
         serviceName: "srvlog_srv_indicator_cfg_select",
         colNames: ["*"],
-        condition: [{
-          colName:'application',
-          ruleType:'eq',
-          value:this.appNo
-        }]
+        condition: [
+          {
+            colName: "application",
+            ruleType: "eq",
+            value: this.appNo
+          }
+        ]
       };
-      let path = this.getServiceUrl("select", "srvlog_srv_indicator_cfg_select", "log");
+      let path = this.getServiceUrl(
+        "select",
+        "srvlog_srv_indicator_cfg_select",
+        "log"
+      );
 
-      let res = await this.axios.post(path,req)
+      let res = await this.axios.post(path, req);
       // console.error(res)
       // this.axios
-       if(res.status===200){
-               let NewCharData = res.data.data
-          // console.log('NewCharData',this.chartData)
-          let srvUrlName = NewCharData.map(item => item.srv_url)
-          self.srvKeyArr = NewCharData.map((item) => {
-            let srvKeys = {}
-             srvKeys['keyr'] = item.srv_url
-             srvKeys['text'] = item.srv_name
-            return srvKeys
-          })
-          srvUrlName = Array.from(new Set(srvUrlName))
-          self.srvUrlName = srvUrlName.join(",")  // 转为‘，’分割的字符串 图例service Name
-          let srvName = NewCharData.map(item => item.srv_name)
-          self.srvName = Array.from(new Set(srvName)) // 图例中文名数组
-          let srvArgName = srvName.map(item => item + '-')
-          self.chartData.columns = ['时间'] // 
-          self.chartData.columns = self.chartData.columns.concat(srvName) // 合并图例的columns  
-          self.chartData.columns = self.chartData.columns.concat(srvArgName)  // 合并图例的columns
-          this.chartSettings.showLine =srvName.map(item => item + '-')
-          this.chartSettings.axisSite.right = srvName.map(item => item + '-')
-          self.legendData(self.srvUrlName,self.srvName,self.dateLine)
-        return {'isRes':true,'res':res}
-      }else{
-        return {'isRes':false,'res':res}
+      if (res.status === 200) {
+        let NewCharData = res.data.data;
+        // console.log('NewCharData',this.chartData)
+        let srvUrlName = NewCharData.map(item => item.srv_url);
+        self.srvKeyArr = NewCharData.map(item => {
+          let srvKeys = {};
+          srvKeys["keyr"] = item.srv_url;
+          srvKeys["text"] = item.srv_name;
+          return srvKeys;
+        });
+        srvUrlName = Array.from(new Set(srvUrlName));
+        self.srvUrlName = srvUrlName.join(","); // 转为‘，’分割的字符串 图例service Name
+        let srvName = NewCharData.map(item => item.srv_name);
+        self.srvName = Array.from(new Set(srvName)); // 图例中文名数组
+        let srvArgName = srvName.map(item => item + "-");
+        self.chartData.columns = ["时间"]; //
+        self.chartData.columns = self.chartData.columns.concat(srvName); // 合并图例的columns
+        self.chartData.columns = self.chartData.columns.concat(srvArgName); // 合并图例的columns
+        this.chartSettings.showLine = srvName.map(item => item + "-");
+        this.chartSettings.axisSite.right = srvName.map(item => item + "-");
+        self.legendData(self.srvUrlName, self.srvName, self.dateLine);
+        return { isRes: true, res: res };
+      } else {
+        return { isRes: false, res: res };
       }
       //   .post(path, req)
       //   .then(res => {
-          // console.log( res)
-       
-          // console.log(self.dateLine[0].key)
-          // console.log(self.dateLine.key)
-        // })
-        // .catch(err => {
-        //   console.log(err);
-        // });
-    },   
-    
+      // console.log( res)
+
+      // console.log(self.dateLine[0].key)
+      // console.log(self.dateLine.key)
+      // })
+      // .catch(err => {
+      //   console.log(err);
+      // });
+    },
+
     //获取图例对应的数据
-    legendData(srvName,legendName,type){
+    legendData(srvName, legendName, type) {
       let req = {
         serviceName: "srvlog_call_statistics_select",
         colNames: ["*"],
-        condition: [{
-            "colName": "application",
-            "ruleType": "eq",
-            "value": this.appNo
-        },
-        {
-            "colName": "service_name",
-            "ruleType": "in",
-            "value": srvName
-        }
+        condition: [
+          {
+            colName: "application",
+            ruleType: "eq",
+            value: this.appNo
+          },
+          {
+            colName: "service_name",
+            ruleType: "in",
+            value: srvName
+          }
         ],
-        group: [                  
+        group: [
           {
-            "colName": "num_of_calls",
-            "type": "sum"
+            colName: "num_of_calls",
+            type: "sum"
           },
           {
-            "colName": "statistics_time",
-            "type": "by_date"
+            colName: "statistics_time",
+            type: "by_date"
           },
           {
-            "colName": "service_name",
-            "type": "by"
+            colName: "service_name",
+            type: "by"
           },
           {
-            "colName": "total_duration",
-            "type": "sum"
+            colName: "total_duration",
+            type: "sum"
           }
         ]
-      }
+      };
       // req -------------------------------------------------------------------------------------------
-      if (type === 'day') {
-          req.condition = req.condition.concat([
-            {
-              "colName": "statistics_time",
-              "value": moment().add(1, 'hours').format("YYYY-MM-DD HH"), // 小于当前时间的下一个小时
-              "ruleType": "le"
-            },
-            {
-              "colName": "statistics_time",
-              "value": moment().subtract(23, 'hours').format("YYYY-MM-DD HH"), // 大于当前时间往前推23个小时
-              "ruleType": "ge"
-            }
-          ])
-          req.group = [                  
+      if (type === "day") {
+        req.condition = req.condition.concat([
           {
-            "colName": "num_of_calls",
-            "type": "sum"
+            colName: "statistics_time",
+            value: moment()
+              .add(1, "hours")
+              .format("YYYY-MM-DD HH"), // 小于当前时间的下一个小时
+            ruleType: "le"
           },
           {
-            "colName": "statistics_time",
-            "type": "by_hour"
-          },
-          {
-            "colName": "service_name",
-            "type": "by"
-          },
-          {
-            "colName": "total_duration",
-            "type": "sum"
+            colName: "statistics_time",
+            value: moment()
+              .subtract(23, "hours")
+              .format("YYYY-MM-DD HH"), // 大于当前时间往前推23个小时
+            ruleType: "ge"
           }
-        ]
-        } else if (type === 'week') {
-          req.condition = req.condition.concat([
-            {
-              "colName": "statistics_time",
-              "value": moment().subtract(6, 'days').format('YYYY-MM-DD'), // 六天前,
-              "ruleType": "ge"
-            },
-            {
-              "colName": "statistics_time",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'), // 今晚0点,
-              "ruleType": "le"
-            }
-          ])        
-        } else if (type === 'month') {
-          req.condition = req.condition.concat([
-            {
-              "colName": "statistics_time",
-              "value": moment().subtract(30, 'days').format('YYYY-MM-DD'), // 30天前
-              "ruleType": "ge"
-            },
-            {
-              "colName": "statistics_time",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'), // 今晚0点,
-              "ruleType": "le"
-            }
-          ])          
-        } else if (type === 'year') {
-          req.condition = req.condition.concat([
-            {
-              "colName": "statistics_time",
-              "value": moment().subtract(11, 'month').format('YYYY-MM-DD'), // 十一个月之前
-              "ruleType": "ge"
-            },
-            {
-              "colName": "statistics_time",
-              "value": moment().add(1, 'days').format('YYYY-MM-DD'), // 今晚0点,
-              "ruleType": "le"
-            }
-          ])          
-          req.group = [                  
-            {
-              "colName": "num_of_calls",
-              "type": "sum"
-            },
-            {
-              "colName": "statistics_time",
-              "type": "by_month_of_year"
-            },
-            {
-              "colName": "service_name",
-              "type": "by"
-            },
-            {
-            "colName": "total_duration",
-            "type": "sum"
-            }
-          ]       
-        }
-        // req ------------------------------------------------------------------------------end
+        ]);
+        req.group = [
+          {
+            colName: "num_of_calls",
+            type: "sum"
+          },
+          {
+            colName: "statistics_time",
+            type: "by_hour"
+          },
+          {
+            colName: "service_name",
+            type: "by"
+          },
+          {
+            colName: "total_duration",
+            type: "sum"
+          }
+        ];
+      } else if (type === "week") {
+        req.condition = req.condition.concat([
+          {
+            colName: "statistics_time",
+            value: moment()
+              .subtract(6, "days")
+              .format("YYYY-MM-DD"), // 六天前,
+            ruleType: "ge"
+          },
+          {
+            colName: "statistics_time",
+            value: moment()
+              .add(1, "days")
+              .format("YYYY-MM-DD"), // 今晚0点,
+            ruleType: "le"
+          }
+        ]);
+      } else if (type === "month") {
+        req.condition = req.condition.concat([
+          {
+            colName: "statistics_time",
+            value: moment()
+              .subtract(30, "days")
+              .format("YYYY-MM-DD"), // 30天前
+            ruleType: "ge"
+          },
+          {
+            colName: "statistics_time",
+            value: moment()
+              .add(1, "days")
+              .format("YYYY-MM-DD"), // 今晚0点,
+            ruleType: "le"
+          }
+        ]);
+      } else if (type === "year") {
+        req.condition = req.condition.concat([
+          {
+            colName: "statistics_time",
+            value: moment()
+              .subtract(11, "month")
+              .format("YYYY-MM-DD"), // 十一个月之前
+            ruleType: "ge"
+          },
+          {
+            colName: "statistics_time",
+            value: moment()
+              .add(1, "days")
+              .format("YYYY-MM-DD"), // 今晚0点,
+            ruleType: "le"
+          }
+        ]);
+        req.group = [
+          {
+            colName: "num_of_calls",
+            type: "sum"
+          },
+          {
+            colName: "statistics_time",
+            type: "by_month_of_year"
+          },
+          {
+            colName: "service_name",
+            type: "by"
+          },
+          {
+            colName: "total_duration",
+            type: "sum"
+          }
+        ];
+      }
+      // req ------------------------------------------------------------------------------end
       let path = this.getServiceUrl(
         "select",
         "srvlog_call_statistics_select",
@@ -403,239 +436,307 @@ export default {
       this.axios
         .post(path, req)
         .then(res1 => {
-          let _this2 = this
-          console.log(res1)
-          let arr = res1.data.data
-          let currRow = []
-          this.getCountData(arr,type)
-          // console.error('arr',arr)       
+          let _this2 = this;
+          console.log(res1);
+          let arr = res1.data.data;
+          let currRow = [];
+          this.getCountData(arr, type);
+          // console.error('arr',arr)
         })
         .catch(err => {
           console.log(err);
         });
     },
 
-     getCountData(data, type) {
-      let datas = data || 
-      [
+    getCountData(data, type) {
+      let datas = data || [
         {
-          "num_of_calls": 6,
-          "statistics_time": 20,
-          "service_name": "DI_ADI_REGISTER_INFO_select"
+          num_of_calls: 6,
+          statistics_time: 20,
+          service_name: "DI_ADI_REGISTER_INFO_select"
         },
         {
-          "num_of_calls": 6,
-          "statistics_time": 20,
-          "service_name": "DI_HDI_INRECORD_INFO_select"
+          num_of_calls: 6,
+          statistics_time: 20,
+          service_name: "DI_HDI_INRECORD_INFO_select"
         },
         {
-          "num_of_calls": 4,
-          "statistics_time": 20,
-          "service_name": "DI_HDI_LAREXA_INFO_select"
+          num_of_calls: 4,
+          statistics_time: 20,
+          service_name: "DI_HDI_LAREXA_INFO_select"
         }
-      ]
-      let xVal = []
-      if (type =='day') {
-        let hours = []
+      ];
+      let xVal = [];
+      if (type == "day") {
+        let hours = [];
         for (let i = 1; i <= 23; i++) {
-          hours.push(moment().subtract(23 - i, 'hours').format("HH"))
+          hours.push(
+            moment()
+              .subtract(23 - i, "hours")
+              .format("HH")
+          );
         }
-        xVal = hours
-      } else if (type == 'week') {
-        let week = []
+        xVal = hours;
+      } else if (type == "week") {
+        let week = [];
         for (let i = 1; i < 8; i++) {
-          week.push(moment(this.timeHorizon.today).subtract(7 - i, 'days').format('YYYY-MM-DD'))
+          week.push(
+            moment(this.timeHorizon.today)
+              .subtract(7 - i, "days")
+              .format("YYYY-MM-DD")
+          );
         }
-        xVal = week
-      } else if (type == 'month') {
-        let days = []
+        xVal = week;
+      } else if (type == "month") {
+        let days = [];
         for (let i = 1; i < 31; i++) {
-          days.push(moment(this.timeHorizon.today).subtract(30 - i, 'days').format('YYYY-MM-DD'))
+          days.push(
+            moment(this.timeHorizon.today)
+              .subtract(30 - i, "days")
+              .format("YYYY-MM-DD")
+          );
         }
-        xVal = days
-      } else if (type == 'year') {
-        let month = []
+        xVal = days;
+      } else if (type == "year") {
+        let month = [];
         for (let i = 1; i <= 12; i++) {
-          month.push(moment().subtract(12 - i, 'month').format("YYYY-MM"))
+          month.push(
+            moment()
+              .subtract(12 - i, "month")
+              .format("YYYY-MM")
+          );
         }
-        xVal = month
+        xVal = month;
       }
-      type = type || 'day'
+      type = type || "day";
 
-      let srvKeys = this.srvKeyArr
-      let yljgmcName = datas.map(item => item.service_name)
-      yljgmcName = Array.from(new Set(yljgmcName))
+      let srvKeys = this.srvKeyArr;
+      let yljgmcName = datas.map(item => item.service_name);
+      yljgmcName = Array.from(new Set(yljgmcName));
 
       // let ywfssjTime = xVal
-      let ywfssjTime = datas.map(item => item.statistics_time)
-      ywfssjTime = Array.from(new Set(ywfssjTime))
-      ywfssjTime = xVal    // 覆盖横轴数组
+      let ywfssjTime = datas.map(item => item.statistics_time);
+      ywfssjTime = Array.from(new Set(ywfssjTime));
+      ywfssjTime = xVal; // 覆盖横轴数组
       // let ArgTime = datas.map(item => item.total_duration)
       // ArgTime = Array.from(new Set(ArgTime))
       // console.log("ArgTime",ArgTime)
-      let allChartData = []
-      function getDataCount(yljgmcName, time, data,chartType) {
-        let count = 0
+      let allChartData = [];
+      function getDataCount(yljgmcName, time, data, chartType) {
+        let count = 0;
         for (let r = 0; r < data.length; r++) {
-          let srvName = data[r]
-          if(chartType === 'pie'){
-            if (srvName.service_name === yljgmcName){
-              count += srvName.num_of_calls
+          let srvName = data[r];
+          if (chartType === "pie") {
+            if (srvName.service_name === yljgmcName) {
+              count += srvName.num_of_calls;
             }
-          }else if(chartType === 'line'){
-            if (srvName.service_name === yljgmcName && srvName.statistics_time == time){
-              count += srvName.num_of_calls
-
+          } else if (chartType === "line") {
+            if (
+              srvName.service_name === yljgmcName &&
+              srvName.statistics_time == time
+            ) {
+              count += srvName.num_of_calls;
             }
           }
         }
-        barGraph.push(count)
-        return count
-      } 
-      function getTimeCount(yljgmcName, time, data,chartType) {
-        let counts = 0
+        barGraph.push(count);
+        return count;
+      }
+      function getTimeCount(yljgmcName, time, data, chartType) {
+        let counts = 0;
         for (let r = 0; r < data.length; r++) {
-          let srvName = data[r]
-          if(chartType === 'pie'){
-            if (srvName.service_name === yljgmcName){
-              counts += srvName.num_of_calls
+          let srvName = data[r];
+          if (chartType === "pie") {
+            if (srvName.service_name === yljgmcName) {
+              counts += srvName.num_of_calls;
             }
-          }else if(chartType === 'line'){
-            if (srvName.service_name === yljgmcName && srvName.statistics_time == time){
-              counts += srvName.total_duration
+          } else if (chartType === "line") {
+            if (
+              srvName.service_name === yljgmcName &&
+              srvName.statistics_time == time
+            ) {
+              counts += srvName.total_duration;
             }
           }
-        }          
-        return counts
-      } 
-        // this.chartSettings['showLine'] = []
-        let barGraph = []
-        let lineGraph = []
+        }
+        return counts;
+      }
+      // this.chartSettings['showLine'] = []
+      let barGraph = [];
+      let lineGraph = [];
       for (let j = 0; j < ywfssjTime.length; j++) {
-            
-            let itemData = {}            
-            let srvText = ''
-            for (let q = 0; q < yljgmcName.length; q++) {
-                for(let n = 0;n<srvKeys.length;n++){
-                  if(yljgmcName[q] === srvKeys[n]['keyr']){
-                      itemData[srvKeys[n].text] = getDataCount(yljgmcName[q], ywfssjTime[j], datas,'line')
-                      let ArgNum = getTimeCount(yljgmcName[q], ywfssjTime[j], datas,'line') / getDataCount(yljgmcName[q], ywfssjTime[j], datas,'line')
-                      if(!ArgNum){
-                          ArgNum = 0;
-                      }
-                      lineGraph.push(ArgNum)
-
-                      itemData[srvKeys[n].text + '-'] = ArgNum
-                      
-                      srvText = srvKeys[n].text + '-'
-                      
-                      itemData['时间'] = ywfssjTime[j]    
-                      if(type === 'day'){ 
-                          itemData['时间'] = ywfssjTime[j] + '点'
-                      }                 
-                  }                  
-                }
-                // this.chartSettings['showLine'].push(srvText)
+        let itemData = {};
+        let srvText = "";
+        for (let q = 0; q < yljgmcName.length; q++) {
+          for (let n = 0; n < srvKeys.length; n++) {
+            if (yljgmcName[q] === srvKeys[n]["keyr"]) {
+              itemData[srvKeys[n].text] = getDataCount(
+                yljgmcName[q],
+                ywfssjTime[j],
+                datas,
+                "line"
+              );
+              let ArgNum =
+                getTimeCount(yljgmcName[q], ywfssjTime[j], datas, "line") /
+                getDataCount(yljgmcName[q], ywfssjTime[j], datas, "line");
+              if (!ArgNum) {
+                ArgNum = 0;
               }
-              if(itemData['时间']){
-                allChartData.push(itemData)
-              }                                                
-            // console.log(barGraph.Math(...barGraph))
-            
-            }
-            if(barGraph.length>0 && lineGraph.length>0){
-                let maxNum = Math.max.apply(null, barGraph)
-                let ArgMax = Math.max.apply(null, lineGraph)                           
-                this.getMaxNum(maxNum,ArgMax)
-            }
-            
-        this.chartData.rows = allChartData
-        let pieAllData = []
-            for (let q = 0; q < yljgmcName.length; q++) {
-            let PieData = {}
-                for(let n = 0;n<srvKeys.length;n++){
-                  if(yljgmcName[q] === srvKeys[n]['keyr']){
-                      PieData['请求次数'] = getDataCount(yljgmcName[q], '', datas,'pie')
-                      PieData['服务'] = srvKeys[n].text
-                      console.log("itemData",PieData)
-                  }
-                  
-                }
-            pieAllData.push(PieData) 
+              lineGraph.push(ArgNum);
+
+              itemData[srvKeys[n].text + "-"] = ArgNum;
+
+              srvText = srvKeys[n].text + "-";
+
+              itemData["时间"] = ywfssjTime[j];
+              if (type === "day") {
+                itemData["时间"] = ywfssjTime[j] + "点";
               }
-        this.RigPieData.rows = pieAllData
-    },
-    getMaxNum(e,r){
-      let ops = {'maxbar': 0,'maxline':0,'interval':0}
-      let n = 1
-      ops.interval = n*100  
-      if((Math.ceil(r / ops.interval) % 2) !== 0){
-        ops.maxline = Math.ceil(r / ops.interval) + 1
-        ops.maxline = ops.maxline * ops.interval
-      }else{
-        ops.maxline = Math.ceil(r / ops.interval)
-        ops.maxline = ops.maxline * ops.interval
-      }
-      if((Math.ceil(e / ops.interval) % 2) !== 0){
-        ops.maxbar = Math.ceil(e / ops.interval) + 1
-        ops.maxbar = ops.maxbar * ops.interval
-      }else{
-        ops.maxbar = Math.ceil(e / ops.interval)
-        ops.maxbar = ops.maxbar * ops.interval
-      }
-      if(ops.maxbar>ops.maxline){
-        ops.interval = ops.maxline
-        ops.maxbar = Math.ceil(ops.maxbar / ops.interval) * ops.interval
-        if((ops.maxbar / ops.interval) < 4) {
-          ops.interval = ops.interval / 2
-        }else if ((ops.maxbar / ops.interval) > 8 ){
-            ops.interval = ops.interval * 2
+            }
+          }
+          // this.chartSettings['showLine'].push(srvText)
         }
+        if (itemData["时间"]) {
+          allChartData.push(itemData);
+        }
+        // console.log(barGraph.Math(...barGraph))
+      }
+      if (barGraph.length > 0 && lineGraph.length > 0) {
+        let maxNum = Math.max.apply(null, barGraph);
+        let ArgMax = Math.max.apply(null, lineGraph);
+        this.getMaxNum(maxNum, ArgMax);
+      }
 
-      }else{
-        ops.interval = ops.maxbar
-        ops.maxline = Math.ceil(ops.maxline / ops.interval) * ops.interval
-        if((ops.maxline / ops.interval) < 4) {
-          ops.interval = ops.interval / 2
-        } else if ((ops.maxline / ops.interval) > 8 ){
-            ops.interval = ops.interval * 2
+      this.chartData.rows = allChartData;
+      let pieAllData = [];
+      for (let q = 0; q < yljgmcName.length; q++) {
+        let PieData = {};
+        for (let n = 0; n < srvKeys.length; n++) {
+          if (yljgmcName[q] === srvKeys[n]["keyr"]) {
+            PieData["请求次数"] = getDataCount(yljgmcName[q], "", datas, "pie");
+            PieData["服务"] = srvKeys[n].text;
+            console.log("itemData", PieData);
+          }
+        }
+        pieAllData.push(PieData);
+      }
+      this.RigPieData.rows = pieAllData;
+    },
+    getMaxNum(e, r) {
+      let ops = { maxbar: 0, maxline: 0, interval: 0 };
+      let n = 1;
+      ops.interval = n * 100;
+      if (Math.ceil(r / ops.interval) % 2 !== 0) {
+        ops.maxline = Math.ceil(r / ops.interval) + 1;
+        ops.maxline = ops.maxline * ops.interval;
+      } else {
+        ops.maxline = Math.ceil(r / ops.interval);
+        ops.maxline = ops.maxline * ops.interval;
+      }
+      if (Math.ceil(e / ops.interval) % 2 !== 0) {
+        ops.maxbar = Math.ceil(e / ops.interval) + 1;
+        ops.maxbar = ops.maxbar * ops.interval;
+      } else {
+        ops.maxbar = Math.ceil(e / ops.interval);
+        ops.maxbar = ops.maxbar * ops.interval;
+      }
+      if (ops.maxbar > ops.maxline) {
+        ops.interval = ops.maxline;
+        ops.maxbar = Math.ceil(ops.maxbar / ops.interval) * ops.interval;
+        let theMod = ops.maxbar / ops.interval;
+        if (theMod < 4) {
+          ops.interval = ops.interval / 2;
+        } else if (theMod > 10 && theMod <= 20) {
+          ops.interval = ops.interval * parseInt(theMod / 4);
+        } else if (theMod > 20 && theMod <= 50) {
+          ops.interval = ops.interval * parseInt(theMod / 5);
+        } else if (theMod >= 50 && theMod < 100) {
+          ops.interval = ops.interval * parseInt(theMod / 6);
+        } else if (theMod >= 100) {
+          ops.interval = ops.interval * parseInt(theMod / 9);
+        }
+        // else if (ops.maxbar / ops.interval > 60) {
+        //   ops.interval = ops.interval * 24;
+        // }
+      } else {
+        ops.interval = ops.maxbar;
+        ops.maxline = Math.ceil(ops.maxline / ops.interval) * ops.interval;
+        // if (ops.maxline / ops.interval < 4) {
+        //   ops.interval = ops.interval / 2;
+        // } else if (ops.maxline / ops.interval > 60) {
+        //   ops.interval = ops.interval * 24;
+        // }
+        let theModT = ops.maxline / ops.interval;
+        if (theModT < 4) {
+          ops.interval = ops.interval / 2;
+        } else if (theModT > 10 && theModT <= 20) {
+          ops.interval = ops.interval * parseInt(theModT / 4);
+        } else if (theModT > 20 && theModT <= 50) {
+          ops.interval = ops.interval * parseInt(theModT / 5);
+        } else if (theModT >= 50 && theModT < 100) {
+          ops.interval = ops.interval * parseInt(theModT / 6);
+        } else if (theModT >= 100) {
+          ops.interval = ops.interval * parseInt(theModT / 9);
         }
       }
 
-      this.chartExtendLine.yAxis.interval = ops.interval
-      this.chartSettings.max[0] =ops.maxbar
-      this.chartSettings.max[1] = ops.maxline
+      //赋值
+      this.chartExtendLine.yAxis.interval = ops.interval;
+      if (ops.maxbar > ops.interval) {
+        if (ops.maxbar % ops.interval !== 0) {
+          let mod = Math.trunc(ops.maxbar / ops.interval) + 1;
+          ops.maxbar = mod * ops.interval;
+        }
+      } else {
+        if (ops.maxline % ops.interval !== 0) {
+          let mod = Math.trunc(ops.maxline / ops.interval) + 1;
+          ops.maxline = mod * ops.interval;
+        }
+      }
+      this.chartSettings.max[0] = ops.maxbar;
+      this.chartSettings.max[1] = ops.maxline;
 
-      console.log('ops',e,r,ops)
-      return ops
+      console.log("ops", e, r, ops);
+      return ops;
     },
-     RunTimeOut(){
-      let self = this
-      self.ReqTimeOut.RunTimeOut = new this.timeOut(30,0,self.getLegend)
+    RunTimeOut() {
+      let self = this;
+      self.ReqTimeOut.RunTimeOut = new this.timeOut(30, 0, self.getLegend);
       self.ReqTimeOut.RunTimeOut.reqFun();
       self.ReqTimeOut.RunTimeOut.startTime();
-    },
-     
+    }
   },
-  created(){
-     let user = sessionStorage.getItem("current_login_user");
+  created() {
+    let user = sessionStorage.getItem("current_login_user");
     this.user = JSON.parse(user);
     setInterval(() => {
-      this.date = moment().format('YYYY-MM-DD  HH:mm:ss');
+      this.date = moment().format("YYYY-MM-DD  HH:mm:ss");
     }, 1000);
-    
-    let date = "2018-8-31"
-    let today = moment().format('YYYY-MM-DD') // moment获取本日日期
-    let day_of_week = moment(today, 'YYYY-MM-DD').format('E'); // 计算指定日期是这周第几天
+
+    let date = "2018-8-31";
+    let today = moment().format("YYYY-MM-DD"); // moment获取本日日期
+    let day_of_week = moment(today, "YYYY-MM-DD").format("E"); // 计算指定日期是这周第几天
     // let week_start = moment(today).subtract(day_of_week - 1, 'days').format('YYYY-MM-DD'); // 周一日期
-    let week_start = moment(today).subtract(6, 'days').format('YYYY-MM-DD'); // 六天前
-    let week_end = today // 今天
+    let week_start = moment(today)
+      .subtract(6, "days")
+      .format("YYYY-MM-DD"); // 六天前
+    let week_end = today; // 今天
     // let week_end = moment(today).add(7 - day_of_week, 'days').format('YYYY-MM-DD'); // 周日日期
-    let month_start = moment(today).subtract(30, 'days').format('YYYY-MM-DD') // 30天前
+    let month_start = moment(today)
+      .subtract(30, "days")
+      .format("YYYY-MM-DD"); // 30天前
     // let month_start = moment(today).startOf('month').format('YYYY-MM-DD'); // 本月第一天
-    let month_end = moment(today).endOf('month').format('YYYY-MM-DD'); // 本月最后一天
-    let day_count = parseInt(moment(today).endOf('month').format('DD')); // 本月天数
-    let year_start = moment(today).subtract(11, 'month').format('YYYY-MM-DD') // 11个月之前
+    let month_end = moment(today)
+      .endOf("month")
+      .format("YYYY-MM-DD"); // 本月最后一天
+    let day_count = parseInt(
+      moment(today)
+        .endOf("month")
+        .format("DD")
+    ); // 本月天数
+    let year_start = moment(today)
+      .subtract(11, "month")
+      .format("YYYY-MM-DD"); // 11个月之前
     this.timeHorizon = {
       date: date,
       today: today,
@@ -646,29 +747,29 @@ export default {
       month_start: month_start,
       month_end: month_end,
       year_start: year_start
-    }
+    };
     // this.getLegend()
     //  this.$cookie.set('appNo', this.appNo);
     //  console.log("________"+this.$route.params.appNo)
   },
-  mounted(){
-    this.RunTimeOut()
+  mounted() {
+    this.RunTimeOut();
   },
-  beforeDestroy(){
+  beforeDestroy() {
     this.ReqTimeOut.RunTimeOut.endTime();
   }
 };
 </script>
 
 <style scoped lang="scss">
- .main_left_cen_right {
-        // margin: 1rem!important;
-        // box-sizing: border-box
-        // width: 90% !important;
-        // height: 55%;
-        // margin: 0 auto;
-        // padding: 1rem;
-      }
+.main_left_cen_right {
+  // margin: 1rem!important;
+  // box-sizing: border-box
+  // width: 90% !important;
+  // height: 55%;
+  // margin: 0 auto;
+  // padding: 1rem;
+}
 .Cont_wrap {
   width: 95%;
   //  height: calc(100% - 10rem /* 140/16 */);
@@ -697,7 +798,6 @@ export default {
       .pie_content_top {
         margin: 2rem;
         margin-bottom: 6rem;
-        
       }
     }
   }

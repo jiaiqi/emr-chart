@@ -95,6 +95,9 @@ export default {
             GanttData:[]
           },
           set:{
+            series:{
+              type:null
+            },
             axisSite: { right: ["占用空间"] },
             yAxisType: ["normal", "normal"],
             yAxisName: ["数值", "占用空间"],
@@ -1809,13 +1812,13 @@ export default {
     }, 1000);
     // this.timeCycle("day");
   },
-  beforeDestroy(){
-    // this.ReqTimeOut.RunTimeOut.endTime()
-    // this.ReqTimeOut.dataSizeTimeOut.endTime()
-    // this.ReqTimeOut.DataShareSizeTimeOut.endTime()
-    // this.ReqTimeOut.DataShareRecodTimeOut.endTime()
-    // this.ReqTimeOut.leftChartLegendTimeOut.endTime()
-    // this.ReqTimeOut.RightTaskTimeOut.endTime()
+  destroyed(){
+    this.ReqTimeOut.RunTimeOut.endTime()
+    this.ReqTimeOut.dataSizeTimeOut.endTime()
+    this.ReqTimeOut.DataShareSizeTimeOut.endTime()
+    this.ReqTimeOut.DataShareRecodTimeOut.endTime()
+    this.ReqTimeOut.leftChartLegendTimeOut.endTime()
+    this.ReqTimeOut.RightTaskTimeOut.endTime()
   }
 };
 </script>

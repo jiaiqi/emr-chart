@@ -52,6 +52,7 @@ export default {
       //     }
       //   ]
       num: this.$route.params.num,
+      proc: this.$route.params.proc,
       tableData: [],
       tableDataTitle: [],
       page: {
@@ -71,6 +72,11 @@ export default {
           {
             colName: "table_no",
             value: this.num,
+            ruleType: "eq"
+          },
+          {
+            colName: "proc_instance_no",
+            value: this.proc,
             ruleType: "eq"
           }
         ],
@@ -100,6 +106,11 @@ export default {
           {
             colName: "table_no",
             value: this.num, //数据表编号
+            ruleType: "eq"
+          },
+          {
+            colName: "proc_instance_no",
+            value: this.proc,
             ruleType: "eq"
           }
         ],

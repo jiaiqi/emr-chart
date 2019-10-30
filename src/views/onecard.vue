@@ -264,21 +264,11 @@ export default {
     },
     getAllChartData(currentPage) {
       this.getBar1data(currentPage)
-      // setTimeout(() => {
       this.getPie1Data(currentPage)
-      // setTimeout(() => {
       this.getPie2Data(currentPage)
-      // setTimeout(() => {
       this.getBar2Data(currentPage)
-      // setTimeout(() => {
       this.getPie3Data(currentPage)
-      // setTimeout(() => {
       this.getCount(currentPage)
-      // });
-      // });
-      // });
-      // });
-      // });
     },
     async getRunTime() {
       // 获取累计运行时间
@@ -1744,6 +1734,10 @@ export default {
       this.refresh.timeOutReq = new this.timeOut(30, 0, this.getAlldata)
       this.refresh.timeOutReq.reqFun()
       this.refresh.timeOutReq.startTime()
+    },
+    autoRefreshEnd(){
+      this.refresh.RunTime.endTime()
+      this.refresh.timeOutReq.endTime()
     }
   },
   data() {
@@ -1833,6 +1827,9 @@ export default {
     // this.getRunTime()
     this.autoRefresh()
     // this.autoChangeTab(10000) // 自动切换Tab
+  },
+  destroyed(){
+    this.autoRefreshEnd()
   }
 };
 </script>

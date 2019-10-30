@@ -67,8 +67,16 @@ export default {
     },
     toManangerment() {
       let str = window.location.href;
+
       let num = str.indexOf("?");
+
       str = str.substr(num + 1);
+
+      ///协调平台  二级页面跳转后台方式
+      if (window.location.href.substring(num - 8, num) == "/secplat") {
+        str = "app_class=platform";
+      }
+
       window.location.href = "../../main/index.html?" + str;
     },
     async RegNum() {
