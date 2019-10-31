@@ -1,50 +1,11 @@
 <template>
   <div class="content-view">
-    <div class="content_top"></div>
-    <div class="content_cen">
-      <!-- <p>
-        服务器数量:
-        <span>12</span>
-      </p>-->
-      <!-- <p>
-        平均资源占用率（CPU/内存/硬盘）:
-        <span>16%</span> |
-        <span>23%</span> |
-        <span>26%</span>
-      </p>-->
-      <div class="content_cen1">
-        <div class="content_cen_left">
-          <p>
-            <span>服务器数量：</span>
-            <span>{{severNum}}</span>
-          </p>
-          <p>
-            <span>CPU占用率：</span>
-            <span>{{(cpuData==NaN)?(0+"%"):cpuData}}</span>
-          </p>
-          <p>
-            <span>内存占用率：</span>
-            <span>{{RamData}}</span>
-          </p>
-          <p>
-            <span>硬盘：</span>
-            <span>{{HDDdata}}</span>
-          </p>
-          <p>
-            <span>入网速度：</span>
-            <span>{{netIndata}}</span>
-          </p>
-          <p>
-            <span>出网速度：</span>
-            <span>{{netOutdata}}</span>
-          </p>
-        </div>
-      </div>
-    </div>
+    
+   
     <div class="content_bot">
       <ul>
         <li @click="toDetail" v-for="(item,index) in SerEsources" :key="index">
-          <dv-border-box-9 style="width:100%;padding:0.4rem;">
+          <!-- <dv-border-box-9 style="width:100%;padding:0.4rem;"> -->
             <div class="bot-card-item bot-card-item-header">
               <span>{{'IP : '+(item.ip==''||item.ip==undefined ? "暂无数据":item.ip)}}</span>
               <!-- <span class="val-text">（{{item.itemsVos[4].val}}）</span>-->
@@ -90,9 +51,12 @@
               </span>
             </div>
             <div></div>
-          </dv-border-box-9>
+          <!-- </dv-border-box-9> -->
         </li>
       </ul>
+    </div>
+    <div v-if="booler" class="database">
+      <p>暂无数据！</p>
     </div>
   </div>
 </template>
@@ -241,7 +205,8 @@ export default {
             }
           ]
         }
-      ]
+      ],
+      booler:Boolean
     };
   },
   methods: {
@@ -252,17 +217,10 @@ export default {
           "srvmonitor_apps_servernape_select",
           "monitor"
         )
-      // this.axios({
-      //   method: "get",
-      //   url: this.getServiceUrl(
-      //     "",
-      //     "srvmonitor_apps_servernape_select",
-      //     "monitor"
-      //   )
-      // await self.axios.get(path)
-       let res =  await self.axios.get(path)
+       let res =await self.axios.get(path)
+      console.error(res)
         if(res.status===200 ){
-                   this.timer();
+          this.booler=false;
         let severdata = res.data.data;
         this.SerResData = res.data.data;
         let cpuCum = 0, //总cpu
@@ -353,7 +311,7 @@ export default {
             (resItemData.networkOut / 1000).toFixed(1) + "bps";
           return itemData;
         });
-        this.severNum = res.data.data.length; //服务器数量
+       //服务器数量
         // console.log('========================',cpuCum,this.severNum)
         this.cpuData = (cpuCum / this.severNum).toFixed(1) + "%"; //cpu总占用率
         this.RamData = ((memoryUse / memoryCum) * 100).toFixed(1) + "%"; //内存
@@ -380,11 +338,7 @@ export default {
       let url = "http://10.120.119.30/zabbix";
       window.open(url);
     },
-    timer() {
-      setInterval(() => {
-        // this.petition();
-      }, 300000);
-    },
+    
     // diskdatanum() {
     //   //计算当前时间与2019.9.1之间的间隔
     //   var dateSpan, tempDate, iDays, sDate1, sDate2;
@@ -429,8 +383,6 @@ export default {
     this.cpuDataNums();
     this.memoryDataNums();
     this.diskMemoryData();
-      alert(window.location.href)
-
   },
   mounted(){
       this.RunTimeOut()
@@ -523,13 +475,13 @@ export default {
   }
   @media screen and (max-width: 1366px) {
     .content_cen {
-      margin-top: 0.5rem;
+      margin-top: 0.2rem;
     }
   }
 
   .content_bot {
     width: 99%;
-    margin-top: 2%;
+    margin-top: 1%;
     ul {
       width: 100%;
       overflow: hidden;
@@ -544,6 +496,8 @@ export default {
       li {
         color: rgb(19, 151, 255);
         width: 15%;
+        border-radius: 5px;
+        background: #0B0F34;
         margin: 0 1.34vw;
         margin-left: 0rem;
         float: left;
@@ -583,13 +537,13 @@ export default {
           }
         }
         div.bot-card-item {
-          // line-height: -0.2rem;
+          line-height: 2rem;
           display: flex;
           flex-direction: row;
           justify-content: flex-start;
           align-items: center;
           // margin-bottom: 0.5rem;
-          padding: 3.5px;
+          padding: 4px;
           margin-left: 0rem;
           margin-right: 0rem;
           border-bottom: 1px solid rgba(40, 139, 252, 0.171);
@@ -683,5 +637,17 @@ export default {
       }
     }
   }
+}
+.database{
+  // position: relative;
+  // top: 0;
+  // bottom:0;
+  // left: 0;
+  // right: 0;
+  // margin: auto;
+  color: #0B0F34;
+  font-size: 18px;
+  text-align: center;
+  margin-top:  45vh;
 }
 </style>

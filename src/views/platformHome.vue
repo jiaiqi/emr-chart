@@ -159,6 +159,15 @@ export default {
           icon: ""
         };
         window.top.tab.addTab(page);
+      }else if (item == "服务器个数") {
+        // this.$router.push({path:"/serveNum"})
+         let page = {
+          title: item,
+          url:
+            "/chart/#/serveNum",
+          icon: ""
+        };
+        window.top.tab.addTab(page);
       }
     },
     development(item) {
@@ -396,23 +405,22 @@ export default {
     //服务器个数
     async getData_three() {
       let self = this;
-      let req3 = {
-        serviceName: "srvapprc_env_apply_select",
-        colNames: ["*"],
-        condition: [],
-        group: [{ colName: "id", type: "count" }]
-      };
-      let path = this.getServiceUrl(
-        "select",
-        "srvapprc_env_apply_select",
-        "apprc"
-      );
-      // axios.post(
-      //   path, req3,
-      let res = await self.axios.post(path, req3);
-
+        let paths = this.getServiceUrl(
+          "",
+          "srvmonitor_apps_servernape_select",
+          "monitor"
+        )
+      // this.axios({
+      //   method: "get",
+      //   url: this.getServiceUrl(
+      //     "",
+      //     "srvmonitor_apps_servernape_select",
+      //     "monitor"
+      //   )
+      // await self.axios.get(path)
+       let res = await self.axios.get(paths)
       if (res.status === 200) {
-        this.lineOne[2].value = res.data.data[0].id;
+        this.lineOne[2].value = res.data.data.length
 
         return { isRes: true, res: res };
       } else {
@@ -496,15 +504,15 @@ export default {
     async getData_six() {
       let self = this;
       let req6 = {
-        serviceName: "srvapprc_dev_wendang_select",
+        serviceName: "srvfile_attachment_select",
         colNames: ["*"],
         condition: [],
         group: [{ colName: "id", type: "count" }]
       };
       let path = this.getServiceUrl(
         "select",
-        "srvapprc_dev_wendang_select",
-        "apprc"
+        "srvfile_attachment_select",
+        "file"
       );
       // axios.post(
       //   path, req6,

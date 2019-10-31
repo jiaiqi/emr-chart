@@ -1,8 +1,8 @@
 <template>
   <div class="home">
     <div class="home_content">
-      <div class="box_one">
-        <span>一 . 选择服务应用:</span>
+      <div class="box_one  boxs">
+        <span class="fontstyle">一 . 选择服务应用:</span>
         <select v-model="data_change" @change="adm">
           <option
             v-for="(item,index) in app_name"
@@ -11,11 +11,12 @@
           >{{item.app_name}}</option>
         </select>
       </div>
-      <div class="box_two">
-        <span>二 . 选择接口列表:</span>
+      <div class="box_two boxs">
+        <span class="fontstyle">二 . 选择接口列表:</span>
         <el-select v-model="value8" filterable placeholder="请选择" @change="serviceChange">
           <el-option
             v-for="(item,index) in app_no"
+            
             :key="index"
             :label="item.service_view_name"
             :value="item.service_view_name"
@@ -23,21 +24,22 @@
         </el-select>
         <!-- <span class="box_two_method">方法：GET</span> -->
       </div>
-      <div class="box_three">
+      <div class="box_three boxs">
         <p>三. 参数列表</p>
         <p class="box_pone">接口参数：</p>
-        <textarea cols="130" rows="25" v-model="data_one"></textarea>
+        <textarea id="textTest" cols="130" rows="25" v-model="data_one"></textarea>
         <p class="box_threep">调用接口的数据json包</p>
+
+        
         <div class="box_three_foot1">
-          <span class="box_three_foot_span">*</span>
-          <span>appid:</span>
+          <span class="box_three_foot_span">* <i class="importid">appid:</i></span>
           <!-- <input type="text" v-model="appId" /> -->
           <el-select
             v-model="appId"
             filterable
             placeholder="请选择"
             @change="changeAppId"
-            style="width:400px; margin-left:130px;"
+            style="width:400px; margin-left:50px;"
           >
             <el-option
               v-for="(item,index) in appIdData"
@@ -49,21 +51,26 @@
           <p class="box_three_foot_p">填写appid</p>
           <p class="box_three_foot_p2">校验通过</p>
         </div>
+
+
         <div class="box_three_foot2">
-          <span class="box_three_foot_span">*</span>
-          <span>secret:</span>
+          <span class="box_three_foot_span  foot_span ">* <i class="importid">secret:</i></span>
           <el-input
             type="text"
             v-model="appSecret"
             class="secret"
-            style="width:400px; margin-left:130px;"
+            style="width:400px; margin-left:148px;"
           />
           <p class="box_three_foot_p">填写appsecret</p>
           <p class="box_three_foot_p2">校验通过</p>
         </div>
+
+
+
+
         <button @click="debuggs" class="debugger">在线调试</button>
       </div>
-      <div class="box_four" v-if="show">
+      <div class="box_four boxs" v-if="show">
         <div class="box_four_a">
           <span>{{this.data_change}}</span>
           <span>:</span>
@@ -111,23 +118,27 @@ export default {
     };
   },
   methods: {
+    acquire(val){
+      this.data_one=val
+    },
     getData_one() {
       //选择服务应用
       let req = {
         colNames: ["*"],
         condition: [],
         order: [],
-        page: { pageNo: 1, rownumber: 10 },
+        page: {},
         serviceName: "srvconfig_app_list_select"
       };
-      let url = this.getServiceUrl("select", req.serviceName, "config");
+      let that=this
+      let url = that.getServiceUrl("select", req.serviceName, "config");
       axios
         .post(url, req)
         .then(res => {
-          this.app_name = res.data.data;
-          console.log(this.app_name);
-          this.data_change = this.app_name[4].app_name;
-          this.api = this.app_name[4].app_no;
+          that.app_name = res.data.data;
+          console.log(that.app_name);
+          that.data_change = that.app_name[4].app_name;
+          that.api = that.app_name[4].app_no;
         })
         .catch(err => {
           console.error(err);
@@ -159,7 +170,7 @@ export default {
             "ruleType": "ne"
           },
           {
-            "colName": "service_name",
+            "colName": "module",
             "value": "process",
             "ruleType": "ne"
           },
@@ -189,10 +200,11 @@ export default {
         let appNo = this.api;
         let service = this.serviceName;
         let type = this.serviceType;
-        let str = `{"serviceName": "${service}", ${req3}}`;
+        let str = `{"serviceName": "${service}", ${req3} }`;
+
         str = JSON.parse(str.replace(/\s+/g, ""));
         this.data[0] = str;
-        // console.log('+++++++++', this.data)
+        console.log('+++++++++', this.data)
         let data1 = [];
         let data2 = [];
         let map = {
@@ -207,14 +219,21 @@ export default {
           param: str
         };
         data1.push(map);
+        console.error(data1)
         data2.push(map1);
         // console.log('+++++++++', data1)
         let url = this.getServiceUrl("operate", map.serviceName, "apprc");
         axios
           .post(url, data1)
           .then(res => {
-            this.data_return = JSON.stringify(res.data.response);
+            console.group(res)
+            this.data_return         = JSON.stringify(res.data.response);
             this.data_state = res.data.state;
+
+            // var jdata = JSON.stringify(JSON.parse(jsondata), null, 4);
+
+            // $(".showMessage").html("<pre>"+jdata+"</pre>" );
+
           })
           .catch(err => {
             console.error(err);
@@ -275,6 +294,12 @@ export default {
       this.getData_three();
     }
   },
+  
+    watch:{
+        value8(val, oldVal) {
+          //  this.data_one=val
+        }
+    },
   mounted() {
     this.getData_one();
     setTimeout(() => {
@@ -322,12 +347,14 @@ export default {
   opacity: 0.5;
 }
 .box_three > textarea {
-  margin-left: 180px;
+  margin-left: 151px;
 }
 .box_three {
   .debugger {
     width: 100px;
     line-height: 40px;
+    margin-top: 20px;
+    margin-left: 149px;
     color: #fff;
     background-color: #198edc;
     border-radius: 4px;
@@ -342,7 +369,7 @@ export default {
   margin-top: 10px;
 }
 .box_threep {
-  margin-left: 180px;
+  margin-left: 151px;
   opacity: 0.5;
 }
 .box_three_foot_span {
@@ -359,7 +386,7 @@ export default {
 }
 .box_three_foot1 > p,
 .box_three_foot2 > p {
-  margin-left: 173px;
+  margin-left: 151px;
 }
 .box_three_foot_p {
   opacity: 0.5;
@@ -423,7 +450,7 @@ input {
   border-bottom: 1px solid #ccc;
 }
 .box_four_c > textarea {
-  margin-left: 155px;
+  margin-left: 146px;
   margin-top: -16px;
 }
 .box_four_c {
@@ -438,5 +465,29 @@ input {
   line-height: 50px;
   border-bottom: 1px solid #ccc;
   margin-bottom: 10px;
+}
+.el-select:nth-last-child(){
+  margin-left: 50px!important
+}
+.boxs span:nth-child(1){
+      display: inline-block;
+      min-width: 100px;
+      max-width: 150px;
+}
+.importid{
+  color: #000 !important;
+  font-style:normal;
+}
+.foot_span{
+  position: relative;
+  top:25px;
+}
+@media screen  and (min-width:1366px){
+    .fontstyle{
+      font-size:12px;
+    }
+}
+li{
+  padding-left: 10px!important;
 }
 </style>

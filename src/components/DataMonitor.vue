@@ -95,7 +95,7 @@ export default {
         colNames: [
           "src_no",
           "db_type",
-          "table_count",
+          "table_count_real",
           "storage_size",
           "row_count",
           "db_name"

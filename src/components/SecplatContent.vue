@@ -2,22 +2,27 @@
   <div class="Cont_wrap">
     <div class="Cont_left_bar">
       <dv-border-box-10>
-        <div class="bar_title">
-          <span>微服务服务请求次数</span>
-        </div>
-        <div class="bar_content">
-          <ve-histogram
-            :data="chartData"
-            height="60vh"
-            :legend="legend"
-            :textStyle="legend.textStyle"
-            :extend="chartExtendLine"
-            :settings="chartSettings"
-            :log="true"
-          ></ve-histogram>
-          <!-- :textStyle="legend.textStyle" -->
-          <!-- :legend="legend" -->
-        </div>
+          <div >
+                 <div class="bar_title">
+                  <span style="margin:8px 0 10px 0;">微服务服务请求次数</span>
+                </div>
+                <div v-if="dataBaseTop" class="bar_content">
+                  <ve-histogram
+                    :data="chartData"
+                    height="60vh"
+                    :legend="legend"
+                    :textStyle="legend.textStyle"
+                    :extend="chartExtendLine"
+                    :settings="chartSettings"
+                    :log="true"
+                  ></ve-histogram>
+                  <!-- :textStyle="legend.textStyle" -->
+                  <!-- :legend="legend" -->
+                </div>
+            </div>
+            <div v-if="dataBaseBar">
+                <p style="text-align:center; line-height:58.3vh">暂无数据！</p>
+            </div>
       </dv-border-box-10>
       <!-- <li
         @click="timeCycle(item.key,index)"
@@ -29,22 +34,28 @@
     <div class="Cont_right_pie">
       <dv-border-box-10>
         <div class="pie_title">
-          <span>服务请求分布</span>
+          <span style="margin:8px 0;">服务请求分布</span>
         </div>
         <div class="pie_content">
           <div class="pie_content_top">
             <dv-border-box-8 style>
               <!-- <div class="main_left_cen_right"> -->
-              <ve-pie
-                :legend-visible="false"
-                height="30vh"
-                :extend="chartExtendPie"
-                width="100%"
-                :data="RigPieData"
-                :textStyle="legend.textStyle"
-                :settings="pieSetting"
-              ></ve-pie>
+                <div v-if="dataBaseTop">
+                      <ve-pie
+                  :legend-visible="false"
+                  height="32vh"
+                  :extend="chartExtendPie"
+                  width="100%"
+                  :data="RigPieData"
+                  :textStyle="legend.textStyle"
+                  :settings="pieSetting"
+                ></ve-pie>
+                </div>
+            
               <!-- </div> -->
+              <div>
+                <p  v-if="dataBaseBar" style="text-align:center;line-height:32vh">暂无数据！</p>
+              </div>
             </dv-border-box-8>
           </div>
           <!-- :legend-visible="false"  -->
@@ -168,7 +179,9 @@ export default {
       legend: {
         textStyle: {
           color: "#fff"
-        }
+        },
+         padding:[15,0,0,0],   //可
+
       },
       legendCake: {
         textStyle: {
@@ -208,7 +221,9 @@ export default {
         max: [1300, 2600]
       },
       appNo: this.$route.query.appNo,
-      dateLine: this.secplatdata == "" ? "day" : this.secplatdata
+      dateLine: this.secplatdata == "" ? "day" : this.secplatdata,
+      dataBaseBar:false,
+      dataBaseTop:true
     };
   },
   components: {
@@ -436,12 +451,17 @@ export default {
       this.axios
         .post(path, req)
         .then(res1 => {
+          
           let _this2 = this;
-          console.log(res1);
+          
           let arr = res1.data.data;
           let currRow = [];
           this.getCountData(arr, type);
           // console.error('arr',arr)
+          if(res1.data.data.length==0){
+              this.dataBaseBar=true    
+              this.dataBaseTop=false        
+          }
         })
         .catch(err => {
           console.log(err);
@@ -797,10 +817,17 @@ export default {
       justify-content: space-around;
       .pie_content_top {
         margin: 2rem;
-        margin-bottom: 6rem;
+        margin-bottom: 3rem;
       }
     }
   }
+}
+
+
+@media screen  and (max-width:1367px){
+  .pie_content_top{
+      margin-bottom: 6rem !important;
+  } 
 }
 // .wrap {
 //   width: 100%;

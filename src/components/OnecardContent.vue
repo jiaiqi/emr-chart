@@ -192,13 +192,13 @@
             v-for="(item,index) in contentData.secondBar.tableData.GanttData"
             :key="index"
           >
-            <div class="databox-col">{{item.start_time}}</div>
-            <div class="databox-col">{{item.processor_name}}</div>
-            <div class="databox-col">{{item.failed_records_count}}</div>
-            <div class="databox-col">{{item.ok_records_count}}</div>
-            <div class="databox-col">{{item.input_record_count}}</div>
-            <div class="databox-col">{{item.output_record_count}}</div>
-            <div class="databox-col">{{item.end_time}}</div>
+            <div class="databox-col">{{item.start_time?item.start_time:0}}</div>
+            <div class="databox-col">{{item.processor_name?item.processor_name:0}}</div>
+            <div class="databox-col">{{item.failed_records_count?item.failed_records_count:0}}</div>
+            <div class="databox-col">{{item.ok_records_count?item.ok_records_count:0}}</div>
+            <div class="databox-col">{{item.input_record_count?item.input_record_count:0}}</div>
+            <div class="databox-col">{{item.output_record_count?item.output_record_count:0}}</div>
+            <div class="databox-col">{{item.end_time?item.end_time:0}}</div>
             <!-- <div class="databox-col">{{item.item08}}</div> -->
           </div>
           <div
@@ -259,7 +259,7 @@ export default {
           pageIconColor: "#3399ff"
         },
         series: {
-          type: "bar",
+          type: null,
           itemStyle: {
             normal: {
               label: {
@@ -423,6 +423,8 @@ export default {
         this.rightChartExtend.yAxis.interval = newValue.secondBar.interval;
         this.countData = newValue.countData;
         if (this.contentData.currentPage === "dataShare") {
+          this.chartExtendLine.series.type = newValue.firstBar.set.type;
+        } else if (this.contentData.currentPage === "ETL") {
           this.chartExtendLine.series.type = newValue.firstBar.set.type;
         } else {
           this.chartExtendLine.series.type = newValue.firstBar.type;

@@ -147,14 +147,14 @@
                   <div class="task">
                     <span>缓存管理</span>
                   </div>
-                  <div>
+                  <div>    
                     <div>
                       <span>应用命中率</span>
-                      <span>{{mean==NaN || mean==null || mean=="NaN"?0+"%":(mean+"%")}}</span>
+                      <span>{{mean==NaN || mean==null || mean=="NaN"?(0+"%"):(mean+"%")}}</span>
                     </div>
                     <div>
                       <span>内存使用率</span>
-                      <span>{{memoryMean==NaN ||memoryMean==null || memoryMean=="NaN"?0+"%":(memoryMean+"%")}}</span>
+                      <span>{{memoryMean==NaN ||memoryMean==null || memoryMean=="NaN"?(0+"%"):(memoryMean+"%")}}</span>
                     </div>
                   </div>
                 </li>
@@ -487,6 +487,7 @@ export default {
       let self = this; // 缓存管理
       let path = this.getServiceUrl("", "redis", "monitor");
       let res = await self.axios.get(path);
+      // console.error(res)
       if (res.status === 200) {
         let space = null; //命中总数
         let miss = null; //未命中总数
@@ -504,9 +505,24 @@ export default {
           totalMemory += Number(resa[i].itemsVos[3].val);
         }
 
-        this.mean = mean = (space / (space + miss)).toFixed(2) * 100;
-        this.memoryMean = memoryMean =
-          (memory / 1024 / 1024 / (totalMemory / 1024 / 1024)).toFixed(2) * 100;
+        mean = (space / (space + miss)).toFixed(2) * 100;
+        // console.error(mean)
+        if(!isNaN (mean)){
+            this.mean = mean
+        }else if(mean==NaN || mean=="NaN"){
+            this.mean=0
+        }else{
+            this.mean=0
+        }
+        memoryMean =(memory / 1024 / 1024 / (totalMemory / 1024 / 1024)).toFixed(2) * 100;
+
+           if(!isNaN (memoryMean)){
+            this.memoryMean = memoryMean
+        }else if(memoryMean==NaN || memoryMean=="NaN"){
+            this.mean=0
+        }else{
+            this.memoryMean=0
+        }
         return { isRes: true, res: res };
       } else {
         return { isRes: false, res: res };
@@ -610,7 +626,7 @@ body {
       flex-direction: row;
       justify-content: space-around;
       align-items: center;
-      cursor: pointer;
+      cursor: default;
       div {
         color: #ffffff;
         font-size: 1.8rem;
@@ -674,6 +690,7 @@ body {
     .main_cen_left {
       width: 20%;
       height: 90%;
+      cursor:default;
       ul {
         width: 100%;
         height: 100%;
@@ -687,6 +704,7 @@ body {
         justify-content: space-around;
         // justify-content: space-between;
         li {
+          cursor:default !important;
           width: 70%;
           color: white;
           margin: 0 auto 15%;
@@ -794,10 +812,11 @@ body {
           display: flex;
           flex-direction: row;
           flex-wrap: wrap;
+              margin-left: 2%;
           // justify-content: space-between;
           li {
             display: flex;
-            width: 20%;
+            width: 21%;
             flex-direction: column;
             justify-content: space-between;
             margin-bottom: 1rem;
@@ -812,7 +831,8 @@ body {
             padding: 5px 10px;
             color: #dfeb4c;
             cursor: pointer;
-            margin-left: 2.1rem;
+                margin: 10px 2%;
+    box-sizing: border-box;
             &:nth-child(4n + 1) {
               margin-left: 0;
             }
@@ -904,7 +924,7 @@ body {
         flex-direction: column;
         justify-content: space-between;
         font-size: 14px;
-        cursor: pointer;
+        cursor: default;
         // :first-child {
         //   font-size: 16px;
         // }

@@ -1,94 +1,101 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from "vue";
+import Router from "vue-router";
 
-Vue.use(Router)
+Vue.use(Router);
 
 const router = new Router({
-	// mode: "history",
-	base: process.env.BASE_URL,
-	routes: [
-		{
-			path: '/',
-			redirect: '/navs'
-		},
-		{
-			path: '/login',
-			name: 'login',
-			component: () =>
-				import(/* webpackChunkName: "login" */ './views/login.vue')
-		},
-		{
-			path: '/onecard',
-			name: 'onecard',
-			component: () =>
-				import(/* webpackChunkName: "onecard" */ './views/onecard.vue')
-		},
-		{
-			path: '/platform',
-			name: 'platform',
-			component: () =>
-				import(/* webpackChunkName: "platform" */ './views/platform.vue')
-		},
-		{
-			path: '/datacenter',
-			name: 'datacenter',
-			component: () =>
-				import(/* webpackChunkName: "datacenter" */ './views/datacenter.vue')
-		},
-		{
-			path: '/secplat',
-			name: 'secplat',
-			component: () =>
-				import(/* webpackChunkName: "secplat" */ './views/secplat.vue')
-		},
-		{
-			path: '/navs',
-			name: 'navs',
-			component: () => import(/* webpackChunkName: "navs" */ './views/navs.vue')
-		},
-		{
-			path: '/onecardHome',
-			name: 'onecardHome',
-			component: () =>
-				import(/* webpackChunkName: "onecardHome" */ './views/onecardHome.vue')
-		},
-		{
-			path: '/platformHome',
-			name: 'platformHome',
-			component: () =>
-				import(/* webpackChunkName: "platformHome" */ './views/platformHome.vue')
-		},
-		{
-			path: '/datacenterHome',
-			name: 'datacenterHome',
-			component: () =>
-				import(/* webpackChunkName: "datacenterHome" */ './views/datacenterHome.vue')
-		},
-		{
-			path: '/debugging',
-			name: 'debugging',
-			component: () =>
-				import(/* webpackChunkName: "debugging" */ './views/debugging.vue')
-		},
-		{
-			path: '/viewData/:num',
-			name: 'viewData',
-			component: () =>
-				import(/* webpackChunkName: "viewData" */ './views/viewData.vue')
-		},
-		{
-			path: '/viewPort',
-			name: 'viewPort',
-			component: () =>
-				import(/* webpackChunkName: "viewPort" */ './views/viewPort.vue')
-		},
-		{
-			path: '/listdemo/:app/:serveice', // 拖拽组件
-			name: 'listdemo',
-			component: () =>
-				import(/* webpackChunkName: "viewPort" */ './views/listDemo.vue')
-		}
-	]
-})
+  base: process.env.BASE_URL,
+  routes: [{
+      path: '/',
+      redirect: '/navs'
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: () => import( /* webpackChunkName: "login" */ "./views/login.vue")
+    },
+    {
+      path: "/onecard",
+      name: "onecard",
+      component: () => import( /* webpackChunkName: "onecard" */ "./views/onecard.vue")
+    },
+    {
+      path: "/platform",
+      name: "platform",
+      component: () =>
+        import( /* webpackChunkName: "platform" */ "./views/platform.vue")
+    },
+    {
+      path: "/datacenter",
+      name: "datacenter",
+      component: () =>
+        import( /* webpackChunkName: "datacenter" */ "./views/datacenter.vue")
+    },
+    {
+      path: "/secplat",
+      name: "secplat",
+      component: () =>
+        import( /* webpackChunkName: "secplat" */ "./views/secplat.vue")
+    },
+    {
+      path: "/navs",
+      name: "navs",
+      component: () =>
+        import( /* webpackChunkName: "navs" */ "./views/navs.vue")
+    }, {
+      path: "/onecardHome",
+      name: "onecardHome",
+      component: () =>
+        import( /* webpackChunkName: "onecardHome" */ "./views/onecardHome.vue")
+    }, {
+      path: "/platformHome",
+      name: "platformHome",
+      component: () =>
+        import( /* webpackChunkName: "platformHome" */ "./views/platformHome.vue")
+    }, {
+      path: "/datacenterHome",
+      name: "datacenterHome",
+      component: () =>
+        import( /* webpackChunkName: "datacenterHome" */ "./views/datacenterHome.vue")
+    },
+    {
+      path: '/debugging',
+      name: 'debugging',
+      component: () =>
+        import( /* webpackChunkName: "debugging" */ "./views/debugging.vue")
+    },
+    // {
+    //   path: '/vChartView',
+    //   name: 'vChartView',
+    //   component: () =>
+    //     import( /* webpackChunkName: "debugging" */ "./views/vChartView.vue")
+    // },
+    {
+      path: '/viewData/:num',
+      name: 'viewData',
+      component: () =>
+        import( /* webpackChunkName: "debugging" */ "./views/viewData.vue")
+    },
+    {
+      path: '/viewPort',
+      name: 'viewPort',
+      component: () =>
+        import( /* webpackChunkName: "debugging" */ "./views/viewPort.vue")
+    },
+    {
+      path: '/serveNum',
+      name: 'serveNum',
+      component: () =>
+        import( /* webpackChunkName: "debugging" */ "./views/serveNum.vue")
+    },
+    {
+      // path: '/listdemo',
+      path: '/listdemo/:app/:serveice',
+      name: 'listdemo',
+      component: () =>
+        import( /* webpackChunkName: "debugging" */ "./views/listDemo.vue")
+    }
+  ]
+});
 
-export default router
+export default router;

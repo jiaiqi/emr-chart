@@ -101,7 +101,7 @@ export default {
       ],
       lineTwo: [
         {
-          title: "患者总数",
+          title: "患者就诊卡总数",
           value: 0
         },
         {
@@ -290,7 +290,7 @@ export default {
           {
             colName: "cmd",
             ruleType: "eq",
-            value: "report"
+            value: "inpatient"
           }
         ],
         group: [{ colName: "bizno", type: "count" }]
@@ -359,7 +359,7 @@ export default {
       }
     },
     development(item) {
-      if (item == "患者总数") {
+      if (item == "患者就诊卡总数") {
         let page = {
           title: item,
           url: "/vpages/index.html#/list/DI_MPI_REGISTERINFO_select?srvApp=emr",
@@ -423,7 +423,7 @@ export default {
       //   console.log(err)
       // })
     },
-    //患者总数
+    //患者就诊卡总数
     async getData_three() {
       let self = this;
       let req3 = {
@@ -461,10 +461,21 @@ export default {
       let req4 = {
         "serviceName":"srvemr_record_count_by_hour_select",
         "colNames": ["*"],
+          "group": [
+        {
+        "colName": "record_type",
+        "type": "by"
+        },
+        {
+        "colName": "amount",
+        "type": "sum",
+		"aliasName":"amount"
+        }
+    ],
         "condition": [
             {
                 "colName": "record_type",
-                "value": "门诊诊疗挂号记录",
+                "value": "门急诊诊疗挂号记录",
                 "ruleType": "eq"
             }
         ]
@@ -503,6 +514,17 @@ export default {
       let req5 = {
     "serviceName":"srvemr_record_count_by_hour_select",
     "colNames": ["*"],
+      "group": [
+        {
+        "colName": "record_type",
+        "type": "by"
+        },
+        {
+        "colName": "amount",
+        "type": "sum",
+		"aliasName":"amount"
+        }
+    ],
     "condition": [
         {
             "colName": "record_type",
@@ -542,28 +564,28 @@ export default {
       let req6 = {
     "serviceName":"srvemr_record_count_by_hour_select",
     "colNames": ["*"],
-    //  "group": [
-    //     {
-    //     "colName": "record_type",
-    //     "type": "by"
-    //     },
-    //     {
-    //     "colName": "amount",
-    //     "type": "sum",
-		// "aliasName":"amount"
-    //     }
-    // ],
+      "group": [
+        {
+        "colName": "record_type",
+        "type": "by"
+        },
+        {
+        "colName": "amount",
+        "type": "sum",
+		"aliasName":"amount"
+        }
+    ],
     "relation_condition": 
         {
             "relation":"OR",
             "data":[{
 			"colName": "record_type",
-            "value": "门诊诊疗实验室检验记录",
+            "value": "门急诊诊疗检验报告",
             "ruleType": "eq"
 			},
 			{
 			"colName": "record_type",
-            "value": "住院诊疗检验报告头表",
+            "value": "住院诊疗检验报告",
             "ruleType": "eq"
 
 			}]
@@ -584,7 +606,7 @@ export default {
          sum+= res.data.data[i].amount
       }
           // if (res.data.data[0].VER > 0) {
-
+              console.error(sum)
             this.lineTwo[3].value =sum;
           // }
           // console.log('666',res.data.data[0].VER)
@@ -620,7 +642,6 @@ export default {
           console.log(err);
         });
     },
-    //医嘱
     async getData_eight() {
       let self = this;
       let req8 = {
@@ -642,12 +663,12 @@ export default {
             "relation":"OR",
             "data":[{
 			"colName": "record_type",
-            "value": "门诊诊疗医嘱",
+            "value": "门急诊诊疗医嘱",
             "ruleType": "eq"
 			},
 			{
 			"colName": "record_type",
-            "value": "住院诊疗医嘱信息",
+            "value": "住院诊疗医嘱",
             "ruleType": "eq"
 
 			}]
@@ -678,34 +699,35 @@ export default {
       //   console.log(err)
       // })
     },
+    //医嘱
 
     async getData_nine() {
       let self = this;
       let req9 = {
     "serviceName":"srvemr_record_count_by_hour_select",
     "colNames": ["*"],
-    //  "group": [
-    //     {
-    //     "colName": "record_type",
-    //     "type": "by"
-    //     },
-    //     {
-    //     "colName": "amount",
-    //     "type": "sum",
-		// "aliasName":"amount"
-    //     }
-    // ],
+      "group": [
+        {
+        "colName": "record_type",
+        "type": "by"
+        },
+        {
+        "colName": "amount",
+        "type": "sum",
+		"aliasName":"amount"
+        }
+    ],
     "relation_condition": 
         {
             "relation":"OR",
             "data":[{
 			"colName": "record_type",
-            "value": "门诊诊疗医嘱",
+            "value": "门急诊诊疗医嘱",
             "ruleType": "eq"
 			},
 			{
 			"colName": "record_type",
-            "value": "住院诊疗医嘱信息",
+            "value": "住院诊疗医嘱",
             "ruleType": "eq"
 
 			}]

@@ -1,6 +1,6 @@
 <template>
   <div class="pie_content_bot">
-    <dv-border-box-8 style="height:6rem">
+    <dv-border-box-8 style="height:8rem">
       <div class="main_right_word">
         <div class="main_right_count">
           <span>累计请求次数</span>
@@ -43,7 +43,7 @@ export default {
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      margin-top: 1.5rem;
+      margin-top: 2.8rem;
       :first-child {
         font-size: 14px;
       }
@@ -53,4 +53,5 @@ export default {
     }
   }
 }
+
 </style>

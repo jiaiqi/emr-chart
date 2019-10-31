@@ -17,15 +17,15 @@
             v-if="singList.type==='all'"
             class="value"
             :class="{columns:singList.type==='all'}"
-          >{{item.label}}---{{item.col_type}}</div>
+          >{{item.label}}</div>
           <div v-else class="value">{{item.label}}</div>
           <el-select
             v-model="item._condition.ruleType"
             filterable
             placeholder="请选择"
-            v-if="singList.type=='condition'"
+            v-if="singList.type=='condition' && singList.list"
             class="el-select"
-            @visible-change="selectConditionOperator(item)"
+            @visible-change="selectConditionOperator(item,'click')"
           >
             <el-option
               v-for="item in selectList"
@@ -40,7 +40,7 @@
             placeholder="请选择"
             v-if="singList.type=='group'"
             class="el-select"
-            @visible-change="selectGroupOperator(item)"
+            @visible-change="selectGroupOperator(item,'click')"
           >
             <el-option
               v-for="item in selectList"
@@ -69,13 +69,13 @@
             placeholder="请选择"
             v-if="singList.type=='aggregation'"
             class="el-select"
-            @visible-change="seleteAggregationOperator(item)"
           >
             <el-option
               v-for="(item,index) in selectList"
               :key="index"
               :label="item.label"
               :value="item.value"
+              @visible-change="seleteAggregationOperator(item,'click')"
             ></el-option>
           </el-select>
           <el-input
@@ -138,6 +138,7 @@ export default {
       deploy: {},
       selectList: [],
       modelType: "",
+      singListBak: {},
       falgs: "article",
       endData: {
         condition: [],
@@ -429,265 +430,534 @@ export default {
         this.deploy.group = "article";
       }
     },
-    selectConditionOperator(item) {
+    selectConditionOperator(sign, isClick) {
+      let self = this;
       // 切换condition的操作符
-      let dataType = item.col_type; // 暂定有时间、数字、其它三种
-      if (dataType == "Date" || dataType == "DateTime") {
-        dataType = "date";
-      } else if (dataType == "String" || dataType == "string") {
-        dataType = "string";
-      } else if (
-        dataType == "Number" ||
-        dataType == "number" ||
-        dataType == "int"
-      ) {
-        dataType = "number";
-      }
-      let operator = [];
-      switch (dataType) {
-        case "date": // 时间类型
-          operator = [
-            {
-              label: "等于",
-              value: "eq"
-            },
-            {
-              label: "不等于",
-              value: "ne"
-            },
-            {
-              label: "近似于",
-              value: "like"
-            },
-            {
-              label: "包含",
-              value: "in"
-            },
-            {
-              label: "大于等于",
-              value: "ge"
-            },
-            {
-              label: "小于等于",
-              value: "le"
-            },
-            {
-              label: "大于",
-              value: "gt"
-            },
-            {
-              label: "小于",
-              value: "lt"
-            }
-          ];
-          break;
-        case "number": // 数字类型
-          operator = [
-            {
-              label: "等于",
-              value: "eq"
-            },
-            {
-              label: "小于等于",
-              value: "le"
-            },
-            {
-              label: "大于等于",
-              value: "ge"
-            },
-            {
-              label: "大于",
-              value: "gt"
-            },
-            {
-              label: "小于",
-              value: "lt"
-            },
-            {
-              label: "不等于",
-              value: "ne"
-            },
-            {
-              label: "包含",
-              value: "in"
-            }
-          ];
-          break;
-        default:
-          operator = [
-            {
-              label: "等于",
-              value: "eq"
-            },
-            {
-              label: "不等于",
-              value: "ne"
-            },
-            {
-              label: "近似于",
-              value: "like"
-            },
-            {
-              label: "包含",
-              value: "in"
-            }
-          ];
-          break;
-      }
-      this.selectList = operator;
-    },
-    selectGroupOperator(item) {
-      // 切换group的操作符
-      let dataType = item.col_type; // 暂定有时间、数字、其它三种
-      if (dataType == "Date" || dataType == "DateTime") {
-        dataType = "date";
+      if (isClick) {
+        let dataType = sign.col_type; // 暂定有时间、数字、其它三种
+        if (dataType == "Date" || dataType == "DateTime") {
+          dataType = "date";
+        } else if (dataType == "String" || dataType == "string") {
+          dataType = "string";
+        } else if (
+          dataType == "Number" ||
+          dataType == "number" ||
+          dataType == "int"
+        ) {
+          dataType = "number";
+        }
+        let operator = [];
+        switch (dataType) {
+          case "date": // 时间类型
+            operator = [
+              {
+                label: "等于",
+                value: "eq"
+              },
+              {
+                label: "不等于",
+                value: "ne"
+              },
+              {
+                label: "近似于",
+                value: "like"
+              },
+              {
+                label: "包含",
+                value: "in"
+              },
+              {
+                label: "大于等于",
+                value: "ge"
+              },
+              {
+                label: "小于等于",
+                value: "le"
+              },
+              {
+                label: "大于",
+                value: "gt"
+              },
+              {
+                label: "小于",
+                value: "lt"
+              }
+            ];
+            break;
+          case "number": // 数字类型
+            operator = [
+              {
+                label: "等于",
+                value: "eq"
+              },
+              {
+                label: "小于等于",
+                value: "le"
+              },
+              {
+                label: "大于等于",
+                value: "ge"
+              },
+              {
+                label: "大于",
+                value: "gt"
+              },
+              {
+                label: "小于",
+                value: "lt"
+              },
+              {
+                label: "不等于",
+                value: "ne"
+              },
+              {
+                label: "包含",
+                value: "in"
+              }
+            ];
+            break;
+          default:
+            operator = [
+              {
+                label: "等于",
+                value: "eq"
+              },
+              {
+                label: "不等于",
+                value: "ne"
+              },
+              {
+                label: "近似于",
+                value: "like"
+              },
+              {
+                label: "包含",
+                value: "in"
+              }
+            ];
+            break;
+        }
+        self.selectList = operator;
       } else {
-        dataType = "others";
-      }
-      let operator = [];
-      switch (dataType) {
-        case "date":
-          this.selectList = [
-            {
-              label: "by",
-              value: "by"
-            },
-            {
-              label: "按年统计",
-              value: "by_year"
-            },
-            {
-              label: "按月统计",
-              value: "by_month"
-            },
-            {
-              label: "按周统计",
-              value: "by_week"
-            },
-            {
-              label: "按天统计",
-              value: "by_date"
-            },
-            {
-              label: "按小时统计",
-              value: "by_hour"
-            },
-            {
-              label: "按分统计",
-              value: "by_minute"
-            },
-            {
-              label: "按秒统计",
-              value: "by_second"
-            },
-            {
-              label: "按每年的每个月统计",
-              value: "by_month_of_year"
-            },
-            {
-              label: "按每年的每周统计",
-              value: "by_week_of_year"
-            },
-            {
-              label: "按每年的每天统计",
-              value: "by_date_of_year"
-            },
-            {
-              label: "按每天的每小时统计",
-              value: "by_hour_of_date"
-            },
-            {
-              label: "按每天的每分钟统计",
-              value: "by_minute_of_date"
-            }
-          ];
-          break;
-        default:
-          this.selectList = [
-            {
-              label: "by",
-              value: "by"
-            }
-          ];
-          break;
+        sign.forEach(item => {
+          let dataType = item.col_type; // 暂定有时间、数字、其它三种
+          if (dataType == "Date" || dataType == "DateTime") {
+            dataType = "date";
+          } else if (dataType == "String" || dataType == "string") {
+            dataType = "string";
+          } else if (
+            dataType == "Number" ||
+            dataType == "number" ||
+            dataType == "int"
+          ) {
+            dataType = "number";
+          }
+          let operator = [];
+          switch (dataType) {
+            case "date": // 时间类型
+              operator = [
+                {
+                  label: "等于",
+                  value: "eq"
+                },
+                {
+                  label: "不等于",
+                  value: "ne"
+                },
+                {
+                  label: "近似于",
+                  value: "like"
+                },
+                {
+                  label: "包含",
+                  value: "in"
+                },
+                {
+                  label: "大于等于",
+                  value: "ge"
+                },
+                {
+                  label: "小于等于",
+                  value: "le"
+                },
+                {
+                  label: "大于",
+                  value: "gt"
+                },
+                {
+                  label: "小于",
+                  value: "lt"
+                }
+              ];
+              break;
+            case "number": // 数字类型
+              operator = [
+                {
+                  label: "等于",
+                  value: "eq"
+                },
+                {
+                  label: "小于等于",
+                  value: "le"
+                },
+                {
+                  label: "大于等于",
+                  value: "ge"
+                },
+                {
+                  label: "大于",
+                  value: "gt"
+                },
+                {
+                  label: "小于",
+                  value: "lt"
+                },
+                {
+                  label: "不等于",
+                  value: "ne"
+                },
+                {
+                  label: "包含",
+                  value: "in"
+                }
+              ];
+              break;
+            default:
+              operator = [
+                {
+                  label: "等于",
+                  value: "eq"
+                },
+                {
+                  label: "不等于",
+                  value: "ne"
+                },
+                {
+                  label: "近似于",
+                  value: "like"
+                },
+                {
+                  label: "包含",
+                  value: "in"
+                }
+              ];
+              break;
+          }
+          console.log("operator--------------", operator);
+          self.selectList = operator;
+        });
       }
     },
-    seleteAggregationOperator(item) {
-      // 切换聚合条件
-      let dataType = item.col_type;
-      if (dataType == "Date" || dataType == "DateTime") {
-        dataType = "date";
-      } else if (dataType == "String" || dataType == "string") {
-        dataType = "string";
-      } else if (
-        dataType == "Number" ||
-        dataType == "number" ||
-        dataType == "int"
-      ) {
-        dataType = "number";
+    selectGroupOperator(sign, isClick) {
+      let self = this;
+      if (isClick) {
+        let dataType = sign.col_type; // 暂定有时间、数字、其它三种
+        if (dataType == "Date" || dataType == "DateTime") {
+          dataType = "date";
+        } else {
+          dataType = "others";
+        }
+        let operator = [];
+        switch (dataType) {
+          case "date":
+            this.selectList = [
+              {
+                label: "by",
+                value: "by"
+              },
+              {
+                label: "按年统计",
+                value: "by_year"
+              },
+              {
+                label: "按月统计",
+                value: "by_month"
+              },
+              {
+                label: "按周统计",
+                value: "by_week"
+              },
+              {
+                label: "按天统计",
+                value: "by_date"
+              },
+              {
+                label: "按小时统计",
+                value: "by_hour"
+              },
+              {
+                label: "按分统计",
+                value: "by_minute"
+              },
+              {
+                label: "按秒统计",
+                value: "by_second"
+              },
+              {
+                label: "按每年的每个月统计",
+                value: "by_month_of_year"
+              },
+              {
+                label: "按每年的每周统计",
+                value: "by_week_of_year"
+              },
+              {
+                label: "按每年的每天统计",
+                value: "by_date_of_year"
+              },
+              {
+                label: "按每天的每小时统计",
+                value: "by_hour_of_date"
+              },
+              {
+                label: "按每天的每分钟统计",
+                value: "by_minute_of_date"
+              }
+            ];
+            break;
+          default:
+            self.selectList = [
+              {
+                label: "by",
+                value: "by"
+              }
+            ];
+            break;
+        }
+      } else {
+        sign.forEach(item => {
+          // 切换group的操作符
+          let dataType = item.col_type; // 暂定有时间、数字、其它三种
+          if (dataType == "Date" || dataType == "DateTime") {
+            dataType = "date";
+          } else {
+            dataType = "others";
+          }
+          let operator = [];
+          switch (dataType) {
+            case "date":
+              self.selectList = [
+                {
+                  label: "by",
+                  value: "by"
+                },
+                {
+                  label: "按年统计",
+                  value: "by_year"
+                },
+                {
+                  label: "按月统计",
+                  value: "by_month"
+                },
+                {
+                  label: "按周统计",
+                  value: "by_week"
+                },
+                {
+                  label: "按天统计",
+                  value: "by_date"
+                },
+                {
+                  label: "按小时统计",
+                  value: "by_hour"
+                },
+                {
+                  label: "按分统计",
+                  value: "by_minute"
+                },
+                {
+                  label: "按秒统计",
+                  value: "by_second"
+                },
+                {
+                  label: "按每年的每个月统计",
+                  value: "by_month_of_year"
+                },
+                {
+                  label: "按每年的每周统计",
+                  value: "by_week_of_year"
+                },
+                {
+                  label: "按每年的每天统计",
+                  value: "by_date_of_year"
+                },
+                {
+                  label: "按每天的每小时统计",
+                  value: "by_hour_of_date"
+                },
+                {
+                  label: "按每天的每分钟统计",
+                  value: "by_minute_of_date"
+                }
+              ];
+              break;
+            default:
+              self.selectList = [
+                {
+                  label: "by",
+                  value: "by"
+                }
+              ];
+              break;
+          }
+        });
       }
-      let operator = [];
-      switch (dataType) {
-        case "number":
-          operator = [
-            {
-              label: "字段值之和(sum)",
-              value: "sum"
-            },
-            {
-              label: "最小值(min)",
-              value: "min"
-            },
-            {
-              label: "最大值(max)",
-              value: "max"
-            },
-            {
-              label: "平均值(avg)",
-              value: "avg"
-            },
-            {
-              label: "非空数据条数(count)",
-              value: "count"
-            },
-            {
-              label: "数据总条数(count_all)",
-              value: "count_all"
-            },
-            {
-              label: "去重后的数据条数(distinct_count)",
-              value: "distinct_count"
-            }
-          ];
-          break;
-        default:
-          operator = [
-            {
-              label: "非空数据条数(count)",
-              value: "count"
-            },
-            {
-              label: "数据总条数(count_all)",
-              value: "count_all"
-            },
-            {
-              label: "去重后的数据条数(distinct_count)",
-              value: "distinct_count"
-            }
-          ];
-          break;
+    },
+    seleteAggregationOperator(sign, isClick) {
+      let self = this;
+      if (isClick) {
+        let dataType = sign.col_type;
+        if (dataType == "Date" || dataType == "DateTime") {
+          dataType = "date";
+        } else if (dataType == "String" || dataType == "string") {
+          dataType = "string";
+        } else if (
+          dataType == "Number" ||
+          dataType == "number" ||
+          dataType == "int"
+        ) {
+          dataType = "number";
+        }
+        let operator = [];
+        switch (dataType) {
+          case "number":
+            operator = [
+              {
+                label: "字段值之和(sum)",
+                value: "sum"
+              },
+              {
+                label: "最小值(min)",
+                value: "min"
+              },
+              {
+                label: "最大值(max)",
+                value: "max"
+              },
+              {
+                label: "平均值(avg)",
+                value: "avg"
+              },
+              {
+                label: "非空数据条数(count)",
+                value: "count"
+              },
+              {
+                label: "数据总条数(count_all)",
+                value: "count_all"
+              },
+              {
+                label: "去重后的数据条数(distinct_count)",
+                value: "distinct_count"
+              }
+            ];
+            break;
+          default:
+            operator = [
+              {
+                label: "非空数据条数(count)",
+                value: "count"
+              },
+              {
+                label: "数据总条数(count_all)",
+                value: "count_all"
+              },
+              {
+                label: "去重后的数据条数(distinct_count)",
+                value: "distinct_count"
+              }
+            ];
+            break;
+        }
+        console.log(
+          "TCL: seleteAggregationOperator -> item",
+          item.col_type,
+          dataType,
+          operator
+        );
+        self.selectList = operator;
+      } else {
+        sign.forEach(item => {
+          // 切换聚合条件
+          let dataType = item.col_type;
+          if (dataType == "Date" || dataType == "DateTime") {
+            dataType = "date";
+          } else if (dataType == "String" || dataType == "string") {
+            dataType = "string";
+          } else if (
+            dataType == "Number" ||
+            dataType == "number" ||
+            dataType == "int"
+          ) {
+            dataType = "number";
+          }
+          let operator = [];
+          switch (dataType) {
+            case "number":
+              operator = [
+                {
+                  label: "字段值之和(sum)",
+                  value: "sum"
+                },
+                {
+                  label: "最小值(min)",
+                  value: "min"
+                },
+                {
+                  label: "最大值(max)",
+                  value: "max"
+                },
+                {
+                  label: "平均值(avg)",
+                  value: "avg"
+                },
+                {
+                  label: "非空数据条数(count)",
+                  value: "count"
+                },
+                {
+                  label: "数据总条数(count_all)",
+                  value: "count_all"
+                },
+                {
+                  label: "去重后的数据条数(distinct_count)",
+                  value: "distinct_count"
+                }
+              ];
+              break;
+            default:
+              operator = [
+                {
+                  label: "非空数据条数(count)",
+                  value: "count"
+                },
+                {
+                  label: "数据总条数(count_all)",
+                  value: "count_all"
+                },
+                {
+                  label: "去重后的数据条数(distinct_count)",
+                  value: "distinct_count"
+                }
+              ];
+              break;
+          }
+          console.log(
+            "TCL: seleteAggregationOperator -> item",
+            item.col_type,
+            dataType,
+            operator
+          );
+          self.selectList = operator;
+        });
       }
-      console.log(
-        "TCL: seleteAggregationOperator -> item",
-        item.col_type,
-        dataType,
-        operator
-      );
-      this.selectList = operator;
-    }
+    },
+    selectData(initial) {}
   },
   created() {
-    // console.log("created", this.singList);
+    console.log("created", this.singList, this.selectList);
+    // this.selectConditionOperator(this.singList.list);
+
     let val = this.singList;
     let deploy = {};
     if (val.type === "all") {
@@ -712,17 +982,38 @@ export default {
       };
     }
     this.deploy = deploy;
-    if (this.singList.type === "condition") {
-      this.selectList = this.operatorList;
-    }
-    if (this.singList.type === "group") {
-      this.selectList = this.groupList;
-    }
+    console.log("---val---------------", val);
     if (this.singList.type === "order") {
       this.selectList = this.orderList;
     }
-    if (this.singList.type === "aggregation") {
-      this.selectList = this.aggregationList;
+  },
+  mounted() {
+    console.log(
+      "singList-------++++++-----------》",
+      this.singList,
+      this.selectList
+    );
+  },
+
+  watch: {
+    singList: {
+      handler(newVal, oldVal) {
+        console.log("---------watch--------");
+        if (newVal.type === "condition") {
+          this.selectConditionOperator(newVal.list);
+        }
+        if (newVal.type === "order") {
+          this.selectList = this.orderList;
+        }
+        if (newVal.type === "group") {
+          this.selectGroupOperator(newVal.list);
+        }
+        if (newVal.type === "aggregation") {
+          this.seleteAggregationOperator(newVal.list);
+        }
+      },
+      deep: true,
+      immediate: true
     }
   }
   // beforeCreate() {
@@ -779,14 +1070,14 @@ export default {
     background: #198edc;
   }
   .content {
-    height: 95%;
+    height: 87%;
     overflow-y: scroll;
     &::-webkit-scrollbar {
       width: 0px;
       height: 0;
     }
     .dragArea {
-      height: 100%;
+      height: calc(100% - 0.1rem);
       &.el-input__inner {
         border-radius: 0;
       }
@@ -799,16 +1090,18 @@ export default {
       // line-height: 1.5rem;
       color: #fff;
       &:nth-child(2n) .value {
-        background-color: #2980b9;
+        color: #606266;
+        background-color: #fafafa;
       }
-
       .value {
         min-width: 35%;
         flex: 1;
         font-size: 14px;
-        background-color: #3498db;
+        background-color: #fff;
+        color: #606266;
+        border: 1px solid #ebeef5;
         border-radius: 4px;
-        line-height: 40px;
+        line-height: 38px;
         border-radius: 0;
         text-align: center;
       }
@@ -821,15 +1114,15 @@ export default {
       }
       .el-select {
         border-radius: 0;
-        max-width: 30%;
+        max-width: 25%;
       }
       .date-picker {
         width: 100%;
         border-radius: 0;
-        max-width: 35%;
+        max-width: 25%;
       }
       .input-value {
-        max-width: 35%;
+        max-width: 25%;
         border: none;
         border-radius: 0;
       }

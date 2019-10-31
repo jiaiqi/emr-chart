@@ -23,13 +23,18 @@
           ></el-option>
         </el-select>
       </div>
+      <div class="select-item">
+        <el-checkbox-group v-model="checkedReqOptions" :min="0" :max="4" @change="changeReqOption">
+          <el-checkbox v-for="option in ReqOptions" :label="option" :key="option">{{option}}</el-checkbox>
+        </el-checkbox-group>
+      </div>
     </div>
     <div class="content-box">
       <div class="column-box">
         <listhaul :singList="allColum"></listhaul>
       </div>
       <div class="condition-box">
-        <div class="sing_hual" v-for="(item,index) in listData" :key="index">
+        <div class="sing_hual" v-for="(item,index) in listData" :key="index" v-if="listData[index]">
           <listhaul ref="child" @save="requestData" :singList="item"></listhaul>
         </div>
       </div>
@@ -95,8 +100,10 @@ export default {
   data() {
     return {
       dialogTableVisible: false,
-      app: this.$route.params.app,
-      serveice: this.$route.params.serveice,
+      // app: this.$route.params.app,
+      // serveice: this.$route.params.serveice,
+      app: "cvs",
+      serveice: "srvcvs_medical_records_select",
       allColum: {
         type: "all",
         name: "字段",
@@ -104,31 +111,39 @@ export default {
         isClone: true
       },
       listData: [
-        {
-          type: "condition",
-          name: "过滤条件",
-          list: [],
-          isClone: false
-        },
-        {
-          type: "group",
-          name: "分组配置",
-          list: [],
-          isClone: false
-        },
-        {
-          type: "aggregation",
-          name: "聚合配置",
-          list: [],
-          isClone: false
-        },
-        {
-          type: "order",
-          name: "排序配置",
-          list: [],
-          isClone: false
-        }
+        // {
+        //   type: "condition",
+        //   name: "过滤条件",
+        //   list: [],
+        //   isClone: false
+        // },
+        // {
+        //   type: "group",
+        //   name: "分组配置",
+        //   list: [],
+        //   isClone: false
+        // },
+        // {
+        //   type: "aggregation",
+        //   name: "聚合配置",
+        //   list: [],
+        //   isClone: false
+        // },
+        // {
+        //   type: "order",
+        //   name: "排序配置",
+        //   list: [],
+        //   isClone: false
+        // }
       ],
+      checkedReqOptions: ["条件", "分组"],
+      ReqOptions: ["条件", "分组", "聚合", "排序"],
+      showReqArea: {
+        condition: false,
+        group: true,
+        aggregation: true,
+        order: false
+      },
       detailTableData: [], // 详情表格数据
       detailTableTitle: [], // 详情表头数据
       columnsOption: [],
@@ -158,9 +173,6 @@ export default {
       ListData: null,
       saveConfigData: {}
     };
-  },
-  mounted() {
-    this.getApp();
   },
   methods: {
     getData() {
@@ -249,10 +261,10 @@ export default {
           this.endData.aggregation && this.endData.group
             ? this.endData.group.concat(this.endData.aggregation)
             : this.endData.aggregation && !this.endData.group
-              ? this.endData.aggregation
-              : !this.endData.aggregation && this.endData.group
-                ? this.endData.group
-                : undefined,
+            ? this.endData.aggregation
+            : !this.endData.aggregation && this.endData.group
+            ? this.endData.group
+            : undefined,
         condition: this.endData.condition,
         order: this.endData.order
       };
@@ -360,40 +372,131 @@ export default {
         .post(url, req)
         .then(res => {
           this.allApp = res.data.data;
-          console.log("allappp-------->", this.allApp);
+          // console.log("allappp-------->", this.allApp);
         })
         .catch(err => {
           console.error(err);
         });
     },
-    toDetail(rowData) {
-      let colnumns = Object.keys(rowData)
-      this.dialogTableVisible = true;
-      let condition = []
-      colnumns.map(rows => {
-        if (rowData[rows]) {
-          condition.push({
-            colName: rows,
-            ruleType: "eq",
-            value: rowData[rows]
-          })
+    changeReqOption() {
+      // 选择显示那四个框中的哪个
+      // this.showReqArea = {
+      //   condition: false,
+      //   group: true,
+      //   aggregation: true,
+      //   order: false
+      // }
+
+      let options = this.checkedReqOptions;
+      let listData = [];
+      if (options.length == 4) {
+      }
+      options.map(option => {
+        if (option == "条件") {
+          this.showReqArea.condition = true;
+          listData[0] = {
+            type: "condition",
+            name: "过滤条件",
+            list: [],
+            isClone: false
+          };
+          // listData.push({
+          //   type: "condition",
+          //   name: "过滤条件",
+          //   list: [],
+          //   isClone: false
+          // })
+        } else if (option == "分组") {
+          this.showReqArea.group = true;
+          listData[1] = {
+            type: "group",
+            name: "分组配置",
+            list: [],
+            isClone: false
+          };
+          // listData.push({
+          //   type: "group",
+          //   name: "分组配置",
+          //   list: [],
+          //   isClone: false
+          // })
+        } else if (option == "聚合") {
+          this.showReqArea.aggregation = true;
+          listData[2] = {
+            type: "aggregation",
+            name: "聚合配置",
+            list: [],
+            isClone: false
+          };
+          // listData.push({
+          //   type: "aggregation",
+          //   name: "聚合配置",
+          //   list: [],
+          //   isClone: false
+          // })
+        } else if (option == "排序") {
+          this.showReqArea.order = true;
+          listData[3] = {
+            type: "order",
+            name: "排序配置",
+            list: [],
+            isClone: false
+          };
+          // listData.push({
+          //   type: "order",
+          //   name: "排序配置",
+          //   list: [],
+          //   isClone: false
+          // })
         }
-      })
-      let url = this.getServiceUrl("select", this.serviceName, this.appName);
-      let req = {
-        serviceName: this.serviceName,
-        colNames: ['*'],
-        condition: condition
-      };
-      this.axios
-        .post(url, req)
-        .then(res => {
-          let resData = res.data.data
-          this.detailTableData = resData
-        })
-        .catch(err => {
-          console.error(err);
-        })
+      });
+      this.listData = listData;
+      console.log("TCL: changeReqOption -> listData", listData);
+    },
+    toDetail(rowData) {
+      let colnumns = Object.keys(rowData);
+      console.log("TCL: toDetail -> colnumns", colnumns);
+      this.detailTableTitle = this.columnsOption;
+
+      colnumns = this.endData.group.map(item => item.colName);
+      this.dialogTableVisible = true;
+      if (colnumns.length > 0) {
+        console.log("TCL: toDetail -> endData", colnumns);
+        let condition = [];
+        colnumns.map(rows => {
+          if (rowData[rows]) {
+            condition.push({
+              colName: rows,
+              ruleType: "eq",
+              value: rowData[rows]
+            });
+          } else {
+            condition.push({
+              colName: rows,
+              ruleType: "isnull",
+              value: ""
+            });
+          }
+        });
+        let url = this.getServiceUrl("select", this.serviceName, this.appName);
+        let req = {
+          serviceName: this.serviceName,
+          colNames: ["*"],
+          condition: condition
+        };
+        this.axios
+          .post(url, req)
+          .then(res => {
+            let resData = res.data.data;
+            this.detailTableData = resData;
+          })
+          .catch(err => {
+            console.error(err);
+          });
+      } else {
+        console.log("TCL: toDetail -> rowData", rowData);
+        this.detailTableData = [rowData];
+      }
     },
     getServiceName(appno) {
       //选择服务名称列表
@@ -447,6 +550,7 @@ export default {
               }
             });
           }
+          // console.log("res.data.data:>>>>>", res.data.data);
           this.deleteListData();
           this.appService = selectServiceList;
           this.colNameOption = selectServiceList;
@@ -466,12 +570,15 @@ export default {
       this.axios
         .post(this.requestUrl, req)
         .then(res => {
+          // this.app_no = res.data.data;
           this.ListData = res.data.data;
           //点击后出先表格
           //表头数组
+
           let tableAllTitleData = self.reqData.group;
           if (tableAllTitleData.length === 0) {
             self.tableTitle = self.columnsOption;
+            // console.log("self.tableTitle----------", self.tableTitle);
           } else {
             tableAllTitleData.forEach(item => {
               if (item.type) {
@@ -492,10 +599,13 @@ export default {
                 : (obj[next.columns] = true && item.push(next));
               return item;
             }, []);
+            // console.log("NEWaRR--------------", newArr);
             self.tableTitle = newArr;
           }
           //表格内容数据
+
           self.tableData = self.ListData;
+          // console.log("ListData:>>>>>", res.data.data);
         })
         .catch(err => {
           console.log(err);
@@ -503,29 +613,34 @@ export default {
     }
   },
   created() {
+    let self = this;
+    this.changeReqOption();
     let saveConfigData = JSON.parse(localStorage.getItem("saveConfigData"));
     if (saveConfigData) {
-      this.allApp = saveConfigData.allApp;
-      this.allColum = saveConfigData.allColum;
-      this.appService = saveConfigData.appService;
-      this.columnsOption = saveConfigData.columnsOption;
-      this.endData = saveConfigData.endData;
-      this.listData = saveConfigData.listData;
-      // this.listData.forEach(item => {
+      self.allApp = saveConfigData.allApp;
+      self.allColum = saveConfigData.allColum;
+      self.appService = saveConfigData.appService;
+      self.columnsOption = saveConfigData.columnsOption;
+      self.endData = saveConfigData.endData;
+      self.listData = saveConfigData.listData;
+
+      // self.listData.forEach(item => {
       //   if (item.type === "condition") {
-      //     item.list.forEach(list => {
-      //       this.$set(list._condition, "ruleType", "eq");
+      //     item.list.forEach(only => {
+      //       self.$set(only._condition, "ruleType", "等于");
       //     });
       //   }
       // });
-      this.appName = saveConfigData.chooseServe;
-      this.serviceName = saveConfigData.choosePort;
+      self.appName = saveConfigData.chooseServe;
+      self.serviceName = saveConfigData.choosePort;
     } else {
-      this.app && this.serveice;
-      this.appName = this.app;
-      this.getServiceName(this.appName);
-      this.serviceName = this.serveice;
-      this.getData();
+      if (self.app && self.serveice) {
+        this.getApp();
+        self.appName = self.app;
+        self.getServiceName(self.appName);
+        self.serviceName = self.serveice;
+        self.getData();
+      }
     }
   }
 };
@@ -537,7 +652,6 @@ export default {
   flex-direction: column;
   width: 70%;
   margin: 0 auto;
-  color: #333;
   .sing_hual {
     margin-left: 0.5rem;
     height: 50%;
@@ -559,6 +673,9 @@ export default {
       font-size: 0.8rem;
       font-weight: 600;
       margin-right: 8rem;
+      .label {
+        color: #333;
+      }
     }
   }
   .content-box {
@@ -566,33 +683,42 @@ export default {
     flex-wrap: wrap;
     justify-content: space-between;
     .column-box {
-      width: 15%;
-      height: 500px;
+      // width: 15%;
+      max-width: 15%;
+      min-width: 8%;
+      // flex: 1.5;
+      margin-right: 1.5rem;
+      height: 300px;
       max-width: 300px;
       font-size: 0.8rem;
       font-weight: 100;
     }
     .condition-box {
-      width: 83%;
-      min-height: 500px;
+      // max-width: 85%;
+      min-height: 300px;
+      flex: 1;
       display: flex;
       flex-wrap: wrap;
       align-content: space-between;
       justify-content: space-between;
       .sing_hual {
-        width: 65%;
-        height: 235px;
+        // width: 65%;
+        // height: 235px;
+        height: 100%;
+        flex: 1;
+        display: flex;
+
         &:first-child {
-          width: 48%;
+          // width: 30%;
         }
         &:nth-child(2) {
-          width: 48%;
+          // width: 30%;
         }
         &:nth-child(3) {
-          width: 56%;
+          // width: 56%;
         }
         &:nth-child(4) {
-          width: 40%;
+          // width: 40%;
         }
       }
     }
@@ -611,6 +737,7 @@ export default {
       .title {
         font-size: 1.5rem;
         font-weight: 600;
+        color: #333;
       }
     }
     .preview-content {

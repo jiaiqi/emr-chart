@@ -96,18 +96,18 @@ export default {
           },
           set:{
             series:{
-              type:null
+              type:'bar'
             },
             axisSite: { right: ["占用空间"] },
             yAxisType: ["normal", "normal"],
             yAxisName: ["数值", "占用空间"],
-            max: [1300, 2600],
+            max: [0, 0],
             itemStyle: {
               normal: {
                 label: {
                   show: true,
                   formatter: function(c) {
-                    return JSON.stringify(c.data);
+                    return parseInt(c.data);
                   }
                 }
               }
@@ -872,10 +872,15 @@ export default {
         this.contentData.secondPie.data.rows = this.data03[type].rows;//最终的rows
 
       }else if(this.contentData.currentPage === 'ETL'){
+        this.contentData.firstBar.set.type = 'line'
         let rowData = []
         xValue.map(only=>{
           let rowItem = {}
+          if(type === 'day'){
             rowItem['时间'] = only + '点'
+          }else{
+            rowItem['时间'] = only 
+          }
             rowItem['处理总时长'] = parseInt(Math.random()*100000)
             rowItem['总处理记录数'] =parseInt(Math.random()*100000)
             rowData.push(rowItem)
@@ -940,7 +945,7 @@ export default {
         let Odeploy = res.data.data
         let tabeNum = Odeploy.map(item => item.table_no)
             tabeNum = tabeNum.join(',')
-            await self.getLegend(tabeNum)
+            await self.getLegend(tabeNum,Odeploy)
         return {'isRes':true,'res':res}
       }else{
         return {'isRes':false,'res':res}
@@ -965,9 +970,10 @@ export default {
       //   });
     },
     //获取图例对应的数据
-    async getLegend(tabe){
+    async getLegend(tabe,tabeData){
       let self = this
       console.log('maxData',tabe)
+      this.contentData.secondBar.data.rows = []
       let req = {        
           "serviceName": "srvdc_rc_db_table_select",
           "condition":[{"colName":"table_no","ruleType":"in","value":tabe}],
@@ -982,17 +988,30 @@ export default {
         let rightDateStro = []
         let rightDataSize = []
         this.contentData.secondBar.data.columns = ['表','占用空间','数据量']
+        let row = []
         barDatas.map((item,index)=>{
             //  { 表: "表1", 数据量: 51, 占用空间: 0.22 },
             let defaultObj = {}
             
             defaultObj['占用空间'] = item.storage_size / 1024
             defaultObj['数据量'] = item.row_count
-            defaultObj['表'] = item.table_label 
+            tabeData.forEach(tab=>{
+              if(item.table_no === tab.table_no){
+                defaultObj['表'] = tab.table_label
+              }
+            })
+             
             rightDateStro.push(defaultObj['占用空间'])
-            rightDataSize.push(defaultObj['数据量'])            
-            this.contentData.secondBar.data.rows.push(defaultObj)
+            rightDataSize.push(defaultObj['数据量'])
+            row.push(defaultObj)
+
+            // if(self.contentData.secondBar.data.rows){
+            //     self.contentData.secondBar.data.rows[index] = defaultObj
+            // }else{
+            //   self.contentData.secondBar.data.rows.push(defaultObj)
+            // }            
         })
+        self.contentData.secondBar.data.rows = row
 
         console.log('this.secondBar.data',this.contentData.secondBar.data)
         let maxNum = Math.max.apply(null, rightDateStro)
@@ -1095,6 +1114,7 @@ export default {
   },
 
     async checktask(item){
+      console.log('-------------srvetl_job_history_select--------',)
       let self = this
       let NewStep = []
       let value = item.job_no
@@ -1186,13 +1206,16 @@ export default {
         },                        
       }
       let url = this.getServiceUrl("select", params.serviceName, "etl")
-      let res = this.axios.post(url,params)
+      let res = await this.axios.post(url,params)
       if(res.status === 200){
+        // console.log('--------res.data.data---------',res)
         this.contentData.secondBar.tableData.GanttData = res.data.data
         return {'isRes':true,'res':res}
       }else{
         return {'isRes':false,'res':res}
       }
+        // this.contentData.secondBar.tableData.GanttData = res.data.data
+
         // this.axios({
         //   method:"POST",url:url,data:params
         // }
@@ -1207,6 +1230,54 @@ export default {
         // });
     },
     //双Y轴间隔设置
+    // getMaxNum(e, r) {
+    //   let ops = { maxbar: 0, maxline: 0, interval: 0 };
+    //   let n = 1;
+    //   ops.interval = n * 100;
+    //   if (Math.ceil(r / ops.interval) % 2 !== 0) {
+    //     ops.maxline = Math.ceil(r / ops.interval) + 1;
+    //     ops.maxline = ops.maxline * ops.interval;
+    //   } else {
+    //     ops.maxline = Math.ceil(r / ops.interval);
+    //     if(ops.maxline){
+    //     ops.maxline = ops.maxline * ops.interval;
+
+    //     }else{
+    //       ops.maxline = 0
+    //     }
+    //   }
+    //   if (Math.ceil(e / ops.interval) % 2 !== 0) {
+    //     ops.maxbar = Math.ceil(e / ops.interval) + 1;
+    //     ops.maxbar = ops.maxbar * ops.interval;
+    //   } else {
+    //     ops.maxbar = Math.ceil(e / ops.interval);
+    //     ops.maxbar = ops.maxbar * ops.interval;
+    //   }
+    //   if (ops.maxbar > ops.maxline) {
+    //     ops.interval = ops.maxline;
+    //     ops.maxbar = Math.ceil(ops.maxbar / ops.interval) * ops.interval;
+    //     if (ops.maxbar / ops.interval < 4) {
+    //       ops.interval = ops.interval / 2;
+    //     } else if (ops.maxbar / ops.interval > 8) {
+    //       ops.interval = ops.interval * 2;
+    //     }
+    //   } else {
+    //     ops.interval = ops.maxbar;
+    //     ops.maxline = Math.ceil(ops.maxline / ops.interval) * ops.interval;
+    //     if (ops.maxline / ops.interval < 4) {
+    //       ops.interval = ops.interval / 2;
+    //     } else if (ops.maxline / ops.interval > 8) {
+    //       ops.interval = ops.interval * 2;
+    //     }
+    //   }
+
+    //   this.contentData.secondBar.interval = ops.interval;
+    //   this.contentData.secondBar.set.max[0] = ops.maxbar;
+    //   this.contentData.secondBar.set.max[1] = ops.maxline;
+
+    //   console.log("ops", e, r, ops);
+    //   return ops;
+    // },
     getMaxNum(e, r) {
       let ops = { maxbar: 0, maxline: 0, interval: 0 };
       let n = 1;
@@ -1226,28 +1297,64 @@ export default {
         ops.maxbar = ops.maxbar * ops.interval;
       }
       if (ops.maxbar > ops.maxline) {
-        ops.interval = ops.maxline;
+        ops.interval = ops.maxline;        
         ops.maxbar = Math.ceil(ops.maxbar / ops.interval) * ops.interval;
-        if (ops.maxbar / ops.interval < 4) {
+        let theMod = ops.maxbar / ops.interval;
+        if (theMod < 4) {
           ops.interval = ops.interval / 2;
-        } else if (ops.maxbar / ops.interval > 8) {
-          ops.interval = ops.interval * 2;
+        } else if (theMod > 10 && theMod <= 20) {
+          ops.interval = ops.interval * parseInt(theMod / 4);
+        } else if (theMod > 20 && theMod <= 50) {
+          ops.interval = ops.interval * parseInt(theMod / 5);
+        } else if (theMod >= 50 && theMod < 100) {
+          ops.interval = ops.interval * parseInt(theMod / 6);
+        } else if (theMod >= 100) {
+          ops.interval = ops.interval * parseInt(theMod / 9);
         }
+        // else if (ops.maxbar / ops.interval > 60) {
+        //   ops.interval = ops.interval * 24;
+        // }
       } else {
         ops.interval = ops.maxbar;
+        if(ops.interval===0){
+          ops.interval = ops.maxline
+        }
         ops.maxline = Math.ceil(ops.maxline / ops.interval) * ops.interval;
-        if (ops.maxline / ops.interval < 4) {
+        // if (ops.maxline / ops.interval < 4) {
+        //   ops.interval = ops.interval / 2;
+        // } else if (ops.maxline / ops.interval > 60) {
+        //   ops.interval = ops.interval * 24;
+        // }
+        let theModT = ops.maxline / ops.interval;
+        if (theModT < 4) {
           ops.interval = ops.interval / 2;
-        } else if (ops.maxline / ops.interval > 8) {
-          ops.interval = ops.interval * 2;
+        } else if (theModT > 10 && theModT <= 20) {
+          ops.interval = ops.interval * parseInt(theModT / 4);
+        } else if (theModT > 20 && theModT <= 50) {
+          ops.interval = ops.interval * parseInt(theModT / 5);
+        } else if (theModT >= 50 && theModT < 100) {
+          ops.interval = ops.interval * parseInt(theModT / 6);
+        } else if (theModT >= 100) {
+          ops.interval = ops.interval * parseInt(theModT / 9);
         }
       }
 
+      //赋值
       this.contentData.secondBar.interval = ops.interval;
-      this.contentData.secondBar.set.max[0] = ops.maxbar;
-      this.contentData.secondBar.set.max[1] = ops.maxline;
+      if (ops.maxbar > ops.interval) {
+        if (ops.maxbar % ops.interval !== 0) {
+          let mod = Math.trunc(ops.maxbar / ops.interval) + 1;
+          ops.maxbar = mod * ops.interval;
+        }
+      } else {
+        if (ops.maxline % ops.interval !== 0) {
+          let mod = Math.trunc(ops.maxline / ops.interval) + 1;
+          ops.maxline = mod * ops.interval;
+        }
+      }
+      this.contentData.secondBar.set.max[0] = ops.maxline;
+      this.contentData.secondBar.set.max[1] = ops.maxbar;
 
-      console.log("ops", e, r, ops);
       return ops;
     },
 

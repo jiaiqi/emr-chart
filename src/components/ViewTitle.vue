@@ -59,7 +59,7 @@ export default {
       }
       if (num === "2") {
         if (this.titleViewData.currentPage === "secplat") {
-          this.$router.push({ name: "platform" });
+          this.$router.push({ name: "navs" });
         } else {
           this.$router.push({ name: "navs" });
         }
@@ -72,7 +72,7 @@ export default {
 
       str = str.substr(num + 1);
 
-      ///协调平台  二级页面跳转后台方式
+      //协调平台  二级页面跳转后台方式
       if (window.location.href.substring(num - 8, num) == "/secplat") {
         str = "app_class=platform";
       }
