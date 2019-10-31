@@ -103,7 +103,7 @@ export default {
               let count = 0
               originData.map(dataItem => {
                 let dateHour = dataItem.count_hour
-                if (dateHour == hour && dataItem.cmd == item) {
+                if (dateHour == hour && dataItem.record_type == item) {
                   count += dataItem.amount
                 }
               })
@@ -255,7 +255,7 @@ export default {
       let bar1Data = {}
       if (currentPage === 'oneCard') {
         // let hospital = this.getCols(datas, "yljgmc")
-        let hospital = ["延大附院", "市人民医院", "市中医医院", "博爱医院", "市妇幼医院", "宝塔区医院"]
+        let hospital = ["延大附院", "市人民医院", "延安市中医医院", "博爱医院", "市妇幼医院", "宝塔区医院"]
         if (hospital && hospital.length > 0) {
           let types = this.getCols(datas, "cmd")
           // types = ['住院', '门诊']
@@ -392,44 +392,44 @@ export default {
       let data = this.allData.Pie3
       let pie3Arr = []
       if (currentPage === 'oneCard') {
-        // let hospital = ["延大附院", "市人民医院", "市中医医院", "博爱医院", "市妇幼医院", "宝塔区医院"]
-        let hospital = this.getCols(data, "yljgmc")
-        this.contentData.tabCheckItem = hospital
-        if (hospital && hospital.length > 0) {
-          // let cardType = this.getCols(data, "card_type")
-          let cardType = ["社保卡", "就诊卡", "身份证"]
-          hospital.map((hos, i) => {
-            let obj = {
-              columns: ['卡类型', '就诊次数'],
-              rows: []
-            }
-            cardType.map(card => {
-              let count = 0
-              data.map(dataItem => {
-                let cardsType = ''
-                switch (dataItem.card_type) {
-                  case 'sbk':
-                    cardsType = '社保卡'
-                    break;
-                  case 'jzk':
-                    cardsType = '就诊卡'
-                    break;
-                  case 'sfz':
-                    cardsType = '身份证'
-                    break;
-                }
-                if (dataItem.hospital === hos && cardsType === card) {
-                  count = dataItem.create_time
-                }
-              })
-              obj.rows.push({
-                "卡类型": card,
-                "就诊次数": count
-              })
+        let hospital = ["延大附院", "市人民医院", "延安市中医医院", "博爱医院", "市妇幼医院", "宝塔区医院"]
+        // let hospital = this.getCols(data, "yljgmc")
+        // this.contentData.tabCheckItem = hospital
+        // if (hospital && hospital.length > 0) {
+        // let cardType = this.getCols(data, "card_type")
+        let cardType = ["社保卡", "就诊卡", "身份证"]
+        hospital.map((hos, i) => {
+          let obj = {
+            columns: ['卡类型', '就诊次数'],
+            rows: []
+          }
+          cardType.map(card => {
+            let count = 0
+            data.map(dataItem => {
+              let cardsType = ''
+              switch (dataItem.card_type) {
+                case 'sbk':
+                  cardsType = '社保卡'
+                  break;
+                case 'jzk':
+                  cardsType = '就诊卡'
+                  break;
+                case 'sfz':
+                  cardsType = '身份证'
+                  break;
+              }
+              if (dataItem.yljgmc === hos && cardsType === card) {
+                count = dataItem.create_time
+              }
             })
-            pie3Arr.push(obj)
+            obj.rows.push({
+              "卡类型": card,
+              "就诊次数": count
+            })
           })
-        }
+          pie3Arr.push(obj)
+        })
+        // }
       } else if (currentPage === 'emrCollect') {
         // let hospital = ["延大附院", "市人民医院", "市中医医院", "博爱医院", "市妇幼医院", "宝塔区医院"]
         let hospital = this.getCols(originData, "hospital")
@@ -479,9 +479,8 @@ export default {
     getCount(currentPage, originData) {
       let datas = this.allData.countData
       console.log("TCL: getCount -> this.allData.countData", this.allData.countData)
-      let hospital = ["延大附院", "市人民医院", "市中医医院", "博爱医院", "市妇幼医院", "宝塔区医院"]
+      let hospital = ["延大附院", "市人民医院", "延安市中医医院", "博爱医院", "市妇幼医院", "宝塔区医院"]
       let countArr = []
-
       hospital.map(item => {
         let obj = {
           "门诊": 0,
@@ -489,14 +488,12 @@ export default {
         }
         countArr.push(obj)
       })
-      // let hospital = this.contentData.tabCheckItem
       if (currentPage === 'oneCard') {
         hospital.map(hos => {
           let obj = {
             "门诊": 0,
             "住院": 0
           }
-          // countArr.push(obj)
           datas.map(data => {
             if (data.cmd == "register" && hos == data.yljgmc) {
               obj["门诊"] += data.create_time
@@ -505,27 +502,21 @@ export default {
             }
           })
           switch (hos) {
-            case 'bayy':
-              // hos = '博爱医院'
+            case '博爱医院':
               countArr[3] = obj
               break;
-            case 'fybjyy':
-              // hos = '市妇幼医院'
+            case '市妇幼医院':
               countArr[4] = obj
               break;
-            case 'zyyy':
-              // hos = '市中医医院'
+            case '延安市中医医院':
               countArr[2] = obj
               break;
-            case 'rmyy':
-              // hos = '市人民医院'
+            case '市人民医院':
               countArr[1] = obj
               break;
-            default:
-              break;
-
           }
         })
+        this.contentData.countData = countArr
       } else if (currentPage === 'emrCollect') {
         hospital.map(item => {
           let obj = {
@@ -1132,6 +1123,7 @@ export default {
         let url2 = this.getServiceUrl("select", req2.serviceName, "emr")
         let resb = await this.axios.post(url2, req2)
         let datab = resb.data.data
+        console.log("TCL: getAlldata -> datab", datab)
         this.getCountData(datab, type, currentPage, "verify_count")
 
         let emrShareCount = { select: 0, verify: 0 }
@@ -1168,202 +1160,7 @@ export default {
         this.contentData.secondPie.title = "各类型记录分布"
         this.contentData.thirdPie.title = "各类型记录分布"
         this.contentData.firstBar.type = 'line'
-        let cond = [
-          {
-            "colName": "record_type",
-            "value": "门急诊诊疗挂号记录",
-            "ruleType": "eq"
-          },
-          {
-            "colName": "record_type",
-            "value": "门急诊诊疗医嘱",
-            "ruleType": "eq"
-          },
-          {
-            "colName": "record_type",
-            "value": "门急诊诊疗检查报告",
-            "ruleType": "eq"
-          },
-          {
-            "colName": "record_type",
-            "value": "住院诊疗入院记录",
-            "ruleType": "eq"
-          },
-          {
-            "colName": "record_type",
-            "value": "住院诊疗医嘱",
-            "ruleType": "eq"
-          },
-          {
-            "colName": "record_type",
-            "value": "住院诊疗检验报告",
-            "ruleType": "eq"
-          }
-        ]
-        let req = {
-          "serviceName": "srvemr_record_count_by_hour_select",
-          "colNames": ["*"],
-          "group": [
-            {
-              "colName": "record_type",
-              "type": "by"
-            },
-            {
-              "colName": "hospital",
-              "type": "by"
-            }, {
-              "colName": "amount",
-              "type": "sum"
-            }, {
-              "colName": "count_hour",
-              "type": "by_hour"
-            }
-          ],
-        }
-        let reqPie3 = {
-          "serviceName": "srvemr_record_count_by_hour_select",
-          "colNames": ["*"],
-          "group": [
-            {
-              "colName": "hospital", // 医疗机构名称
-              "type": "by"
-            },
-            {
-              "colName": "record_type", // 记录类型
-              "type": "by"
-            },
-            {
-              "colName": "amount",
-              "type": "count"
-            }
-          ],
-          condition: [
-            {
-              "colName": "count_hour",
-              "value": this.timeSection.start,
-              "ruleType": "ge"
-            },
-            {
-              "colName": "count_hour",
-              "value": this.timeSection.end,
-              "ruleType": "le"
-            }
-          ]
-        }
-        let url = this.getServiceUrl("select", req.serviceName, "emr")
-        if (type == "day") {
-          req["relation_condition"] = {
-            "relation": "AND",
-            "data": [
-              {
-                "relation": "or",
-                "data": cond
-              },
-              {
-                "relation": "AND",
-                "data": [
-                  {
-                    "colName": "count_hour",
-                    "value": this.timeSection.start,
-                    "ruleType": "ge"
-                  },
-                  {
-                    "colName": "count_hour",
-                    "value": this.timeSection.end,
-                    "ruleType": "le"
-                  }
-                ]
-              }
-            ]
-          }
-        } else if (type == "week") {
-          req["relation_condition"] = {
-            "relation": "AND",
-            "data": [
-              {
-                "relation": "or",
-                "data": cond
-              },
-              {
-                "relation": "AND",
-                "data": [
-                  {
-                    "colName": "count_hour",
-                    "value": this.timeSection.start,
-                    "ruleType": "ge"
-                  },
-                  {
-                    "colName": "count_hour",
-                    "value": this.timeSection.end,
-                    "ruleType": "le"
-                  }
-                ]
-              }
-            ]
-          }
-          req["group"][3] = {
-            "colName": "count_hour",
-            "type": "by_date"
-          }
-        } else if (type == "month") {
-          req["group"][3] = {
-            "colName": "count_hour",
-            "type": "by_date"
-          }
-          req["relation_condition"] = {
-            "relation": "AND",
-            "data": [
-              {
-                "relation": "or",
-                "data": cond
-              },
-              {
-                "relation": "AND",
-                "data": [
-                  {
-                    "colName": "count_hour",
-                    "value": this.timeSection.start,
-                    "ruleType": "ge"
-                  },
-                  {
-                    "colName": "count_hour",
-                    "value": this.timeSection.end,
-                    "ruleType": "le"
-                  }
-                ]
-              }
-            ]
-          }
-        } else if (type == "year") {
-          req["group"][3] = {
-            "colName": "count_hour",
-            "type": "by_month_of_year"
-          }
-          req["relation_condition"] = {
-            "relation": "AND",
-            "data": [
-              {
-                "relation": "or",
-                "data": cond
-              },
-              {
-                "relation": "AND",
-                "data": [
-                  {
-                    "colName": "count_hour",
-                    "value": this.timeSection.start,
-                    "ruleType": "ge"
-                  },
-                  {
-                    "colName": "count_hour",
-                    "value": this.timeSection.end,
-                    "ruleType": "le"
-                  }
-                ]
-              }
-            ]
-          }
-        }
+
         // let res = await this.axios.post(url, req)
         // let data = res.data.data
         // // console.log("TCL: getAlldata -> data", data)
@@ -1410,6 +1207,7 @@ export default {
       }
       type = type || 'day'
       if (currentPage == 'emrShare') {
+        console.log("data", data)
         if (dataType && dataType == "verify_count") {
           // 左侧下方饼图
           let cardTypes = datas.map(item => item.card_type)
@@ -1599,7 +1397,6 @@ export default {
         ]
       }
       let res1 = await this.axios.post(url, params1)
-      this.allData.bar1 = res1.data.data
       this.getBar1data('emrCollect', res1.data.data)
       // this.contentData.firstBar.data = res1.data.data ? res1.data.data : [] // 左侧折线图数据
       let params2 = {
@@ -1665,28 +1462,6 @@ export default {
       }
       let res4 = await this.axios.post(url, params4)
       this.getBar2Data('emrCollect', res4.data.data)
-      // this.contentData.secondBar.data = res4.data.data ? res4.data.data : [] // 右侧折线图数据
-      // let params5 = {
-      //   serviceName: serviceName,
-      //   colNames: ["*"],
-      //   relation_condition: params1.relation_condition,
-      //   group: [
-      //     {
-      //       "colName": "record_type",
-      //       "type": "by"
-      //     },
-      //     {
-      //       "colName": "hospital",
-      //       "type": "by"
-      //     },
-      //     {
-      //       "colName": "amount",
-      //       "type": "sum"
-      //     }
-      //   ]
-      // }
-      // let res5 = await this.axios.post(url, params5)
-      // this.getCount('emrCollect', res5.data.data)
       let params6 = {
         serviceName: serviceName,
         colNames: ["*"],

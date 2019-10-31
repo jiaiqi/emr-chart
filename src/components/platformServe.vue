@@ -429,7 +429,6 @@ export default {
     this.cpuDataNums();
     this.memoryDataNums();
     this.diskMemoryData();
-      alert(window.location.href)
 
   },
   mounted(){

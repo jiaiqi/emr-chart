@@ -47,6 +47,18 @@ export default {
         leftChartLegendTimeOut:null,
         RightTaskTimeOut:null
       },
+      stochastic:{
+        day:[],
+        week:[],
+        month:[],
+        year:[]
+      },//解决ETL随机数
+      pie:{
+        day:[],
+        week:[],
+        month:[],
+        year:[]
+      },
       titleViewData: {
         title: "数据中心",
         date: "",
@@ -874,7 +886,24 @@ export default {
       }else if(this.contentData.currentPage === 'ETL'){
         this.contentData.firstBar.set.type = 'line'
         let rowData = []
-        xValue.map(only=>{
+        // if(type === 'day'){
+        //   if(this.stochastic > 1){
+        //     this.stochastic = 
+        //   }
+        // }else if(type === 'week'){
+        //   this.stochastic = 0
+        //   if(this.stochastic ===1){
+        //     this.stochastic = 2
+        //   }else if(this.stochastic ===0){
+        //     this.stochastic ++
+        //     if(this.stochastic > 1){
+        //     this.stochastic = 1
+        //   }
+        //   }
+        // }
+        if(type === 'day'){
+          if(this.stochastic.day.length === 0){
+            xValue.map(only=>{
           let rowItem = {}
           if(type === 'day'){
             rowItem['时间'] = only + '点'
@@ -883,12 +912,89 @@ export default {
           }
             rowItem['处理总时长'] = parseInt(Math.random()*100000)
             rowItem['总处理记录数'] =parseInt(Math.random()*100000)
-            rowData.push(rowItem)
+            rowData.push(rowItem)                  
         })
+        this.stochastic.day = rowData
+        this.contentData.firstBar.data.rows = rowData;
+
+          }else{
+            this.contentData.firstBar.data.rows = this.stochastic.day
+          }
+        }else if(type === 'week'){
+          if(this.stochastic.week.length === 0){
+            xValue.map(only=>{
+            let rowItem = {}
+            if(type === 'day'){
+              rowItem['时间'] = only + '点'
+            }else{
+              rowItem['时间'] = only 
+            }
+              rowItem['处理总时长'] = parseInt(Math.random()*100000)
+              rowItem['总处理记录数'] =parseInt(Math.random()*100000)
+              rowData.push(rowItem)                  
+          })
+        this.stochastic.week = rowData
+        this.contentData.firstBar.data.rows = rowData;
+
+          }else{
+            this.contentData.firstBar.data.rows = this.stochastic.week
+          }
+          
+        }else if(type === 'month'){
+          if(this.stochastic.month.length === 0){
+            xValue.map(only=>{
+            let rowItem = {}
+            if(type === 'day'){
+              rowItem['时间'] = only + '点'
+            }else{
+              rowItem['时间'] = only 
+            }
+              rowItem['处理总时长'] = parseInt(Math.random()*100000)
+              rowItem['总处理记录数'] =parseInt(Math.random()*100000)
+              rowData.push(rowItem)                  
+          })
+        this.stochastic.month = rowData
+        this.contentData.firstBar.data.rows = rowData;
+
+          }else{
+            this.contentData.firstBar.data.rows = this.stochastic.month
+          }       
+        }else if(type === 'year'){
+          if(this.stochastic.year.length === 0){
+            xValue.map(only=>{
+            let rowItem = {}
+            if(type === 'day'){
+              rowItem['时间'] = only + '点'
+            }else{
+              rowItem['时间'] = only 
+            }
+              rowItem['处理总时长'] = parseInt(Math.random()*100000)
+              rowItem['总处理记录数'] =parseInt(Math.random()*100000)
+              rowData.push(rowItem)                  
+          })
+          this.stochastic.year = rowData
+        this.contentData.firstBar.data.rows = rowData;
+
+          }else{
+            this.contentData.firstBar.data.rows = this.stochastic.year
+            
+          }  
+        }
+        // xValue.map(only=>{
+        //   let rowItem = {}
+        //   if(type === 'day'){
+        //     rowItem['时间'] = only + '点'
+        //   }else{
+        //     rowItem['时间'] = only 
+        //   }
+        //     rowItem['处理总时长'] = parseInt(Math.random()*100000)
+        //     rowItem['总处理记录数'] =parseInt(Math.random()*100000)
+        //     rowData.push(rowItem)                  
+        // })
         
         //ETL---数据共享
         this.contentData.firstBar.data.columns = ['时间','处理总时长','总处理记录数']
-        this.contentData.firstBar.data.rows = rowData;
+        // this.contentData.firstBar.data.rows = rowData;
 
         //ETL---数据共享比例
         let datas = {
@@ -902,15 +1008,71 @@ export default {
             { '任务': '任务6', '执行时间': 593 }
           ]
         }
-        datas.rows.map((item)=>{
+        if(type === 'day'){
+          if(this.pie.day.length === 0){
+            datas.rows.map((item)=>{
             item['执行时间'] = parseInt(Math.random()*100)
           })
+            this.pie.day = datas.rows
+            this.contentData.firstPie.data.rows = datas.rows
+            this.contentData.secondPie.data.rows = datas.rows
+            
+          }else{
+            this.contentData.firstPie.data.rows = this.pie.day
+            this.contentData.secondPie.data.rows = this.pie.day
+          }          
+        }
+        if(type === 'week'){
+          if(this.pie.week.length === 0){
+            datas.rows.map((item)=>{
+            item['执行时间'] = parseInt(Math.random()*1000)
+          })
+            this.pie.week = datas.rows
+            this.contentData.firstPie.data.rows = datas.rows
+            this.contentData.secondPie.data.rows = datas.rows
+            
+          }else{
+            this.contentData.firstPie.data.rows = this.pie.week
+            this.contentData.secondPie.data.rows = this.pie.week
+          }          
+        }
+        if(type === 'month'){
+          if(this.pie.month.length === 0){
+            datas.rows.map((item)=>{
+            item['执行时间'] = parseInt(Math.random()*10000)
+          })
+            this.pie.month = datas.rows
+            this.contentData.firstPie.data.rows = datas.rows
+            this.contentData.secondPie.data.rows = datas.rows
+            
+          }else{
+            this.contentData.firstPie.data.rows = this.pie.month
+            this.contentData.secondPie.data.rows = this.pie.month
+          }          
+        }
+        if(type === 'year'){
+          if(this.pie.year.length === 0){
+            datas.rows.map((item)=>{
+            item['执行时间'] = parseInt(Math.random()*100000)
+          })
+            this.pie.year = datas.rows
+            this.contentData.firstPie.data.rows = datas.rows
+            this.contentData.secondPie.data.rows = datas.rows
+            
+          }else{
+            this.contentData.firstPie.data.rows = this.pie.year
+            this.contentData.secondPie.data.rows = this.pie.year
+          }          
+        }
+        // datas.rows.map((item)=>{
+        //     item['执行时间'] = parseInt(Math.random()*100)
+        //   })
 
         this.contentData.firstPie.data.columns = datas.columns
-        this.contentData.firstPie.data.rows = datas.rows
+        // this.contentData.firstPie.data.rows = datas.rows
 
         this.contentData.secondPie.data.columns = datas.columns
-        this.contentData.secondPie.data.rows = datas.rows
+        // this.contentData.secondPie.data.rows = datas.rows
 
 
       }

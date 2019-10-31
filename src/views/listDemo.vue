@@ -83,6 +83,17 @@
           ></el-table-column>
         </template>
       </el-table>
+      <div class="pagination">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="dialogInfo.currentPage"
+          :page-sizes="[10, 50, 100, 200]"
+          :page-size="dialogInfo.rowNum"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="dialogInfo.totalPage"
+        ></el-pagination>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -100,10 +111,10 @@ export default {
   data() {
     return {
       dialogTableVisible: false,
-      // app: this.$route.params.app,
-      // serveice: this.$route.params.serveice,
-      app: "cvs",
-      serveice: "srvcvs_medical_records_select",
+      app: this.$route.params.app,
+      serveice: this.$route.params.serveice,
+      // app: "cvs",
+      // serveice: "srvcvs_medical_records_select",
       allColum: {
         type: "all",
         name: "字段",
@@ -171,7 +182,13 @@ export default {
       serviceName: "",
       requestUrl: "",
       ListData: null,
-      saveConfigData: {}
+      saveConfigData: {},
+      dialogInfo: { // dialog配置信息
+        currentPage: 1,
+        rowNum: 10,
+        totalPage: 10
+      },
+      detailCondition: []
     };
   },
   methods: {
@@ -261,10 +278,10 @@ export default {
           this.endData.aggregation && this.endData.group
             ? this.endData.group.concat(this.endData.aggregation)
             : this.endData.aggregation && !this.endData.group
-            ? this.endData.aggregation
-            : !this.endData.aggregation && this.endData.group
-            ? this.endData.group
-            : undefined,
+              ? this.endData.aggregation
+              : !this.endData.aggregation && this.endData.group
+                ? this.endData.group
+                : undefined,
         condition: this.endData.condition,
         order: this.endData.order
       };
@@ -453,11 +470,36 @@ export default {
       this.listData = listData;
       console.log("TCL: changeReqOption -> listData", listData);
     },
+    getDetailData() {
+      let condition = this.detailCondition
+      let url = this.getServiceUrl("select", this.serviceName, this.appName);
+      let req = {
+        serviceName: this.serviceName,
+        colNames: ["*"],
+        condition: condition,
+        page: {
+          "pageNo": this.dialogInfo.currentPage,
+          "rownumber": this.dialogInfo.rowNum
+        }
+      };
+      this.axios
+        .post(url, req)
+        .then(res => {
+          let resData = res.data.data;
+          let pageData = res.data.page
+          this.dialogInfo.currentPage = pageData.pageNo
+          this.dialogInfo.rowNum = pageData.rownumber
+          this.dialogInfo.totalPage = pageData.total
+          this.detailTableData = resData;
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
     toDetail(rowData) {
       let colnumns = Object.keys(rowData);
       console.log("TCL: toDetail -> colnumns", colnumns);
       this.detailTableTitle = this.columnsOption;
-
       colnumns = this.endData.group.map(item => item.colName);
       this.dialogTableVisible = true;
       if (colnumns.length > 0) {
@@ -478,21 +520,8 @@ export default {
             });
           }
         });
-        let url = this.getServiceUrl("select", this.serviceName, this.appName);
-        let req = {
-          serviceName: this.serviceName,
-          colNames: ["*"],
-          condition: condition
-        };
-        this.axios
-          .post(url, req)
-          .then(res => {
-            let resData = res.data.data;
-            this.detailTableData = resData;
-          })
-          .catch(err => {
-            console.error(err);
-          });
+        this.detailCondition = condition
+        this.getDetailData()
       } else {
         console.log("TCL: toDetail -> rowData", rowData);
         this.detailTableData = [rowData];
@@ -610,6 +639,15 @@ export default {
         .catch(err => {
           console.log(err);
         });
+    },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.dialogInfo.currentPage = val
+      this.getDetailData()
     }
   },
   created() {
@@ -750,7 +788,15 @@ export default {
       margin: 20px 0;
     }
   }
-  .detail-dialog /deep/ .el-dialog__body {
+  .pagination {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 5rem;
+  }
+  .detail-dialog /deep/ .el-dialog__body .el-table {
     overflow-y: scroll;
     height: 600px;
   }
