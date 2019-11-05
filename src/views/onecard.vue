@@ -76,6 +76,8 @@ export default {
           columns: ['时间', "门诊", "住院"],
           rows: rows
         }
+      } else if (currentPage == 'emrShare') {
+
       } else if (currentPage == 'emrCollect') {
         let types = this.getCols(originData, "record_type")
         xVal.map(hour => {
@@ -145,6 +147,8 @@ export default {
             }
           }
         })
+      } else if (currentPage == 'emrShare') {
+
       } else if (currentPage === 'emrCollect') {
         // 获取指标
         // let types = this.getCols(data, "yljgmc")
@@ -318,74 +322,82 @@ export default {
       } else if (currentPage === 'emrCollect') {
         // let hospital = this.getCols(datas, "yljgmc")
         let hospital = ["延大附院", "市人民医院", "市中医医院", "博爱医院", "市妇幼医院", "宝塔区医院"]
+        let types = this.getCols(originData, "record_type")
+        types = ["住院诊疗入院记录", "门急诊诊疗挂号记录", "门急诊诊疗医嘱", "门急诊诊疗检验报告", "住院诊疗医嘱", "住院诊疗检验报告"]
+        hospital.map(item => {
+          let obj = {
+            columns: ['时间'].concat(types),
+            rows: []
+          }
+          bar2Arr.push(obj)
+        })
         hospital = this.getCols(originData, 'hospital')
-        if (hospital && hospital.length > 0) {
-          let types = this.getCols(originData, "record_type")
-          types = ["住院诊疗入院记录", "门急诊诊疗挂号记录", "门急诊诊疗医嘱", "门急诊诊疗检验报告", "住院诊疗医嘱", "住院诊疗检验报告"]
-          // types = ['住院', '门诊']
-          hospital.map(hos => {
-            let obj = {
-              columns: ['时间'].concat(types),
-              rows: []
-            }
-            xVal.map(hour => {
-              let dataMap = {}
-              obj.rows.push(dataMap)
-              if (timeType === 'day') {
-                if (hour < 10) {
-                  dataMap['时间'] = hour.slice(1, 2) + "点"
-                } else {
-                  dataMap['时间'] = hour + "点"
-                }
-                types.map(item => {
-                  let count = 0
-                  originData.map(dataItem => {
-                    let dateHour = dataItem.count_hour
-                    if (dateHour == hour && dataItem.record_type == item && dataItem.hospital === hos) {
-                      count += dataItem.amount
-                    }
-                  })
-                  dataMap[item] = count
-                })
-              } else if (timeType === 'week' || timeType === "month" || timeType === 'year') {
-                dataMap.时间 = hour
-                types.map(item => {
-                  let count = 0
-                  originData.map(dataItem => {
-                    let dateHour = dataItem.count_hour
-                    if (dateHour == hour && dataItem.record_type == item && dataItem.hospital === hos) {
-                      count += dataItem.amount
-                    }
-                  })
-                  dataMap[item] = count
-                })
+        console.log("TCL: getBar2Data -> originData", originData)
+        // if (hospital && hospital.length > 0) {
+        hospital.map(hos => {
+          let obj = {
+            columns: ['时间'].concat(types),
+            rows: []
+          }
+          xVal.map(hour => {
+            let dataMap = {}
+            obj.rows.push(dataMap)
+            if (timeType === 'day') {
+              if (hour < 10) {
+                dataMap['时间'] = hour.slice(1, 2) + "点"
+              } else {
+                dataMap['时间'] = hour + "点"
               }
-            })
-            switch (hos) {
-              case 'bayy':
-                // hos = '博爱医院'
-                bar2Arr[3] = obj
-                break;
-              case 'fybjyy':
-                // hos = '市妇幼医院'
-                bar2Arr[4] = obj
-                break;
-              case 'zyyy':
-                // hos = '市中医医院'
-                bar2Arr[2] = obj
-                break;
-              case 'rmyy':
-                // hos = '市人民医院'
-                bar2Arr[1] = obj
-                break;
+              types.map(item => {
+                let count = 0
+                originData.map(dataItem => {
+                  let dateHour = dataItem.count_hour
+                  if (dateHour == hour && dataItem.record_type == item && dataItem.hospital === hos) {
+                    count += dataItem.amount
+                  }
+                })
+                dataMap[item] = count
+              })
+            } else if (timeType === 'week' || timeType === "month" || timeType === 'year') {
+              dataMap.时间 = hour
+              types.map(item => {
+                let count = 0
+                originData.map(dataItem => {
+                  let dateHour = dataItem.count_hour
+                  // console.log("TCL: getBar2Data -> count", dateHour, hour, item, dataItem.record_type, dataItem.hospital, hos, dataItem.amount)
+                  if (dateHour == hour && dataItem.record_type == item && dataItem.hospital === hos) {
+                    count += dataItem.amount
+                  }
+                })
+                dataMap[item] = count
+              })
             }
-            bar2Arr[0] = {}
-            bar2Arr[5] = {}
-            // bar2Arr.push(obj)
           })
-          console.log('bar2Arr', bar2Arr)
-          this.contentData.secondBar.data = bar2Arr
-        }
+          switch (hos) {
+            case 'bayy':
+              // hos = '博爱医院'
+              bar2Arr[3] = obj
+              break;
+            case 'fybjyy':
+              // hos = '市妇幼医院'
+              bar2Arr[4] = obj
+              break;
+            case 'zyyy':
+              // hos = '市中医医院'
+              bar2Arr[2] = obj
+              break;
+            case 'rmyy':
+              // hos = '市人民医院'
+              bar2Arr[1] = obj
+              break;
+          }
+          bar2Arr[0] = {}
+          bar2Arr[5] = {}
+          // bar2Arr.push(obj)
+        })
+        // console.log('bar2Arr', bar2Arr)
+        this.contentData.secondBar.data = bar2Arr
+        // }
       }
     },
     getPie3Data(currentPage, originData) {
@@ -395,7 +407,6 @@ export default {
         let hospital = ["延大附院", "市人民医院", "延安市中医医院", "博爱医院", "市妇幼医院", "宝塔区医院"]
         // let hospital = this.getCols(data, "yljgmc")
         // this.contentData.tabCheckItem = hospital
-        // if (hospital && hospital.length > 0) {
         // let cardType = this.getCols(data, "card_type")
         let cardType = ["社保卡", "就诊卡", "身份证"]
         hospital.map((hos, i) => {
@@ -429,7 +440,8 @@ export default {
           })
           pie3Arr.push(obj)
         })
-        // }
+      } else if (currentPage == 'emrShare') {
+
       } else if (currentPage === 'emrCollect') {
         // let hospital = ["延大附院", "市人民医院", "市中医医院", "博爱医院", "市妇幼医院", "宝塔区医院"]
         let hospital = this.getCols(originData, "hospital")
@@ -517,6 +529,8 @@ export default {
           }
         })
         this.contentData.countData = countArr
+      } else if (currentPage == 'emrShare') {
+
       } else if (currentPage === 'emrCollect') {
         hospital.map(item => {
           let obj = {
@@ -541,20 +555,16 @@ export default {
           console.log('hos,obj', hos, obj)
           switch (hos) {
             case 'bayy':
-              // hos = '博爱医院'
-              countArr[3] = obj
+              countArr[3] = obj // '博爱医院'
               break;
             case 'fybjyy':
-              // hos = '市妇幼医院'
-              countArr[4] = obj
+              countArr[4] = obj // '市妇幼医院'
               break;
             case 'zyyy':
-              // hos = '市中医医院'
-              countArr[2] = obj
+              countArr[2] = obj // '市中医医院'
               break;
             case 'rmyy':
-              // hos = '市人民医院'
-              countArr[1] = obj
+              countArr[1] = obj // '市人民医院'
               break;
             default:
               break;
@@ -627,6 +637,7 @@ export default {
         this.contentData.firstBar.type = 'bar'
         let serviceName = "srvcvs_medical_records_select"
         this.getTimeSection(type)
+        console.log('this.timeSection', this.timeSection)
         condition = [
           {
             "colName": "ywfssj",
@@ -1125,7 +1136,6 @@ export default {
         let datab = resb.data.data
         console.log("TCL: getAlldata -> datab", datab)
         this.getCountData(datab, type, currentPage, "verify_count")
-
         let emrShareCount = { select: 0, verify: 0 }
         let url3 = this.getServiceUrl("select", req.serviceName, "log")
         let resc = await this.axios.post(url3, req3)
@@ -1456,7 +1466,7 @@ export default {
           },
           {
             "colName": "count_hour",
-            "type": "by_hour"
+            "type": this.byValue
           }
         ]
       }
@@ -1484,12 +1494,6 @@ export default {
       let res6 = await this.axios.post(url, params6)
       this.getCount('emrCollect', res6.data.data)
       this.getPie3Data('emrCollect', res6.data.data)
-      // this.contentData.thirdPie.data = res6.data.data ? res6.data.data : [] // 右侧折线图数据
-      console.log("TCL: getCollectOriginData -> res6", res6.data.data)
-      // console.log("TCL: getCollectOriginData -> res4", res4.data.data)
-      // console.log("TCL: getCollectOriginData -> res3", res3.data.data)
-      // console.log("TCL: getCollectOriginData -> res2", res2.data.data)
-      // console.log("TCL: getCollectOriginData -> res1", res1.data.data)
     },
 
     viewtabs(pageName) {
@@ -1506,6 +1510,7 @@ export default {
       this.$router.push({ name: "navs", query: { from: "onecard" } })
     },
     async getTimeType(TimeType) {
+      this.getTimeSection(TimeType)
       // 获取时间区间类型
       let byValue = ""
       if (TimeType) {

@@ -656,11 +656,14 @@ export default {
        this.contentData.firstPie.title = '任务执行时间分布'
        this.contentData.secondPie.title = '任务处理记录数分布'
        this.contentData.firstBar.set.type = 'line'
+      //  this.getETLineDataTimeOut('day')
+        this.getETLineData('day')
         // this.getRightTask()
         this.RightTaskTimeOut()
       }else{
         if(this.ReqTimeOut.RightTaskTimeOut){
           this.ReqTimeOut.RightTaskTimeOut.endTime()
+          // this.ReqTimeOut.getETLineDataTimeOut.endTime()
         }
       }
 
@@ -885,101 +888,11 @@ export default {
 
       }else if(this.contentData.currentPage === 'ETL'){
         this.contentData.firstBar.set.type = 'line'
-        let rowData = []
-        // if(type === 'day'){
-        //   if(this.stochastic > 1){
-        //     this.stochastic = 
-        //   }
-        // }else if(type === 'week'){
-        //   this.stochastic = 0
-        //   if(this.stochastic ===1){
-        //     this.stochastic = 2
-        //   }else if(this.stochastic ===0){
-        //     this.stochastic ++
-        //     if(this.stochastic > 1){
-        //     this.stochastic = 1
-        //   }
-        //   }
-        // }
-        if(type === 'day'){
-          if(this.stochastic.day.length === 0){
-            xValue.map(only=>{
-          let rowItem = {}
-          if(type === 'day'){
-            rowItem['时间'] = only + '点'
-          }else{
-            rowItem['时间'] = only 
-          }
-            rowItem['处理总时长'] = parseInt(Math.random()*100000)
-            rowItem['总处理记录数'] =parseInt(Math.random()*100000)
-            rowData.push(rowItem)                  
-        })
-        this.stochastic.day = rowData
-        this.contentData.firstBar.data.rows = rowData;
-
-          }else{
-            this.contentData.firstBar.data.rows = this.stochastic.day
-          }
-        }else if(type === 'week'){
-          if(this.stochastic.week.length === 0){
-            xValue.map(only=>{
-            let rowItem = {}
-            if(type === 'day'){
-              rowItem['时间'] = only + '点'
-            }else{
-              rowItem['时间'] = only 
-            }
-              rowItem['处理总时长'] = parseInt(Math.random()*100000)
-              rowItem['总处理记录数'] =parseInt(Math.random()*100000)
-              rowData.push(rowItem)                  
-          })
-        this.stochastic.week = rowData
-        this.contentData.firstBar.data.rows = rowData;
-
-          }else{
-            this.contentData.firstBar.data.rows = this.stochastic.week
-          }
-          
-        }else if(type === 'month'){
-          if(this.stochastic.month.length === 0){
-            xValue.map(only=>{
-            let rowItem = {}
-            if(type === 'day'){
-              rowItem['时间'] = only + '点'
-            }else{
-              rowItem['时间'] = only 
-            }
-              rowItem['处理总时长'] = parseInt(Math.random()*100000)
-              rowItem['总处理记录数'] =parseInt(Math.random()*100000)
-              rowData.push(rowItem)                  
-          })
-        this.stochastic.month = rowData
-        this.contentData.firstBar.data.rows = rowData;
-
-          }else{
-            this.contentData.firstBar.data.rows = this.stochastic.month
-          }       
-        }else if(type === 'year'){
-          if(this.stochastic.year.length === 0){
-            xValue.map(only=>{
-            let rowItem = {}
-            if(type === 'day'){
-              rowItem['时间'] = only + '点'
-            }else{
-              rowItem['时间'] = only 
-            }
-              rowItem['处理总时长'] = parseInt(Math.random()*100000)
-              rowItem['总处理记录数'] =parseInt(Math.random()*100000)
-              rowData.push(rowItem)                  
-          })
-          this.stochastic.year = rowData
-        this.contentData.firstBar.data.rows = rowData;
-
-          }else{
-            this.contentData.firstBar.data.rows = this.stochastic.year
-            
-          }  
-        }
+        this.contentData.firstBar.data.columns = ['时间','处理总时长','处理总记录数']
+        this.getETLineData(type)
+        // this.getETLineDataTimeOut(type)
+        
+        
         // xValue.map(only=>{
         //   let rowItem = {}
         //   if(type === 'day'){
@@ -993,94 +906,89 @@ export default {
         // })
         
         //ETL---数据共享
-        this.contentData.firstBar.data.columns = ['时间','处理总时长','总处理记录数']
         // this.contentData.firstBar.data.rows = rowData;
 
         //ETL---数据共享比例
-        let datas = {
-        columns: ['任务', '执行时间'],
-          rows: [
-            { '任务': '任务1', '执行时间': 393 },
-            { '任务': '任务2', '执行时间': 530 },
-            { '任务': '任务3', '执行时间': 923 },
-            { '任务': '任务4', '执行时间': 723 },
-            { '任务': '任务5', '执行时间': 792 },
-            { '任务': '任务6', '执行时间': 593 }
-          ]
-        }
-        if(type === 'day'){
-          if(this.pie.day.length === 0){
-            datas.rows.map((item)=>{
-            item['执行时间'] = parseInt(Math.random()*100)
-          })
-            this.pie.day = datas.rows
-            this.contentData.firstPie.data.rows = datas.rows
-            this.contentData.secondPie.data.rows = datas.rows
-            
-          }else{
-            this.contentData.firstPie.data.rows = this.pie.day
-            this.contentData.secondPie.data.rows = this.pie.day
-          }          
-        }
-        if(type === 'week'){
-          if(this.pie.week.length === 0){
-            datas.rows.map((item)=>{
-            item['执行时间'] = parseInt(Math.random()*1000)
-          })
-            this.pie.week = datas.rows
-            this.contentData.firstPie.data.rows = datas.rows
-            this.contentData.secondPie.data.rows = datas.rows
-            
-          }else{
-            this.contentData.firstPie.data.rows = this.pie.week
-            this.contentData.secondPie.data.rows = this.pie.week
-          }          
-        }
-        if(type === 'month'){
-          if(this.pie.month.length === 0){
-            datas.rows.map((item)=>{
-            item['执行时间'] = parseInt(Math.random()*10000)
-          })
-            this.pie.month = datas.rows
-            this.contentData.firstPie.data.rows = datas.rows
-            this.contentData.secondPie.data.rows = datas.rows
-            
-          }else{
-            this.contentData.firstPie.data.rows = this.pie.month
-            this.contentData.secondPie.data.rows = this.pie.month
-          }          
-        }
-        if(type === 'year'){
-          if(this.pie.year.length === 0){
-            datas.rows.map((item)=>{
-            item['执行时间'] = parseInt(Math.random()*100000)
-          })
-            this.pie.year = datas.rows
-            this.contentData.firstPie.data.rows = datas.rows
-            this.contentData.secondPie.data.rows = datas.rows
-            
-          }else{
-            this.contentData.firstPie.data.rows = this.pie.year
-            this.contentData.secondPie.data.rows = this.pie.year
-          }          
-        }
-        // datas.rows.map((item)=>{
+        // let datas = {
+        // columns: ['任务', '执行时间'],
+        //   rows: [
+        //     { '任务': '任务1', '执行时间': 393 },
+        //     { '任务': '任务2', '执行时间': 530 },
+        //     { '任务': '任务3', '执行时间': 923 },
+        //     { '任务': '任务4', '执行时间': 723 },
+        //     { '任务': '任务5', '执行时间': 792 },
+        //     { '任务': '任务6', '执行时间': 593 }
+        //   ]
+        // }
+        // if(type === 'day'){
+        //   if(this.pie.day.length === 0){
+        //     datas.rows.map((item)=>{
         //     item['执行时间'] = parseInt(Math.random()*100)
         //   })
+        //     this.pie.day = datas.rows
+        //     this.contentData.firstPie.data.rows = datas.rows
+        //     this.contentData.secondPie.data.rows = datas.rows
+            
+        //   }else{
+        //     this.contentData.firstPie.data.rows = this.pie.day
+        //     this.contentData.secondPie.data.rows = this.pie.day
+        //   }          
+        // }
+        // if(type === 'week'){
+        //   if(this.pie.week.length === 0){
+        //     datas.rows.map((item)=>{
+        //     item['执行时间'] = parseInt(Math.random()*1000)
+        //   })
+        //     this.pie.week = datas.rows
+        //     this.contentData.firstPie.data.rows = datas.rows
+        //     this.contentData.secondPie.data.rows = datas.rows
+            
+        //   }else{
+        //     this.contentData.firstPie.data.rows = this.pie.week
+        //     this.contentData.secondPie.data.rows = this.pie.week
+        //   }          
+        // }
+        // if(type === 'month'){
+        //   if(this.pie.month.length === 0){
+        //     datas.rows.map((item)=>{
+        //     item['执行时间'] = parseInt(Math.random()*10000)
+        //   })
+        //     this.pie.month = datas.rows
+        //     this.contentData.firstPie.data.rows = datas.rows
+        //     this.contentData.secondPie.data.rows = datas.rows
+            
+        //   }else{
+        //     this.contentData.firstPie.data.rows = this.pie.month
+        //     this.contentData.secondPie.data.rows = this.pie.month
+        //   }          
+        // }
+        // if(type === 'year'){
+        //   if(this.pie.year.length === 0){
+        //     datas.rows.map((item)=>{
+        //     item['执行时间'] = parseInt(Math.random()*100000)
+        //   })
+        //     this.pie.year = datas.rows
+        //     this.contentData.firstPie.data.rows = datas.rows
+        //     this.contentData.secondPie.data.rows = datas.rows
+            
+        //   }else{
+        //     this.contentData.firstPie.data.rows = this.pie.year
+        //     this.contentData.secondPie.data.rows = this.pie.year
+        //   }          
+        // }
+        // // datas.rows.map((item)=>{
+        // //     item['执行时间'] = parseInt(Math.random()*100)
+        // //   })
 
-        this.contentData.firstPie.data.columns = datas.columns
-        // this.contentData.firstPie.data.rows = datas.rows
+        // this.contentData.firstPie.data.columns = datas.columns
+        // // this.contentData.firstPie.data.rows = datas.rows
 
-        this.contentData.secondPie.data.columns = datas.columns
-        // this.contentData.secondPie.data.rows = datas.rows
+        // this.contentData.secondPie.data.columns = datas.columns
+        // // this.contentData.secondPie.data.rows = datas.rows
 
 
       }
       
-
-      
-
-      console.log('this.contentData.firstBar.data',this.contentData.firstBar)
         
     },
     //获取右边双Y轴图例
@@ -1390,6 +1298,299 @@ export default {
         // .catch(err => {
         //   console.log(err);
         // });
+    },
+    //获取ETL左边折线图
+    async getETLineData(type){
+      let self = this      
+      let req = {
+    "serviceName": "srvetl_job_history_select",
+    "colNames": [
+        "*"
+    ],
+    "group":[    	
+    	{
+    		"colName": "start_time",
+    		"type": "by"
+    	},
+    	{
+    		"colName": "end_time",
+    		"type": "by"
+    	},
+    	{
+    		"colName": "failed_records_count",
+    		"type": "sum"
+    	},
+    	{
+    		"colName": "ok_records_count",
+    		"type": "sum"
+      },
+      {
+    		"colName": "job_name",
+    		"type": "by"
+    	}
+    ],
+    condition:[]
+};
+    if(type === 'day'){
+         req.condition = req.condition.concat([
+           {
+           colName:'start_time',
+           value:moment().add(1,'hours').format("YYYY-MM-DD HH"),// 小于当前时间的下一个小时
+           ruleType:'lt'
+         },{
+           colName:'start_time',
+           value:moment().subtract(23, "hours").format("YYYY-MM-DD HH"),// 大于当前时间往前推23个小时
+           ruleType:'gt'
+         }])
+         req.group = req.group.concat([
+           {
+              "colName": "create_time",
+              "type":"by_hour"
+            },
+         ])
+    }else if(type === 'week'){
+      req.condition = req.condition.concat([
+           {
+           colName:'start_time',
+           value:moment().add(1,'days').format("YYYY-MM-DD"),// 今晚0点
+           ruleType:'lt'
+         },{
+           colName:'start_time',
+           value:moment().subtract(6, "days").format("YYYY-MM-DD"),// 六天前
+           ruleType:'gt'
+         }])
+         req.group = req.group.concat([
+           {
+              "colName": "create_time",
+              "type":"by_date"
+            },
+         ])
+    }else if(type === 'month'){
+      req.condition = req.condition.concat([
+           {
+           colName:'start_time',
+           value:moment().add(1,'days').format("YYYY-MM-DD"),// 今晚零点
+           ruleType:'lt'
+         },{
+           colName:'start_time',
+           value:moment().subtract(30, "days").format("YYYY-MM-DD"),// 30天前
+           ruleType:'gt'
+         }])
+         req.group = req.group.concat([
+           {
+              "colName": "create_time",
+              "type":"by_date"
+            },
+         ])
+    }else if(type === 'year'){
+      req.condition = req.condition.concat([
+           {
+           colName:'start_time',
+           value:moment().add(1,'month').format("YYYY-MM-DD"),// 今晚零点
+           ruleType:'lt'
+         },{
+           colName:'start_time',
+           value:moment().subtract(11, "month").format("YYYY-MM-DD"),// 十一个月之前
+           ruleType:'gt'
+         }])
+         req.group = req.group.concat([
+           {
+              "colName": "create_time",
+              "type":"by_month_of_year"
+            },
+         ])
+    }
+      let path = this.getServiceUrl(
+        "select",
+        "srvetl_job_history_select",
+        "etl"
+      );
+      let res = await self.axios.post(path,req)
+      console.log("--------------getETLineData--------------res",res);
+      
+      let run = res.data.data
+
+      if(res.status === 200){        
+        this.getETLdata(run,type)
+        return { 'isRes': true, 'res': res }
+      }else{
+        return { 'isRes': false, 'res': res };
+      }
+    },
+    getETLdata(data,type){
+      
+      console.log('-----------data处理---------',data)
+      //rows
+      let xVal = []
+      if(type === 'day'){
+        let hours = [];
+        for (let i = 1; i <= 24; i++) {
+          hours.push(
+            moment()
+              .subtract(24 - i, "hours")
+              .format("HH")
+          );
+        }
+        xVal = hours;
+      }else if(type === 'week'){
+        let week = [];
+        for (let i = 1; i < 8; i++) {
+          week.push(
+            moment(this.timeHorizon.today)
+              .subtract(7 - i, "days")
+              .format("YYYY-MM-DD")
+          );
+        }
+        xVal = week;
+      } else if (type === "month") {
+        let days = [];
+        for (let i = 1; i < 31; i++) {
+          days.push(
+            moment(this.timeHorizon.today)
+              .subtract(30 - i, "days")
+              .format("YYYY-MM-DD")
+          );
+        }
+        xVal = days;
+      } else if (type === "year") {
+        let month = [];
+        for (let i = 1; i <= 12; i++) {
+          month.push(
+            moment()
+              .subtract(12 - i, "month")
+              .format("YYYY-MM")
+          );
+        }
+        xVal = month;
+      }
+      //左边柱状图
+      //处理原始数据
+      let initialData = []      
+      let shareTime = data.map(data => data.create_time);
+      shareTime = xVal
+      for (let a = 0; a < shareTime.length; a++) {
+        let defObj = {}
+        let TotalTime = 0
+        let TotalNum = 0
+        if(data.length===0){
+          defObj = {
+                  '时间':shareTime[a],
+                  '处理总时长':0,
+                  '处理总记录数':0                
+                }
+        }else{
+          for (let j = 0; j < data.length; j++) {
+          if(shareTime[a] == data[j].create_time){
+                let time = shareTime[a]
+                 TotalTime = TotalTime + moment(data[j].end_time).diff(moment(data[j].start_time), 'minutes')
+                 TotalNum = TotalNum + data[j].failed_records_count + data[j].ok_records_count                
+                   defObj = {
+                  '时间':time,
+                  '处理总时长':TotalTime,
+                  '处理总记录数':TotalNum                
+                }
+          }else{
+             defObj = {
+                  '时间':shareTime[a],
+                  '处理总时长':0,
+                  '处理总记录数':0                
+                }
+            }          
+          }
+        }
+        if(type === 'day'){
+          defObj['时间'] = defObj['时间'] + '点'
+        }          
+        initialData.push(defObj)        
+      }
+      this.contentData.firstBar.data.rows = initialData;
+
+
+      //右边饼图
+      let columns=['任务', '执行时间']
+      let RigColumns = ['任务', '处理记录数']
+      this.contentData.firstPie.data.columns = columns
+      this.contentData.secondPie.data.columns = RigColumns
+          // let peiObj = {}
+          let etlPieRow = []
+          // let pieRigObj = {}
+          let etlRigPieRow = []
+
+      if(type === 'day'){
+        data.forEach(pieData=>{
+          let peiObj = {}
+          let pieRigObj = {}
+          let dealTime = moment(pieData.end_time).diff(moment(pieData.start_time), 'minutes')
+          let dealNum = pieData.failed_records_count + pieData.ok_records_count
+          peiObj['任务'] = pieData.job_name
+          peiObj['执行时间'] = dealTime
+          pieRigObj['任务'] = pieData.job_name
+          pieRigObj['处理记录数'] = dealNum
+          etlPieRow.push(peiObj)
+          etlRigPieRow.push(pieRigObj)
+        })
+        this.contentData.firstPie.data.rows = etlPieRow
+        this.contentData.secondPie.data.rows = etlRigPieRow
+      }else if(type === 'week'){
+        data.forEach(pieData=>{   
+          let peiObj = {}
+          let pieRigObj = {}       
+          let dealTime = moment(pieData.end_time).diff(moment(pieData.start_time), 'minutes')
+          let dealNum = pieData.failed_records_count + pieData.ok_records_count
+          peiObj['任务'] = pieData.job_name
+          peiObj['执行时间'] = dealTime
+          pieRigObj['任务'] = pieData.job_name
+          pieRigObj['处理记录数'] = dealNum
+          etlPieRow.push(peiObj)
+          etlRigPieRow.push(pieRigObj)
+        })
+        this.contentData.firstPie.data.rows = etlPieRow
+        this.contentData.secondPie.data.rows = etlRigPieRow
+      }else if(type === 'month'){
+        data.forEach(pieData=>{     
+          let peiObj = {}
+          let pieRigObj = {}     
+          let dealNum = pieData.failed_records_count + pieData.ok_records_count
+          let dealTime = moment(pieData.end_time).diff(moment(pieData.start_time), 'minutes')
+          peiObj['任务'] = pieData.job_name
+          peiObj['执行时间'] = dealTime
+          pieRigObj['任务'] = pieData.job_name
+          pieRigObj['处理记录数'] = dealNum
+          etlPieRow.push(peiObj)
+          etlRigPieRow.push(pieRigObj)
+        })
+        this.contentData.firstPie.data.rows = etlPieRow
+        this.contentData.secondPie.data.rows = etlRigPieRow
+      }else if(type === 'year'){
+        data.forEach(pieData=>{    
+          let peiObj = {}
+          let pieRigObj = {}      
+          let dealNum = pieData.failed_records_count + pieData.ok_records_count
+          let dealTime = moment(pieData.end_time).diff(moment(pieData.start_time), 'minutes')
+          peiObj['任务'] = pieData.job_name
+          peiObj['执行时间'] = dealTime
+          pieRigObj['任务'] = pieData.job_name
+          pieRigObj['处理记录数'] = dealNum
+          etlPieRow.push(peiObj)
+          etlRigPieRow.push(pieRigObj)
+        })
+        this.contentData.firstPie.data.rows = etlPieRow
+        this.contentData.secondPie.data.rows = etlRigPieRow
+      }
+      //右下饼图
+
+      console.log('-----daaaaa----',initialData)
+
+      // initialData.forEach(initial=>{
+      //   if(xVal.includes(initial['时间'])){
+
+      //   }
+      // })
+      // xVal.forEach(val=>{
+      //   initialData.forEach(initial=>{
+      //     if()
+      //   })
+      // })
     },
     //双Y轴间隔设置
     // getMaxNum(e, r) {
@@ -2002,6 +2203,13 @@ export default {
       self.ReqTimeOut.RightTaskTimeOut = new this.timeOut(30,0,self.getRightTask)
       self.ReqTimeOut.RightTaskTimeOut.reqFun();
       self.ReqTimeOut.RightTaskTimeOut.startTime();
+    },
+    /**ETL左边任务定时刷新 */
+   getETLineDataTimeOut(type){
+      let self = this
+      self.ReqTimeOut.getETLineDataTimeOut = new this.timeOut(30,0,self.getETLineData(type))
+      self.ReqTimeOut.getETLineDataTimeOut.reqFun();
+      self.ReqTimeOut.getETLineDataTimeOut.startTime();
     }
   },
   name: "datacenter",
@@ -2088,6 +2296,7 @@ export default {
     this.ReqTimeOut.DataShareRecodTimeOut.endTime()
     this.ReqTimeOut.leftChartLegendTimeOut.endTime()
     this.ReqTimeOut.RightTaskTimeOut.endTime()
+    this.ReqTimeOut.getETLineDataTimeOut.endTime()
   }
 };
 </script>

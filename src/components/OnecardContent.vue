@@ -23,6 +23,7 @@
               height="28vh"
               :data="contentData.firstPie.data"
               :legend-visible="false"
+              :class="{'etlPos':contentData.currentPage==='ETL'}"
               :extend="chartExtendPie"
             ></ve-pie>
           </div>
@@ -40,6 +41,8 @@
             <ve-pie
               :data="contentData.secondPie.data"
               height="28vh"
+              :class="{'etlPos':contentData.currentPage==='ETL'}"
+              :settings="chartPieSetting"
               :legend-visible="false"
               :extend="chartExtendPieL"
               v-else
@@ -164,11 +167,11 @@
         </div>
       </div>
       <div class="databox_three" v-else-if="contentData.currentPage === 'ETL'">
-        <div class="last">
+        <!-- <div class="last">
           <span @click="GoLast">上一次</span>
           <span @click="GoNext">下一次</span>
           <span>选择记录</span>
-        </div>
+        </div>-->
         <div class="gantt_task">
           <span
             @click="choose(item)"
@@ -313,7 +316,7 @@ export default {
         series: {
           type: "pie",
           center: ["50%", "50%"],
-          radius: [0, "70%"],
+          radius: [0, "75%"],
           label: {
             normal: {
               show: true,
@@ -322,6 +325,7 @@ export default {
           }
         }
       },
+      chartPieSetting: {},
       chartExtendPieS: {
         // 小饼图
         series: {
@@ -429,6 +433,81 @@ export default {
         } else {
           this.chartExtendLine.series.type = newValue.firstBar.type;
         }
+
+        if (this.contentData.currentPage === "ETL") {
+          let PieSeriesL = {
+            type: "pie",
+            center: ["50%", "60%"],
+            radius: [0, "50%"],
+            label: {
+              normal: {
+                show: true,
+                formatter: "{d}%"
+              }
+            }
+          };
+          let PieSeries = {
+            type: "pie",
+            center: ["50%", "50%"],
+            radius: [0, "35%"],
+            label: {
+              normal: {
+                show: true,
+                formatter: "{d}%"
+              }
+            }
+          };
+          this.chartPieSetting = { limitShowNum: 5 };
+          this.chartExtendPieL.series = PieSeriesL;
+          this.chartExtendPie.series = PieSeries;
+
+          this.chartExtendPieL["legend"] = {
+            show: true,
+            // type: "scroll",
+            textStyle: { color: "#ffffff" }
+          };
+          this.chartExtendPie["legend"] = {
+            show: true,
+            // type: "scroll",
+            textStyle: { color: "#ffffff" }
+          };
+        } else {
+          let series1 = {
+            type: "pie",
+            center: ["50%", "50%"],
+            radius: [0, "75%"],
+            label: {
+              normal: {
+                show: true,
+                formatter: "{b}:{d}%"
+              }
+            }
+          };
+          let PieSeries1 = {
+            type: "pie",
+            center: ["50%", "50%"],
+            radius: [0, "35%"],
+            label: {
+              normal: {
+                show: true,
+                formatter: "{b}:{d}%"
+              }
+            }
+          };
+          this.chartPieSetting = {};
+          this.chartExtendPieL.series = series1;
+          this.chartExtendPie.series = PieSeries1;
+          this.chartExtendPieL["legend"] = {
+            show: false,
+            // type: "scroll",
+            textStyle: { color: "#ffffff" }
+          };
+          this.chartExtendPie["legend"] = {
+            show: false,
+            // type: "scroll",
+            textStyle: { color: "#ffffff" }
+          };
+        }
       }
     },
     chartSetting: {
@@ -506,6 +585,9 @@ $text-color: #47acff;
             height: 2rem;
             line-height: 2rem;
             text-indent: 1rem;
+          }
+          .etlPos {
+            top: 15px;
           }
         }
       }

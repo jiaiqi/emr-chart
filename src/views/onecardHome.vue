@@ -113,11 +113,11 @@ export default {
           value: 0
         },
         {
-          title: "检验报告",
+          title: "门诊检验报告",
           value: 0
         },
         {
-          title: "医嘱",
+          title: "住院检验报告",
           value: 0
         }
       ],
@@ -386,6 +386,25 @@ export default {
         window.top.tab.addTab(page);
         // window.location.href = '/vpages/index.html#/list/DI_HDI_INRECORD_INFO_select'
       }
+      else if (item == "门诊检验报告") {
+        let page = {
+          title: item,
+          url:
+            "/vpages/index.html#/list/DI_ADI_LAREXA_INFO_select?srvApp=emr",
+          icon: ""
+        };
+        window.top.tab.addTab(page);
+        // window.location.href = '/vpages/index.html#/list/DI_HDI_INRECORD_INFO_select'
+      }else if (item == "住院检验报告") {
+        let page = {
+          title: item,
+          url:
+            "/vpages/index.html#/list/DI_HDI_LAREXA_INFO_select?srvApp=emr",
+          icon: ""
+        };
+        window.top.tab.addTab(page);
+        // window.location.href = '/vpages/index.html#/list/DI_HDI_INRECORD_INFO_select'
+      }
       // }else if(item=="申请中应用个数"){
       //    this.$router.push({path:'/vpages/index.html#/listproc/srvapprc_application_apply_select'})
       // }else if(item=="上线应用个数"){
@@ -558,7 +577,7 @@ export default {
       //   console.log(err)
       // })
     },
-    //检验报告
+    //门诊检验报告  住院检验报告    门急诊诊疗检验报告    住院诊疗检验报告
     async getData_six() {
       let self = this;
       let req6 = {
@@ -575,21 +594,13 @@ export default {
 		"aliasName":"amount"
         }
     ],
-    "relation_condition": 
+    "condition": [
         {
-            "relation":"OR",
-            "data":[{
-			"colName": "record_type",
+            "colName": "record_type",
             "value": "门急诊诊疗检验报告",
             "ruleType": "eq"
-			},
-			{
-			"colName": "record_type",
-            "value": "住院诊疗检验报告",
-            "ruleType": "eq"
-
-			}]
         }
+    ]
     
 }
       let path = this.getServiceUrl(
@@ -717,21 +728,14 @@ export default {
 		"aliasName":"amount"
         }
     ],
-    "relation_condition": 
+    "condition": [
         {
-            "relation":"OR",
-            "data":[{
-			"colName": "record_type",
-            "value": "门急诊诊疗医嘱",
+            "colName": "record_type",
+            "value": "住院诊疗检验报告",
             "ruleType": "eq"
-			},
-			{
-			"colName": "record_type",
-            "value": "住院诊疗医嘱",
-            "ruleType": "eq"
-
-			}]
         }
+    ]
+    
     
 }
       let path = this.getServiceUrl(

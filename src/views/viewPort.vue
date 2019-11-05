@@ -4,12 +4,12 @@
       <div class="content2_he">
         <div class="get-menu"></div>
         <div class="menu1 menu_tab">
-          <div class="tab active">
+          <div class="tab active" style="background:white;">
             <div>
               <h4>请求地址：</h4>
               <p class="tab_mb tei20" style="color:#999;">
                 接口地址：
-                <a>http://192.168.0.192:8101</a>
+                <a>{{visitPath}}</a>
                 会把登录系统时得到的 bx_auth_ticket带进去，达到访问权限的控制。
               </p>
               <h4>请求方式：</h4>
@@ -120,6 +120,7 @@ export default {
           explain: "返回其它数据信息(data是其返回值)"
         }
       ],
+      visitPath: null,
       //   param: {
       //     serviceName: "srvdc_share_shared_column_select",
       //     colNames: ["*"],
@@ -139,6 +140,8 @@ export default {
   },
   components: {},
   mounted() {
+    console.log("-------------path", top.backendIpAddr);
+    this.visitPath = top.backendIpAddr;
     this.getData();
     console.log(JSON.stringify(this.param));
   },
@@ -392,9 +395,9 @@ export default {
 .container .content2_he .menu_tab .tab {
   display: none;
 }
-/* .container .content2_he .menu_tab .active {
-  display: block;
-} */
+.container .content2_he .menu_tab .active {
+  background-color: white !important;
+}
 .container .content2_he .menu_tab .tab p {
   font-size: 14px;
   line-height: 24px;

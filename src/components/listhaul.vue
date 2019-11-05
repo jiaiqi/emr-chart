@@ -122,18 +122,18 @@ export default {
   props: {
     singList: {
       type: Object,
-      default: function() {
+      default: function () {
         return {};
       }
     },
     props: {
       operator: {
         type: Array,
-        default: () => {}
+        default: () => { }
       }
     }
   },
-  data() {
+  data () {
     return {
       deploy: {},
       selectList: [],
@@ -326,13 +326,13 @@ export default {
         shortcuts: [
           {
             text: "今天",
-            onClick(picker) {
+            onClick (picker) {
               picker.$emit("pick", new Date());
             }
           },
           {
             text: "昨天",
-            onClick(picker) {
+            onClick (picker) {
               const date = new Date();
               date.setTime(date.getTime() - 3600 * 1000 * 24);
               picker.$emit("pick", date);
@@ -340,7 +340,7 @@ export default {
           },
           {
             text: "一周前",
-            onClick(picker) {
+            onClick (picker) {
               const date = new Date();
               date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
               picker.$emit("pick", date);
@@ -351,17 +351,17 @@ export default {
     };
   },
   methods: {
-    deleteAllData() {
+    deleteAllData () {
       // 清除组装的数据
     },
-    start(list) {
+    start (list) {
       if (list.type === "group" || list.type === "aggregation") {
         this.deploy.group.name = "order";
       } else if (list.type === "condition") {
         this.deploy.group = "a";
       }
     },
-    add(ev, list) {
+    add (ev, list) {
       let num = 0;
       let _this = this;
       for (let i = 0; i < list.list.length; i++) {
@@ -398,9 +398,10 @@ export default {
         });
         _this.endData.order = _this.order;
       }
+      console.log("addd----:", this.endData)
       this.$emit("save", list, this.endData);
     },
-    deleteItem(sign, list, i) {
+    deleteItem (sign, list, i) {
       sign.aliasName = "";
       sign._condition.value = "";
       sign._condition.ruleType = "";
@@ -423,14 +424,14 @@ export default {
         this.endData.aggregation.splice(i, 1);
       }
     },
-    onMove(e, list) {
+    onMove (e, list) {
       if (list.type === "group" || list.type === "aggregation") {
         this.deploy.group.name = "article";
       } else if (list.type === "condition") {
         this.deploy.group = "article";
       }
     },
-    selectConditionOperator(sign, isClick) {
+    selectConditionOperator (sign, isClick) {
       let self = this;
       // 切换condition的操作符
       if (isClick) {
@@ -648,7 +649,7 @@ export default {
         });
       }
     },
-    selectGroupOperator(sign, isClick) {
+    selectGroupOperator (sign, isClick) {
       let self = this;
       if (isClick) {
         let dataType = sign.col_type; // 暂定有时间、数字、其它三种
@@ -803,7 +804,7 @@ export default {
         });
       }
     },
-    seleteAggregationOperator(sign, isClick) {
+    seleteAggregationOperator (sign, isClick) {
       let self = this;
       if (isClick) {
         let dataType = sign.col_type;
@@ -952,9 +953,9 @@ export default {
         });
       }
     },
-    selectData(initial) {}
+    selectData (initial) { }
   },
-  created() {
+  created () {
     console.log("created", this.singList, this.selectList);
     // this.selectConditionOperator(this.singList.list);
 
@@ -987,7 +988,7 @@ export default {
       this.selectList = this.orderList;
     }
   },
-  mounted() {
+  mounted () {
     console.log(
       "singList-------++++++-----------》",
       this.singList,
@@ -997,7 +998,7 @@ export default {
 
   watch: {
     singList: {
-      handler(newVal, oldVal) {
+      handler (newVal, oldVal) {
         console.log("---------watch--------");
         if (newVal.type === "condition") {
           this.selectConditionOperator(newVal.list);

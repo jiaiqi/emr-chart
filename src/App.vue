@@ -6,11 +6,11 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {};
   },
   components: {},
-  mounted() {
+  mounted () {
     window.document.title = "延安市社保医疗一体化服务平台";
   }
 };

@@ -29,28 +29,6 @@ export default {
   name: "viewData",
   data() {
     return {
-      //   tableData: [
-      //     {
-      //       date: "2016-05-02",
-      //       name: "王小虎",
-      //       address: "上海市普陀区金沙江路 1518 弄"
-      //     },
-      //     {
-      //       date: "2016-05-04",
-      //       name: "王小虎",
-      //       address: "上海市普陀区金沙江路 1517 弄"
-      //     },
-      //     {
-      //       date: "2016-05-01",
-      //       name: "王小虎",
-      //       address: "上海市普陀区金沙江路 1519 弄"
-      //     },
-      //     {
-      //       date: "2016-05-03",
-      //       name: "王小虎",
-      //       address: "上海市普陀区金沙江路 1516 弄"
-      //     }
-      //   ]
       num: this.$route.params.num,
       proc: this.$route.params.proc,
       tableData: [],
@@ -72,13 +50,15 @@ export default {
           {
             colName: "table_no",
             value: this.num,
-            ruleType: "eq"
-          },
-          {
-            colName: "proc_instance_no",
-            value: this.proc,
+            // value: "DS201910280021.bxms_cvs.bxcvs_medical_records",
             ruleType: "eq"
           }
+          // ,
+          // {
+          //   colName: "proc_instance_no",
+          //   value: this.proc,
+          //   ruleType: "eq"
+          // }
         ],
         order: [
           {

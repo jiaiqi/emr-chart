@@ -1,9 +1,15 @@
 <template>
   <div class="hual">
-    <div class="select-box">
-      <div class="select-item">
-        <div class="label">选择服务应用：</div>
-        <el-select v-model="appName" placeholder="请选择" @change="getServiceName(appName)">
+    <el-form ref="ruleForm" label-width="100px" class="select-box" :model="ruleForm">
+      <el-form-item
+        label="模型名称："
+        prop="modelName"
+        :rules="[{ required: true, message: '请输入模型名称', trigger: 'blur' }]"
+      >
+        <el-input v-model="ruleForm.modelName"></el-input>
+      </el-form-item>
+      <el-form-item label="应用名称：" prop="app_name">
+        <el-select v-model="appName" placeholder="请选择应用名称" @change="getServiceName(appName)">
           <el-option
             v-for="item in allApp"
             :key="item.value"
@@ -11,30 +17,29 @@
             :value="item.app_no"
           ></el-option>
         </el-select>
-      </div>
-      <div class="select-item">
-        <div class="label">选择接口列表：</div>
-        <el-select @change="getData" v-model="serviceName" placeholder="请选择">
+      </el-form-item>
+      <el-form-item label="服务名称：" prop="service_name">
+        <el-select v-model="serviceName" placeholder="请选择服务名称" @change="getData">
           <el-option
-            v-for="item in appService"
+            v-for="item in allService"
             :key="item.value"
             :label="item.service_view_name"
             :value="item.service_name"
           ></el-option>
         </el-select>
-      </div>
-      <div class="select-item">
-        <el-checkbox-group v-model="checkedReqOptions" :min="0" :max="4" @change="changeReqOption">
-          <el-checkbox v-for="option in ReqOptions" :label="option" :key="option">{{option}}</el-checkbox>
+      </el-form-item>
+      <el-form-item label="请求参数：" prop="request_params">
+        <el-checkbox-group v-model="checkedReqOptions" @change="changeReqOption">
+          <el-checkbox v-for="option in ReqOptions" :label="option" :key="option" name="type"></el-checkbox>
         </el-checkbox-group>
-      </div>
-    </div>
+      </el-form-item>
+    </el-form>
     <div class="content-box">
       <div class="column-box">
         <listhaul :singList="allColum"></listhaul>
       </div>
       <div class="condition-box">
-        <div class="sing_hual" v-for="(item,index) in listData" :key="index" v-if="listData[index]">
+        <div class="sing_hual" v-for="(item,index) in listData" :key="index" v-show="item.show">
           <listhaul ref="child" @save="requestData" :singList="item"></listhaul>
         </div>
       </div>
@@ -46,6 +51,7 @@
     <div class="preview-box">
       <div class="preview-title">
         <div class="title">结果预览</div>
+        <el-button @click="exportExcel" type="primary" class="export-button">导出为Excel</el-button>
       </div>
       <div class="preview-content">
         <el-table
@@ -71,7 +77,17 @@
           </el-table-column>
         </el-table>
       </div>
-      <el-button @click="exportExcel" type="primary" class="export-button">导出为Excel</el-button>
+      <div class="pagination">
+        <el-pagination
+          @size-change="previewDataSizeChange"
+          @current-change="previewDataCurrentChange"
+          :current-page="previewInfo.currentPage"
+          :page-sizes="[10, 50, 100, 200]"
+          :page-size="previewInfo.rowNum"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="previewInfo.totalPage"
+        ></el-pagination>
+      </div>
     </div>
     <el-dialog title="详情" :visible.sync="dialogTableVisible" class="detail-dialog">
       <el-table :data="detailTableData">
@@ -108,59 +124,69 @@ export default {
   components: {
     listhaul
   },
-  data() {
+  data () {
     return {
       dialogTableVisible: false,
       app: this.$route.params.app,
       serveice: this.$route.params.serveice,
+      // modelName: this.ruleForm.modelName,
+      modelId: this.$route.params.modelId,
+      modelConfig: "",// 模型配置信息
+      ruleForm: {
+        modelName: "",
+      },
+      rules: {
+        model_name: [
+          { required: true, message: '请输入模型名称', trigger: 'blur' }
+        ],
+      },
       // app: "cvs",
       // serveice: "srvcvs_medical_records_select",
       allColum: {
         type: "all",
         name: "字段",
         list: [],
-        isClone: true
+        isClone: true,
+        show: true
       },
       listData: [
-        // {
-        //   type: "condition",
-        //   name: "过滤条件",
-        //   list: [],
-        //   isClone: false
-        // },
-        // {
-        //   type: "group",
-        //   name: "分组配置",
-        //   list: [],
-        //   isClone: false
-        // },
-        // {
-        //   type: "aggregation",
-        //   name: "聚合配置",
-        //   list: [],
-        //   isClone: false
-        // },
-        // {
-        //   type: "order",
-        //   name: "排序配置",
-        //   list: [],
-        //   isClone: false
-        // }
+        {
+          type: "condition",
+          name: "过滤条件",
+          list: [],
+          isClone: false,
+          show: false
+        },
+        {
+          type: "group",
+          name: "分组配置",
+          list: [],
+          isClone: false,
+          show: true
+        },
+        {
+          type: "aggregation",
+          name: "聚合配置",
+          list: [],
+          isClone: false,
+          show: true
+        },
+        {
+          type: "order",
+          name: "排序配置",
+          list: [],
+          isClone: false,
+          show: false
+        }
       ],
-      checkedReqOptions: ["条件", "分组"],
+      checkedReqOptions: ["分组", "聚合"],
       ReqOptions: ["条件", "分组", "聚合", "排序"],
-      showReqArea: {
-        condition: false,
-        group: true,
-        aggregation: true,
-        order: false
-      },
       detailTableData: [], // 详情表格数据
       detailTableTitle: [], // 详情表头数据
       columnsOption: [],
       columnsList: [],
-      tableTitle: [], //表格表头
-      tableData: [], //表格内容
+      tableTitle: [], //预览表格表头
+      tableData: [], //预览表格内容
       chartType: "",
       databaseModel: "",
       endList: [],
@@ -177,22 +203,26 @@ export default {
         order: []
       },
       allApp: [],
-      appService: [],
+      allService: [],
       appName: "",
       serviceName: "",
       requestUrl: "",
-      ListData: null,
       saveConfigData: {},
-      dialogInfo: { // dialog配置信息
+      dialogInfo: { // dialog详情分页配置信息
         currentPage: 1,
-        rowNum: 10,
-        totalPage: 10
+        rowNum: 1,
+        totalPage: 1
+      },
+      previewInfo: { // previewTable分页配置信息
+        currentPage: 1,
+        rowNum: 0,
+        totalPage: 0
       },
       detailCondition: []
     };
   },
   methods: {
-    getData() {
+    getData () {
       this.columnsList = [];
       this.allColum.list = [];
       let req = {
@@ -231,7 +261,7 @@ export default {
               };
               item["_group"] = {
                 colName: item.columns,
-                type: ""
+                type: "by"
               };
               item["_order"] = {
                 colName: item.columns,
@@ -253,7 +283,7 @@ export default {
           console.log(err);
         });
     },
-    requestData(endList, endData) {
+    requestData (endList, endData) {
       let requestData = {
         condition: [],
         group: [],
@@ -271,7 +301,7 @@ export default {
       }
       this.endList = endList;
     },
-    previewData() {
+    previewData () {
       // 根据组装的条件 发送请求 预览数据
       this.reqData = {
         group:
@@ -323,25 +353,34 @@ export default {
       reqData["serviceName"] = this.serviceName;
       reqData["colNames"] = ["*"];
       this.reqData = reqData;
-      this.getListData(reqData);
+      this.getPreviewTableData(reqData);
     },
-    saveConfig() {
+    saveConfig () { // 保存配置到服务器
       let saveData = {};
       saveData["allApp"] = this.allApp;
-      saveData["appService"] = this.appService;
+      saveData["allService"] = this.allService;
       saveData["allColum"] = this.allColum;
       saveData["endData"] = this.endData;
-      saveData["chooseServe"] = this.appName;
-      saveData["choosePort"] = this.serviceName;
+      saveData["appName"] = this.appName;
+      saveData["serviceName"] = this.serviceName;
       saveData["columnsOption"] = this.columnsOption;
       saveData["listData"] = this.listData;
+      saveData["model_name"] = this.modelName
+      saveData["checkedReqOptions"] = this.checkedReqOptions //请求多选框
       this.saveConfigData = saveData;
-      let str = JSON.stringify(this.saveConfigData);
-      localStorage.setItem("saveConfigData", str);
+      if (this.$route.params.modelId == 'add' || this.$route.params.modelId == undefined) {
+        this.addModel(saveData)
+      } else if (typeof this.$route.params.modelId == 'string') {
+        this.updateModel(saveData)
+      } else {
+        this.addModel(saveData)
+      }
+      // let str = JSON.stringify(this.saveConfigData);
+      // localStorage.setItem("saveConfigData", str);
       console.log("saveData", saveData);
     },
-    exportExcel() {
-      if (!this.ListData) {
+    exportExcel () {
+      if (!this.tableData) {
         alert("表格数据为空");
         return;
       } else {
@@ -371,7 +410,7 @@ export default {
         return wbout;
       }
     },
-    getApp() {
+    getApp () {
       //获取应用列表
       let req = {
         colNames: ["*"],
@@ -395,82 +434,40 @@ export default {
           console.error(err);
         });
     },
-    changeReqOption() {
+    changeReqOption () {
       // 选择显示那四个框中的哪个
-      // this.showReqArea = {
-      //   condition: false,
-      //   group: true,
-      //   aggregation: true,
-      //   order: false
-      // }
-
+      let self = this
       let options = this.checkedReqOptions;
-      let listData = [];
-      if (options.length == 4) {
+      console.log("TCL: changeReqOption -> options", options)
+      console.log("TCL: changeReqOption ->  listData", this.listData)
+      if (options.indexOf('条件') >= 0) {
+        self.listData[0].show = true
+      } else {
+        self.listData[0].show = false
+        // self.listData[0].list = []
+
       }
-      options.map(option => {
-        if (option == "条件") {
-          this.showReqArea.condition = true;
-          listData[0] = {
-            type: "condition",
-            name: "过滤条件",
-            list: [],
-            isClone: false
-          };
-          // listData.push({
-          //   type: "condition",
-          //   name: "过滤条件",
-          //   list: [],
-          //   isClone: false
-          // })
-        } else if (option == "分组") {
-          this.showReqArea.group = true;
-          listData[1] = {
-            type: "group",
-            name: "分组配置",
-            list: [],
-            isClone: false
-          };
-          // listData.push({
-          //   type: "group",
-          //   name: "分组配置",
-          //   list: [],
-          //   isClone: false
-          // })
-        } else if (option == "聚合") {
-          this.showReqArea.aggregation = true;
-          listData[2] = {
-            type: "aggregation",
-            name: "聚合配置",
-            list: [],
-            isClone: false
-          };
-          // listData.push({
-          //   type: "aggregation",
-          //   name: "聚合配置",
-          //   list: [],
-          //   isClone: false
-          // })
-        } else if (option == "排序") {
-          this.showReqArea.order = true;
-          listData[3] = {
-            type: "order",
-            name: "排序配置",
-            list: [],
-            isClone: false
-          };
-          // listData.push({
-          //   type: "order",
-          //   name: "排序配置",
-          //   list: [],
-          //   isClone: false
-          // })
-        }
-      });
-      this.listData = listData;
-      console.log("TCL: changeReqOption -> listData", listData);
+      if (options.indexOf('分组') >= 0) {
+        self.listData[1].show = true
+      } else {
+        self.listData[1].show = false
+        // self.listData[1].list = []
+        // this.reqData.group = []
+      }
+      if (options.indexOf('聚合') >= 0) {
+        self.listData[2].show = true
+      } else {
+        self.listData[2].show = false
+        // self.listData[2].list = []
+      }
+      if (options.indexOf('排序') >= 0) {
+        self.listData[3].show = true
+      } else {
+        self.listData[3].show = false
+        // self.listData[3].list = []
+      }
     },
-    getDetailData() {
+    getDetailData () {
       let condition = this.detailCondition
       let url = this.getServiceUrl("select", this.serviceName, this.appName);
       let req = {
@@ -479,7 +476,7 @@ export default {
         condition: condition,
         page: {
           "pageNo": this.dialogInfo.currentPage,
-          "rownumber": this.dialogInfo.rowNum
+          "rownumber": 10
         }
       };
       this.axios
@@ -496,7 +493,7 @@ export default {
           console.error(err);
         });
     },
-    toDetail(rowData) {
+    toDetail (rowData) {
       let colnumns = Object.keys(rowData);
       console.log("TCL: toDetail -> colnumns", colnumns);
       this.detailTableTitle = this.columnsOption;
@@ -527,9 +524,9 @@ export default {
         this.detailTableData = [rowData];
       }
     },
-    getServiceName(appno) {
+    getServiceName (appno) {
       //选择服务名称列表
-      this.appService = [];
+      this.allService = [];
       this.allColum.list = [];
       this.serviceName = "";
       this.columnsList = [];
@@ -581,29 +578,37 @@ export default {
           }
           // console.log("res.data.data:>>>>>", res.data.data);
           this.deleteListData();
-          this.appService = selectServiceList;
+          this.allService = selectServiceList;
           this.colNameOption = selectServiceList;
         })
         .catch(err => {
           console.log(err);
         });
     },
-    deleteListData() {
+    deleteListData () {
       for (let index = 0; index < this.listData.length; index++) {
         this.listData[index].list = [];
       }
     },
-    getListData(req) {
+    getPreviewTableData (req) {
+      // 获取预览数据
       let self = this;
       self.tableTitle = [];
+      req.page = {
+        "pageNo": this.previewInfo.currentPage,
+        "rownumber": 10
+      }
       this.axios
         .post(this.requestUrl, req)
         .then(res => {
+          let pageData = res.data.page //获取分页信息
+          this.previewInfo.currentPage = pageData.pageNo
+          this.previewInfo.rowNum = pageData.rownumber
+          this.previewInfo.totalPage = pageData.total
+          this.tableData = res.data.data;
           // this.app_no = res.data.data;
-          this.ListData = res.data.data;
           //点击后出先表格
           //表头数组
-
           let tableAllTitleData = self.reqData.group;
           if (tableAllTitleData.length === 0) {
             self.tableTitle = self.columnsOption;
@@ -633,54 +638,187 @@ export default {
           }
           //表格内容数据
 
-          self.tableData = self.ListData;
-          // console.log("ListData:>>>>>", res.data.data);
         })
         .catch(err => {
           console.log(err);
         });
     },
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-
+    getModelConfig (modelId) {
+      if (modelId) {
+        this.modelId = modelId
+        let serviceName = "srvanalyze_model_select"
+        let url = this.getServiceUrl("select", serviceName, "dataanalyze")
+        let params = {
+          "serviceName": "srvanalyze_model_select",
+          "colNames": ["*"],
+          "condition": [
+            {
+              "colName": "model_no",
+              "ruleType": "eq",
+              "value": modelId
+            }
+          ]
+        }
+        this.axios.post(url, params)
+          .then(res => {
+            console.log('res.data.data:', res.data.data)
+            let data = res.data.data
+            if (data.length > 0) {
+              data = data[0]
+              this.appName = data.belong_app
+              this.serviceName = data.service_name
+              this.modelConfig = data.model_config ? JSON.parse(data.model_config) : "暂无数据"
+              this.setModelConfig(this.modelConfig)
+            }
+            console.log('this.modelConfig-----', this.modelConfig)
+          })
+          .catch(err => {
+            console.error(err);
+          })
+      }
     },
-    handleCurrentChange(val) {
+    setModelConfig (modelConfig) {
+      if (modelConfig) {
+        this.allApp = modelConfig.allApp;
+        this.allColum = modelConfig.allColum;
+        this.allService = modelConfig.allService;
+        this.columnsOption = modelConfig.columnsOption;
+        this.checkedReqOptions = modelConfig.checkedReqOptions;
+        this.endData = modelConfig.endData;
+        this.listData = modelConfig.listData;
+        // this.modelName = modelConfig.model_name
+        this.ruleForm.modelName = modelConfig.model_name
+        this.appName = modelConfig.appName;
+        this.serviceName = modelConfig.serviceName;
+      }
+    },
+    addModel (saveData) { // 增加模型
+      let serviceName = "srvanalyze_model_add"
+      let url = this.getServiceUrl("operate", serviceName, "dataanalyze");
+      let params = [{
+        condition: [],
+        serviceName: serviceName,
+        data: [
+          {
+            "model_name": this.modelName,
+            "belong_app": this.appName,
+            "service_name": this.serviceName,
+            "model_config": JSON.stringify(saveData),
+            "where_json": saveData.endData.condition.length > 0 ? JSON.stringify(saveData.endData.condition) : "",
+            "group_json": saveData.endData.group.length > 0 ? JSON.stringify(saveData.endData.group) : "",
+            "aggregate_json": saveData.endData.aggregation.length > 0 ? JSON.stringify(saveData.endData.aggregation) : "",
+            "order_json": saveData.endData.order.length > 0 ? JSON.stringify(saveData.endData.order) : ""
+          }
+        ]
+      }]
+      this.axios.post(url, params)
+        .then(res => {
+          if (res.data.resultCode === "SUCCESS") {
+            this.$alert('添加成功', 'SUCCESS', {
+              confirmButtonText: '确定',
+              callback: action => {
+              }
+            });
+          } else if (res.data.resultCode === "FAILURE") {
+            this.$alert(`${res.data.resultMessage}`, 'SUCCESS', {
+              confirmButtonText: '确定',
+              callback: action => {
+              }
+            });
+          }
+
+          console.log("添加-保存按钮返回信息： ---->    ", res)
+
+        })
+        .catch(err => {
+          console.error("保存错误信息:", err);
+        })
+    },
+    updateModel (saveData) { // 编辑模型
+      let serviceName = "srvanalyze_model_update"
+      let url = this.getServiceUrl("operate", serviceName, "dataanalyze");
+      let params = [{
+        condition: [{ colName: "model_no", ruleType: "eq", value: this.modelId }],
+        serviceName: serviceName,
+        data: [
+          {
+            "model_name": this.modelName,
+            "belong_app": this.appName,
+            "service_name": this.serviceName,
+            "model_config": JSON.stringify(this.saveConfigData),
+            "where_json": saveData.endData.condition.length > 0 ? JSON.stringify(saveData.endData.condition) : "",
+            "group_json": saveData.endData.group.length > 0 ? JSON.stringify(saveData.endData.group) : "",
+            "aggregate_json": saveData.endData.aggregation.length > 0 ? JSON.stringify(saveData.endData.aggregation) : "",
+            "order_json": saveData.endData.order.length > 0 ? JSON.stringify(saveData.endData.order) : ""
+          }
+        ]
+      }]
+      this.axios.post(url, params)
+        .then(res => {
+          if (res.data.resultCode === "SUCCESS") {
+            this.$alert('保存成功', 'SUCCESS', {
+              confirmButtonText: '确定',
+              callback: action => {
+              }
+            });
+          } else if (res.data.resultCode === "FAILURE") {
+            this.$alert(`${res.data.resultMessage}`, "FAILURE", {
+              confirmButtonText: '确定',
+              callback: action => {
+
+              }
+            });
+          }
+          console.log("编辑-保存返回信息： ----> ", res)
+        })
+        .catch(err => {
+          console.error("保存错误信息:", err);
+        })
+    },
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange (val) {
       console.log(`当前页: ${val}`);
       this.dialogInfo.currentPage = val
       this.getDetailData()
+    },
+    previewDataSizeChange (val) {
+      console.log(`每页 ${val} 条`);
+    },
+    previewDataCurrentChange (val) {
+      console.log(`当前页: ${val}`);
+      this.previewInfo.currentPage = val
+      this.getPreviewTableData(this.reqData)
     }
   },
-  created() {
+  computed: {
+    modelName () {
+      return this.ruleForm.modelName
+    }
+  },
+  created () {
     let self = this;
     this.changeReqOption();
-    let saveConfigData = JSON.parse(localStorage.getItem("saveConfigData"));
-    if (saveConfigData) {
-      self.allApp = saveConfigData.allApp;
-      self.allColum = saveConfigData.allColum;
-      self.appService = saveConfigData.appService;
-      self.columnsOption = saveConfigData.columnsOption;
-      self.endData = saveConfigData.endData;
-      self.listData = saveConfigData.listData;
-
-      // self.listData.forEach(item => {
-      //   if (item.type === "condition") {
-      //     item.list.forEach(only => {
-      //       self.$set(only._condition, "ruleType", "等于");
-      //     });
-      //   }
-      // });
-      self.appName = saveConfigData.chooseServe;
-      self.serviceName = saveConfigData.choosePort;
-    } else {
-      if (self.app && self.serveice) {
-        this.getApp();
-        self.appName = self.app;
-        self.getServiceName(self.appName);
-        self.serviceName = self.serveice;
-        self.getData();
-      }
+    let appName = this.$route.params.app
+    let serviceName = this.$route.params.serveice
+    // if (appName && serviceName) {
+    //   this.app = appName
+    //   this.serveice = serviceName
+    //   this.getApp();
+    //   this.appName = this.app;
+    //   this.getServiceName(this.appName);
+    //   this.serviceName = this.serveice;
+    //   this.getData();
+    // }
+    let operate = this.$route.params.modelId
+    if (operate == 'add') {
+      // this.addModel()
+    } else { // 编辑
+      this.getModelConfig(operate)
     }
   }
+  // let saveConfigData = JSON.parse(localStorage.getItem("saveConfigData"));
 };
 </script>
 
@@ -689,6 +827,7 @@ export default {
   display: flex;
   flex-direction: column;
   width: 70%;
+  min-width: 1300px;
   margin: 0 auto;
   .sing_hual {
     margin-left: 0.5rem;
@@ -702,17 +841,23 @@ export default {
   }
   .select-box {
     width: 100%;
-    height: 80px;
+    // height: 80px;
     display: flex;
     align-items: center;
-    .select-item {
-      display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    .el-form-item {
+      // display: flex;
       line-height: 40px;
       font-size: 0.8rem;
       font-weight: 600;
-      margin-right: 8rem;
+      min-width: 30%;
+      .el-input {
+        max-width: 220px;
+      }
       .label {
         color: #333;
+        min-width: 65px;
       }
     }
   }
@@ -745,19 +890,6 @@ export default {
         height: 100%;
         flex: 1;
         display: flex;
-
-        &:first-child {
-          // width: 30%;
-        }
-        &:nth-child(2) {
-          // width: 30%;
-        }
-        &:nth-child(3) {
-          // width: 56%;
-        }
-        &:nth-child(4) {
-          // width: 40%;
-        }
       }
     }
   }
@@ -780,7 +912,7 @@ export default {
     }
     .preview-content {
       width: 100%;
-      min-height: 200px;
+      min-height: 250px;
       border: 1px solid #ebebeb;
       border-radius: 5px;
     }

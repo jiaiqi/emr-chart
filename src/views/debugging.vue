@@ -2,7 +2,9 @@
   <div class="home">
     <div class="home_content">
       <div class="box_one  boxs">
-        <span class="fontstyle">一 . 选择服务应用:</span>
+        <div class = "box_title">
+          <span>一 . 选择服务应用：</span>
+        </div>
         <select v-model="data_change" @change="adm">
           <option
             v-for="(item,index) in app_name"
@@ -12,11 +14,12 @@
         </select>
       </div>
       <div class="box_two boxs">
-        <span class="fontstyle">二 . 选择接口列表:</span>
+        <div class = "box_title">
+          <span>二 . 选择接口列表：</span>
+        </div>
         <el-select v-model="value8" filterable placeholder="请选择" @change="serviceChange">
           <el-option
             v-for="(item,index) in app_no"
-            
             :key="index"
             :label="item.service_view_name"
             :value="item.service_view_name"
@@ -24,68 +27,81 @@
         </el-select>
         <!-- <span class="box_two_method">方法：GET</span> -->
       </div>
+
       <div class="box_three boxs">
-        <p>三. 参数列表</p>
-        <p class="box_pone">接口参数：</p>
-        <textarea id="textTest" cols="130" rows="25" v-model="data_one"></textarea>
-        <p class="box_threep">调用接口的数据json包</p>
-
-        
-        <div class="box_three_foot1">
-          <span class="box_three_foot_span">* <i class="importid">appid:</i></span>
-          <!-- <input type="text" v-model="appId" /> -->
-          <el-select
-            v-model="appId"
-            filterable
-            placeholder="请选择"
-            @change="changeAppId"
-            style="width:400px; margin-left:50px;"
-          >
-            <el-option
-              v-for="(item,index) in appIdData"
-              :key="index"
-              :label="item.appid"
-              :value="item.appid"
-            ></el-option>
-          </el-select>
-          <p class="box_three_foot_p">填写appid</p>
-          <p class="box_three_foot_p2">校验通过</p>
+        <div class = "box_title">
+          <span  >三 .  <i class="importid">appid：</i></span>
         </div>
-
-
-        <div class="box_three_foot2">
-          <span class="box_three_foot_span  foot_span ">* <i class="importid">secret:</i></span>
-          <el-input
-            type="text"
-            v-model="appSecret"
-            class="secret"
-            style="width:400px; margin-left:148px;"
-          />
-          <p class="box_three_foot_p">填写appsecret</p>
-          <p class="box_three_foot_p2">校验通过</p>
-        </div>
-
-
-
-
-        <button @click="debuggs" class="debugger">在线调试</button>
+        <!-- <input type="text" v-model="appId" /> -->
+        <el-select
+          v-model="appId"
+          filterable
+          placeholder="请选择"
+          @change="changeAppId"
+          style="width:400px; margin-left:50px;">
+          <el-option
+            v-for="(item,index) in appIdData"
+            :key="index"
+            :label="item.appid"
+            :value="item.appid"
+          ></el-option>
+        </el-select>
+        <!-- <p class="box_three_foot_p">填写appid</p>
+        <p class="box_three_foot_p2">校验通过</p> -->
       </div>
-      <div class="box_four boxs" v-if="show">
-        <div class="box_four_a">
-          <span>{{this.data_change}}</span>
-          <span>:</span>
-          <span>{{this.value8}}</span>
+
+
+      <div class="box_four boxs">
+        <div class = "box_title">
+          <span><i class="importid">secret：</i></span>
         </div>
+        <el-input
+          type="text"
+          v-model="appSecret"
+          class="secret"
+        />
+        <!-- <p class="box_three_foot_p">填写appsecret</p>
+        <p class="box_three_foot_p2">校验通过</p> -->
+      </div>
+
+      <div class="box_five boxs">
+        <div class = "box_title">
+          <p class = "box_param">四 . 参数列表</p>
+        </div>
+        <div class = "cont">
+          <div class = "cont_title">
+            <p class="box_pone">接口参数：</p>
+          </div>
+          <div class = "cont_text">
+            <textarea id="textTest" cols="130" rows="25" v-model="data_one" @change="paramChange"></textarea>
+            <p class="box_threep">调用接口的数据json串</p>
+          </div>
+        </div>
+      </div>
+      <div class = "but boxs">
+          <el-button type="primary" @click="debuggs">在线调试</el-button>
+        <!-- <button  class="debugger">在线调试</button> -->
+      </div>
+      <div class="box_six boxs" v-if="show">
+        <!-- <div class="box_four_a">
+          <div class="c_title">
+            <span>{{this.data_change}}</span>
+            <span>：</span>
+            <span>{{this.value8}}</span>
+          </div>
+        </div> -->
         <div class="box_four_b">
-          <span>请求地址：</span>
-          <span>{{requestUrl}}</span>
+          <div class="req_addr">
+            <span>请求地址：</span>
+            <span>{{requestUrl}}</span>
+          </div>
         </div>
         <div class="box_four_c">
           <p>返回结果：</p>
-          <textarea cols="100" rows="25" v-model="data_return"></textarea>
+          <textarea id="texertwo" class="cont" cols="130" rows="25" v-model="data_return"></textarea>
         </div>
         <div class="box_four_d">
-          <span>提示 :</span>
+          <span class="d_title">提示：</span>
           <span class="box_four_d_color">{{data_state}}</span>
         </div>
       </div>
@@ -95,6 +111,7 @@
 
 <script>
 import axios from "axios";
+let $ = require('jquery');
 export default {
   data() {
     return {
@@ -114,13 +131,15 @@ export default {
       data_return: [],
       data_state: "",
       requestUrl: "",
-      appIdData: []
+      appIdData: [],
+      reqData:[]
     };
   },
   methods: {
-    acquire(val){
-      this.data_one=val
-    },
+    
+    // acquire(val){
+    //   this.data_one=val
+    // },
     getData_one() {
       //选择服务应用
       let req = {
@@ -130,17 +149,14 @@ export default {
         page: {},
         serviceName: "srvconfig_app_list_select"
       };
-      let that=this
-      let url = that.getServiceUrl("select", req.serviceName, "config");
-      axios
-        .post(url, req)
-        .then(res => {
-          that.app_name = res.data.data;
-          console.log(that.app_name);
-          that.data_change = that.app_name[4].app_name;
-          that.api = that.app_name[4].app_no;
-        })
-        .catch(err => {
+      let salf = this;
+      let url = this.getServiceUrl("select", req.serviceName, "config");
+      axios.post(url, req).then(res => {
+          salf.app_name = res.data.data;
+          console.log(salf.app_name);
+          salf.data_change = salf.app_name[4].app_name;
+          salf.api = salf.app_name[4].app_no;
+        }).catch(err => {
           console.error(err);
         });
     },
@@ -155,7 +171,11 @@ export default {
           this.appSecret = appIdData[i].secret_key;
         }
       }
+      this.getData_three()
     },
+    /**
+     * 选择应用后，触发查询接口
+     */
     getData_sec() {
       //选择接口列表
       let req2 = {
@@ -178,70 +198,149 @@ export default {
             "colName": "permission_type",
             "value": "内部访问",
             "ruleType": "ne"
+          },
+          {
+            "colName": "main_table",
+            "value": "",
+            "ruleType":"notnull"
           }
         ],
         "order": []
       }
       let url = this.getServiceUrl("select", req2.serviceName, this.api);
-      axios
-        .post(url, req2)
-        .then(res => {
+      axios.post(url, req2).then(res => {
           this.app_no = res.data.data;
           this.value8 = res.data.data[0].service_view_name;
           // console.log(res.data.data)
-        })
-        .catch(err => {
+        }).catch(err => {
           // console.log(err)
         });
     },
+    paramChange(){
+      this.reqData = JSON.parse(this.data_one);
+    },
     getData_three() {
-      try {
-        let req3 = this.data_one;
+      // try {
+        // let req3 = this.data_one;
+        let req3 =[
+          {
+            "colName": "id",
+            "value": "1",
+            "ruleType": "eq"
+          }
+        ]
         let appNo = this.api;
         let service = this.serviceName;
-        let type = this.serviceType;
-        let str = `{"serviceName": "${service}", ${req3} }`;
 
-        str = JSON.parse(str.replace(/\s+/g, ""));
-        this.data[0] = str;
-        console.log('+++++++++', this.data)
-        let data1 = [];
-        let data2 = [];
-        let map = {
-          serviceName: "srvonline_interface_deubg",
-          data: data2
-        };
-        let map1 = {
-          req_app: appNo,
-          operate_type: type,
-          app_Id: this.appId,
-          app_secret: this.appSecret,
-          param: str
-        };
-        data1.push(map);
-        console.error(data1)
-        data2.push(map1);
-        // console.log('+++++++++', data1)
-        let url = this.getServiceUrl("operate", map.serviceName, "apprc");
-        axios
-          .post(url, data1)
-          .then(res => {
-            console.group(res)
-            this.data_return         = JSON.stringify(res.data.response);
-            this.data_state = res.data.state;
+        let salf = this;
+        
+        let tableReq = {
+          "serviceName": "srvsys_service_select",
+          "colNames": [
+            "*"
+          ],
+          "condition": [
+            {
+              "colName": "service_name",
+              "value": service,
+              "ruleType": "eq"
+            }
+          ]
+        }
+        let tableName = "";
+        let url1 = salf.getServiceUrl("select", "srvsys_service_select", appNo);
+        axios.post(url1, tableReq).then(res => {
+          let service_data = res.data.data;
+          let imple_type = service_data[0].imple_type;
+          tableName = service_data[0].main_table;
+          let tableStr = tableName.substring(2);
+          let serviceName = "srv" + tableStr + "_select";
 
-            // var jdata = JSON.stringify(JSON.parse(jsondata), null, 4);
 
-            // $(".showMessage").html("<pre>"+jdata+"</pre>" );
 
-          })
-          .catch(err => {
-            console.error(err);
+          let issueReq = {
+            "serviceName": serviceName,
+            "colNames": [
+              "*"
+            ]
+          }
+          let url2 = salf.getServiceUrl("select", serviceName, appNo);
+          axios.post(url2, issueReq).then(res => {
+            let issue = [];
+            issue.push(res.data.data[0]);
+
+            let type = this.serviceType;
+            req3 = JSON.stringify(req3);
+            let data1 = [];
+            let data2 = [];
+            let map = {
+              serviceName: "srvonline_interface_deubg",
+              data: data2
+            };
+            let map1 = null;
+            if(type === 'select'){
+              map1 = {
+                req_app: appNo,
+                operate_type: type,
+                app_Id: this.appId,
+                app_secret: this.appSecret,
+                param: {
+                  "serviceName": service,
+                  "condition": [
+                    {
+                      "colName": "id",
+                      "value": "1",
+                      "ruleType": "eq"
+                    }
+                  ]
+                }
+              };
+            }
+            if(type === 'delete'){
+              map1 = {
+                req_app: appNo,
+                operate_type: type,
+                app_Id: salf.appId,
+                app_secret: salf.appSecret,
+                param: {
+                  "serviceName": service,
+                  "condition": [
+                    {
+                      "colName": "id",
+                      "value": "1",
+                      "ruleType": "eq"
+                    }
+                  ]
+                }
+                
+              };
+            }
+            if(type === 'update' || type === 'add' || type === 'apply'){
+              map1 = {
+                req_app: appNo,
+                operate_type: type,
+                app_Id: salf.appId,
+                app_secret: salf.appSecret,
+                param: {
+                  "serviceName": service,
+                  "data": issue
+                }
+              };
+            }
+            data1.push(map);
+            data2.push(map1);
+            // salf.reqData = data1;
+            console.error(data1)
+            // let salf = this;
+            salf.data_one = salf.formatJson(data1);
+            
+            // console.log(aaa);
           });
-      } catch (error) {
-        alert(error + "请求参数未填写或填写格式有误")
-      }
+        });
     },
+    /**
+    * 应用选择事件
+    */
     adm() {
       // console.log(this.data_change)
       this.app_name.forEach(item => {
@@ -272,26 +371,117 @@ export default {
       };
 
       let url = this.getServiceUrl("select", req.serviceName, "apprc");
-      this.axios
-        .post(url, req)
-        .then(res => {
+      this.axios.post(url, req).then(res => {
           console.log("appidData:", res.data.data);
           this.appIdData = res.data.data;
-        })
-        .catch(err => {
+        }).catch(err => {
           console.error();
         });
     },
+    /**
+     * 接口选择事件
+     */
     serviceChange() {
       this.app_no.forEach(item => {
         if (this.value8 === item.service_view_name) {
           this.serviceName = item.service_name;
           this.serviceType = item.service_type;
+          this.getData_three();
         }
       });
     },
+    /**
+     * 按钮点击事件
+     */
     debuggs() {
-      this.getData_three();
+      let salf = this;
+      let cond = salf.reqData;
+      let url = this.getServiceUrl("operate", "srvonline_interface_deubg", "apprc");
+      axios.post(url, cond).then(res => {
+        let response = res.data.response;
+        this.data_return = salf.formatJson(res.data.response);
+          this.data_state = res.data.state;
+        }).catch(err => {
+          console.error(err);
+        });
+    },
+    formatJson(json, options) {
+      
+        var reg = null,
+        formatted = '',
+        pad = 0,
+        PADDING = '    '; // one can also use '\t' or a different number of spaces
+        // optional settings
+        options = options || {};
+        // remove newline where '{' or '[' follows ':'
+        options.newlineAfterColonIfBeforeBraceOrBracket = (options.newlineAfterColonIfBeforeBraceOrBracket === true) ? true : false;
+        // use a space after a colon
+        options.spaceAfterColon = (options.spaceAfterColon === false) ? false : true;
+
+        // begin formatting...
+
+        // make sure we start with the JSON as a string
+        if (typeof json !== 'string') {
+            json = JSON.stringify(json);
+        }
+        // parse and stringify in order to remove extra whitespace
+        json = JSON.parse(json);
+        json = JSON.stringify(json);
+
+        // add newline before and after curly braces
+        reg = /([\{\}])/g;
+        json = json.replace(reg, '\r\n$1\r\n');
+
+        // add newline before and after square brackets
+        reg = /([\[\]])/g;
+        json = json.replace(reg, '\r\n$1\r\n');
+
+        // add newline after comma
+        reg = /(\,)/g;
+        json = json.replace(reg, '$1\r\n');
+
+        // remove multiple newlines
+        reg = /(\r\n\r\n)/g;
+        json = json.replace(reg, '\r\n');
+
+        // remove newlines before commas
+        reg = /\r\n\,/g;
+        json = json.replace(reg, ',');
+
+        // optional formatting...
+        if (!options.newlineAfterColonIfBeforeBraceOrBracket) {
+            reg = /\:\r\n\{/g;
+            json = json.replace(reg, ':{');
+            reg = /\:\r\n\[/g;
+            json = json.replace(reg, ':[');
+        }
+        if (options.spaceAfterColon) {
+            reg = /\:/g;
+            json = json.replace(reg, ': ');
+        }
+
+        $.each(json.split('\r\n'), function(index, node) {
+            var i = 0,
+                indent = 0,
+                padding = '';
+
+            if (node.match(/\{$/) || node.match(/\[$/)) {
+                indent = 1;
+            } else if (node.match(/\}/) || node.match(/\]/)) {
+                if (pad !== 0) {
+                    pad -= 1;
+                }
+            } else {
+                indent = 0;
+            }
+
+            for (i = 0; i < pad; i++) {
+                padding += PADDING;
+            }
+            formatted += padding + node + '\r\n';
+            pad += indent;
+        });
+        return formatted;
     }
   },
   
@@ -322,7 +512,7 @@ export default {
   margin: 0;
   list-style: none;
   box-sizing: border-box;
-  // color: black !important;
+  /* color: black !important; */
 }
 .home {
   width: 100%;
@@ -333,92 +523,132 @@ export default {
   margin: 0 auto;
   color: #000;
 }
-.box_one {
-  padding-top: 20px;
-}
-.box_one,
-.box_two {
+.boxs {
   width: 100%;
-  height: 100px;
+  margin: 1rem;
 }
-
-.box_two_method {
-  margin-left: 20px;
-  opacity: 0.5;
+.box_one{
+  display: flex;
 }
-.box_three > textarea {
-  margin-left: 151px;
+.box_one .box_title{
+  width: 12rem;
 }
-.box_three {
-  .debugger {
-    width: 100px;
-    line-height: 40px;
-    margin-top: 20px;
-    margin-left: 149px;
-    color: #fff;
-    background-color: #198edc;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    &:active {
-      transform: translate(3px, 3px);
-    }
-  }
+.box_one span{
+  display: inline-block;
+  font-size: 1.3rem;
 }
-.box_pone {
-  margin-top: 10px;
+.box_two{
+  display: flex;
 }
-.box_threep {
-  margin-left: 151px;
-  opacity: 0.5;
+.box_two .box_title{
+  width: 12rem;
 }
-.box_three_foot_span {
-  color: red;
-  .secret {
-    width: 35%;
-  }
+.box_two .box_title span{
+  font-size: 1.3rem;
 }
-.box_three_foot2 > input {
-  margin-left: 108px;
+.box_three{
+  display: flex;
 }
-.box_three_foot1 > input {
-  margin-left: 111px;
+.box_three .box_title{
+  width: 12rem;
+  /* padding-left: 2rem; */
 }
-.box_three_foot1 > p,
-.box_three_foot2 > p {
-  margin-left: 151px;
+.box_three .box_title span {
+  font-size: 1.3rem;
 }
-.box_three_foot_p {
-  opacity: 0.5;
-  margin-top: 5px;
+.box_four{
+  display: flex;
 }
-.box_three_foot_p2 {
-  color: darkgreen;
-  display: none;
+.box_four .box_title{
+  width: 12rem;
+  padding-left: 2rem;
 }
-.box_three_foot1 {
-  max-width: 600px;
-  margin-top: 20px;
+.box_four .box_title span {
+  font-size: 1.3rem;
 }
-.box_three > input {
-  margin-left: 173px;
-  margin-top: 30px;
-  background-color: lightgreen;
-  width: 120px;
-  height: 40px;
-  font-size: 20px;
-}
-.box_three_foot2 {
-  max-width: 600px;
-  margin-top: 30px;
+.box_four .secret{
+  width: 400px;
+  margin-left: 50px;
 }
 .el-select {
   width: 400px;
   margin-left: 50px;
 }
-el-select > el-option {
-  height: 20px;
+.box_five{
+
 }
+.box_five .box_title{
+  width: 12rem;
+}
+.box_five .box_title .box_param{
+  font-size: 1.3rem;
+}
+.box_five .cont{
+  display: flex;
+}
+.box_five .cont .cont_title{
+  width: 12rem;
+}
+.box_five .cont .cont_title .box_pone{
+  font-size: 1.2rem;
+  margin: 1.5rem 2rem;
+}
+.box_five .cont .cont_text{
+  margin-top: 2rem;
+  margin-left: 50px;
+}
+.but{
+  width: 100%;
+  height: 3rem;
+  border-bottom: solid 0.5px #eee;
+  /* text-align: center; */
+}
+.but button{
+  width: 10rem;
+  font-size: 1.3rem;
+  height: 2.5rem;
+  margin-left: 16rem;
+}
+.box_six .box_four_a{
+  height: 3rem;
+  width: 100%;
+  border-bottom: solid 0.5px #eee;
+  font-size: 1.3rem;
+}
+.box_six .box_four_a .c_title {
+  margin-left: 2rem;
+}
+.box_six .box_four_b{
+  height: 3rem;
+  width: 100%;
+  border-bottom: solid 0.5px #eee;
+  font-size: 1.3rem;
+}
+.box_six .box_four_b .req_addr {
+  margin-left: 2rem;
+}
+.box_six .box_four_c{
+  display: flex;
+  padding: 1rem 0;
+  border-bottom: solid 0.5px #eee;
+}
+.box_six .box_four_c p{
+  font-size: 1.2rem;
+  margin-left: 2rem;
+  width: 12rem;
+}
+.box_six .box_four_c .cont{
+  margin-left: 1.3rem;
+}
+.box_six .box_four_d .d_title{
+  font-size: 1.3rem;
+  margin-left: 2rem;
+}
+.box_six .box_four_d .box_four_d_color{
+  font-size: 1.3rem;
+  color: red;
+}
+
 /* 在线调试按钮以下 */
 .box_one > select {
   width: 200px;
@@ -431,63 +661,25 @@ input {
   height: 40px;
   width: 200px;
 }
-.box_four {
-  width: 100%;
-  margin-top: 50px;
+@media screen and (max-width:1185px){
+ #textTest{
+   width: 70vw;
+ }
+.box_six .box_four_c .cont{
+    width: 70vw !important; 
+     margin-left: 2rem;
+ }
 }
-.box_four > .box_four_a {
-  width: 100%;
-  height: 50px;
-  line-height: 50px;
-  font-weight: bolder;
-  border-bottom: 1px solid #ccc;
-  border-top: 1px solid #ccc;
+
+@media screen and (min-width:1185px){
+ .but button{
+  margin-left: 15rem;
 }
-.box_four > .box_four_b {
-  width: 100%;
-  height: 50px;
-  line-height: 50px;
-  border-bottom: 1px solid #ccc;
 }
-.box_four_c > textarea {
-  margin-left: 146px;
-  margin-top: -16px;
+
+@media screen and (min-width:1185px) and (max-width:1191px) {
+   .but button{
+  margin-left: 16rem !important;
 }
-.box_four_c {
-  border-bottom: 1px solid #ccc;
-}
-.box_four_d_color {
-  color: red;
-}
-.box_four_d {
-  width: 100%;
-  height: 50px;
-  line-height: 50px;
-  border-bottom: 1px solid #ccc;
-  margin-bottom: 10px;
-}
-.el-select:nth-last-child(){
-  margin-left: 50px!important
-}
-.boxs span:nth-child(1){
-      display: inline-block;
-      min-width: 100px;
-      max-width: 150px;
-}
-.importid{
-  color: #000 !important;
-  font-style:normal;
-}
-.foot_span{
-  position: relative;
-  top:25px;
-}
-@media screen  and (min-width:1366px){
-    .fontstyle{
-      font-size:12px;
-    }
-}
-li{
-  padding-left: 10px!important;
 }
 </style>
