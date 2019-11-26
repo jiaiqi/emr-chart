@@ -1,15 +1,42 @@
 <template>
   <div class="hual">
-    <el-form ref="ruleForm" label-width="100px" class="select-box" :model="ruleForm">
+    <el-form ref="ruleForm" label-width="120px" class="select-box" :model="ruleForm">
       <el-form-item
-        label="模型名称："
-        prop="modelName"
-        :rules="[{ required: true, message: '请输入模型名称', trigger: 'blur' }]"
+        label="仪表盘名称："
+        prop="service_name"
+        :rules="[{ required: true, message: '请选择仪表盘', trigger: 'blur' }]"
       >
-        <el-input v-model="ruleForm.modelName"></el-input>
+        <el-select v-model="ruleForm.dashBoardId" disabled placeholder="请选择仪表盘" filterable>
+          <el-option
+            v-for="item in dashBoardIdOption"
+            :key="item.value"
+            :label="item.dashboard_name"
+            :value="item.dashboard_no"
+          >
+            <span
+              style="float: left;font-size: 13px"
+            >{{ item.dashboard_name+'/'+item.dashboard_no }}</span>
+          </el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="应用名称：" prop="app_name">
-        <el-select v-model="appName" placeholder="请选择应用名称" @change="getServiceName(appName)">
+      <el-form-item
+        label="图表名称："
+        prop="chartName"
+        :rules="[{ required: true, message: '请输入图表名称', trigger: 'blur' }]"
+      >
+        <el-input v-model="ruleForm.chartName"></el-input>
+      </el-form-item>
+      <el-form-item
+        label="应用名称："
+        prop="app_name"
+        :rules="[{ required: true, message: '请输入图表名称', trigger: 'blur' }]"
+      >
+        <el-select
+          v-model="ruleForm.appName"
+          placeholder="请选择应用名称"
+          @change="getServiceName()"
+          filterable
+        >
           <el-option
             v-for="item in allApp"
             :key="item.value"
@@ -18,8 +45,12 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="服务名称：" prop="service_name">
-        <el-select v-model="serviceName" placeholder="请选择服务名称" @change="getData">
+      <el-form-item
+        label="服务名称："
+        prop="service_name"
+        :rules="[{ required: true, message: '请选择服务名称', trigger: 'blur' }]"
+      >
+        <el-select v-model="ruleForm.serviceName" placeholder="请选择服务名称" @change="getColumns()">
           <el-option
             v-for="item in allService"
             :key="item.value"
@@ -50,7 +81,7 @@
     </div>
     <div class="preview-box">
       <div class="preview-title">
-        <div class="title">结果预览</div>
+        <div class="title">数据预览</div>
         <el-button @click="exportExcel" type="primary" class="export-button">导出为Excel</el-button>
       </div>
       <div class="preview-content">
@@ -59,6 +90,7 @@
           style="width: 100%"
           stripe
           fixed
+          border
           v-if="tableData&&tableTitle"
           id="out-table"
         >
@@ -69,7 +101,7 @@
               :label="only.aliasName?only.aliasName:only.label"
             ></el-table-column>
           </template>
-          <el-table-column
+          <!-- <el-table-column
             v-if="tableTitle.length != 0&&tableExportStatus==false"
             fixed="right"
             label="操作"
@@ -78,7 +110,7 @@
             <template slot-scope="scope">
               <el-button @click="toDetail(scope.row)" type="text" size="small">详情</el-button>
             </template>
-          </el-table-column>
+          </el-table-column>-->
         </el-table>
       </div>
       <div class="pagination">
@@ -94,7 +126,8 @@
         ></el-pagination>
       </div>
     </div>
-    <el-dialog title="详情" :visible.sync="dialogTableVisible" class="detail-dialog">
+
+    <!-- <el-dialog title="详情" :visible.sync="dialogTableVisible" class="detail-dialog">
       <el-table :data="detailTableData">
         <template v-for="(only,i) in detailTableTitle">
           <el-table-column
@@ -115,12 +148,12 @@
           :total="dialogInfo.totalPage"
         ></el-pagination>
       </div>
-    </el-dialog>
+    </el-dialog>-->
   </div>
 </template>
 
 <script>
-import listhaul from "../components/listhaul";
+import listhaul from "@/components/dataChart/dragList";
 import moment from "moment";
 import FileSaver from "file-saver";
 import XLSX from "xlsx";
@@ -134,19 +167,22 @@ export default {
       dialogTableVisible: false,
       app: this.$route.params.app,
       serveice: this.$route.params.serveice,
-      // modelName: this.ruleForm.modelName,
       modelId: this.$route.params.modelId,
       modelConfig: "",// 模型配置信息
+      chartNumber: this.$route.params.chartNumber,
+      dashBoardIdOption: [
+
+      ],
+      chart_id: '', //图表id
+      requestBody: {},
+      dashBoardName: "",
+      // chartName: "",
       ruleForm: {
-        modelName: "",
+        chartName: "",
+        dashBoardId: "",
+        appName: "",
+        serviceName: "",
       },
-      rules: {
-        model_name: [
-          { required: true, message: '请输入模型名称', trigger: 'blur' }
-        ],
-      },
-      // app: "cvs",
-      // serveice: "srvcvs_medical_records_select",
       allColum: {
         type: "all",
         name: "字段",
@@ -184,7 +220,7 @@ export default {
           show: false
         }
       ],
-      checkedReqOptions: ["分组", "聚合"],
+      checkedReqOptions: ["条件", "分组", "聚合", "排序"],
       ReqOptions: ["条件", "分组", "聚合", "排序"],
       detailTableData: [], // 详情表格数据
       detailTableTitle: [], // 详情表头数据
@@ -210,8 +246,8 @@ export default {
       },
       allApp: [],
       allService: [],
-      appName: "",
-      serviceName: "",
+      // appName: "emr",
+      // serviceName: "srvemr_region_stat_select",
       requestUrl: "",
       saveConfigData: {},
       dialogInfo: { // dialog详情分页配置信息
@@ -228,7 +264,29 @@ export default {
     };
   },
   methods: {
-    getData () {
+    getDashBoardId () {
+      let serviceName = 'srvanalyze_dashboard_select'
+      let url = this.getServiceUrl('select', serviceName, 'dataanalyze')
+      let req = {
+        "serviceName": serviceName,
+        "queryMethod": "select",
+        "distinct": false,
+        "colNames": ["*"],
+        "condition": [],
+        // "page": { "pageNo": 1, "rownumber": 20 }
+      }
+      this.axios.post(url, req)
+        .then(res => {
+          if (res.data.data && res.data.data.length > 0) {
+            this.dashBoardIdOption = res.data.data
+          }
+        })
+        .catch(err => {
+          console.error(err);
+        })
+
+    },
+    getColumns () {
       this.columnsList = [];
       this.allColum.list = [];
       let req = {
@@ -238,7 +296,7 @@ export default {
           {
             colName: "service_name",
             ruleType: "eq",
-            value: this.serviceName
+            value: this.ruleForm.serviceName
           }
         ],
         order: [
@@ -251,7 +309,7 @@ export default {
       let url = this.getServiceUrl(
         "select",
         "srvsys_service_columns_select",
-        this.appName
+        this.ruleForm.appName
       );
       this.axios
         .post(url, req)
@@ -283,7 +341,70 @@ export default {
           });
           this.deleteListData();
           this.allColum.list = this.columnsOption;
-          this.detailTableTitle = this.columnsOption;
+
+          let _condition = []
+          let _group = []
+          let _aggregation = []
+          let _order = []
+
+          let endData = {
+            condition: [],
+            group: [],
+            aggregation: [],
+            order: []
+          }
+          this.requestBody.condition.map(cond => {
+            this.allColum.list.map(column => {
+              if (column.columns == cond.colName) {
+                column._condition = cond
+                _condition.push(cond)
+                endData.condition.push(column)
+              }
+            })
+          })
+          let group = this.requestBody.group
+          if (group) {
+            group.map(groupItem => {
+              this.allColum.list.map(column => {
+                if (column.columns == groupItem.colName) {
+                  if (groupItem.type == 'sum' || groupItem.type == 'min' || groupItem.type == 'max' || groupItem.type == 'avg' || groupItem.type == 'count' || groupItem.type == 'count_all' || groupItem.type == 'distinct_count') {
+                    column._aggregation = groupItem
+                    _aggregation.push(groupItem)
+                    endData.aggregation.push(column)
+                  }
+                  if (groupItem.type == 'by' || groupItem.type == 'by_year' || groupItem.type == 'by_month' || groupItem.type == 'by_week' || groupItem.type == 'by_date' || groupItem.type == 'by_hour' || groupItem.type == 'by_minute' || groupItem.type == 'by_second' || groupItem.type == 'by_month_of_year' || groupItem.type == 'by_week_of_year' || groupItem.type == 'by_date_of_year' || groupItem.type == 'by_hour_of_date' || groupItem.type == 'by_minute_of_date') {
+                    column._group = groupItem
+                    _group.push(groupItem)
+                    endData.group.push(column)
+                  }
+                }
+              })
+            })
+          }
+          let order = this.requestBody.order
+          if (order) {
+            order.map(orderItem => {
+              this.allColum.list.map(column => {
+                console.log("order", orderItem, column)
+                if (column.columns == orderItem.colName) {
+                  column._order = orderItem
+                  _order.push(orderItem)
+                  endData.order.push(column)
+                }
+              })
+            })
+          }
+
+          this.listData[0].list = endData.condition
+          this.listData[1].list = endData.group
+          this.listData[2].list = endData.aggregation
+          this.listData[3].list = endData.order
+          this.endData.condition = _condition
+          this.endData.group = _group
+          this.endData.aggregation = _aggregation
+          this.endData.order = _order
+
+          // this.detailTableTitle = this.columnsOption;
         })
         .catch(err => {
           console.log(err);
@@ -317,6 +438,7 @@ export default {
         order: this.endData.order
       };
       let reqData = {};
+      // reqData = this.requestBody
       if (this.reqData.condition) {
         reqData.condition = this.reqData.condition
           .map(item => {
@@ -342,8 +464,8 @@ export default {
       }
       this.requestUrl = this.getServiceUrl(
         "select",
-        this.serviceName,
-        this.appName
+        this.ruleForm.serviceName,
+        this.ruleForm.appName
       );
       console.log("this.allColum.list", this.allColum.list);
       if (this.allColum.list.length === 0) {
@@ -351,34 +473,24 @@ export default {
       } else {
         reqData["colNames"] = this.columnsList;
       }
-      reqData["serviceName"] = this.serviceName;
+      reqData["serviceName"] = this.ruleForm.serviceName;
       reqData["colNames"] = ["*"];
       this.reqData = reqData;
+      this.requestBody = reqData
       this.getPreviewTableData(reqData);
     },
     saveConfig () { // 保存配置到服务器
       let saveData = {};
-      saveData["allApp"] = this.allApp;
-      saveData["allService"] = this.allService;
-      saveData["allColum"] = this.allColum;
-      saveData["endData"] = this.endData;
-      saveData["appName"] = this.appName;
-      saveData["serviceName"] = this.serviceName;
-      saveData["columnsOption"] = this.columnsOption;
-      saveData["listData"] = this.listData;
-      saveData["model_name"] = this.modelName
-      saveData["checkedReqOptions"] = this.checkedReqOptions //请求多选框
-      this.saveConfigData = saveData;
-      if (this.$route.params.modelId == 'add' || this.$route.params.modelId == undefined) {
-        this.addModel(saveData)
-      } else if (typeof this.$route.params.modelId == 'string') {
-        this.updateModel(saveData)
-      } else {
-        this.addModel(saveData)
-      }
-      // let str = JSON.stringify(this.saveConfigData);
-      // localStorage.setItem("saveConfigData", str);
-      console.log("saveData", saveData);
+      saveData['dashboard_no'] = this.dashBoardId
+      saveData['dashboard_name'] = this.dashBoardName
+      saveData['chart_name'] = this.chartName
+      saveData['chart_type'] = this.chartType
+      saveData['chart_request_url'] = '/' + this.appName + '/select/' + this.serviceName
+      saveData['chart_request_payload'] = JSON.stringify(this.requestBody)
+      console.log("TCL: saveConfig -> saveData", saveData)
+      // if (this.$route.chartNumber && this.$route.chartNumber.indexOf('CR')) {
+      this.updateModel(saveData)
+      // }
     },
     exportExcel () {
       this.tableExportStatus = true
@@ -396,7 +508,7 @@ export default {
         return;
       } else {
         let time = moment().format("YYYYMMDDHHmmss");
-        let fileName = this.serviceName + time + ".xlsx";
+        let fileName = this.ruleForm.serviceName + time + ".xlsx";
         // 将预览表格中的数据导出为excel
         let wb = XLSX.utils.table_to_book(document.querySelector("#out-table"));
         /* 获取二进制字符串作为输出 */
@@ -451,42 +563,34 @@ export default {
       // 选择显示那四个框中的哪个
       let self = this
       let options = this.checkedReqOptions;
-      console.log("TCL: changeReqOption -> options", options)
-      console.log("TCL: changeReqOption ->  listData", this.listData)
       if (options) {
         if (options.indexOf('条件') >= 0) {
           self.listData[0].show = true
         } else {
           self.listData[0].show = false
-          // self.listData[0].list = []
-
         }
         if (options.indexOf('分组') >= 0) {
           self.listData[1].show = true
         } else {
           self.listData[1].show = false
-          // self.listData[1].list = []
-          // this.reqData.group = []
         }
         if (options.indexOf('聚合') >= 0) {
           self.listData[2].show = true
         } else {
           self.listData[2].show = false
-          // self.listData[2].list = []
         }
         if (options.indexOf('排序') >= 0) {
           self.listData[3].show = true
         } else {
           self.listData[3].show = false
-          // self.listData[3].list = []
         }
       }
     },
     getDetailData () {
       let condition = this.detailCondition
-      let url = this.getServiceUrl("select", this.serviceName, this.appName);
+      let url = this.getServiceUrl("select", this.ruleForm.serviceName, this.ruleForm.appName);
       let req = {
-        serviceName: this.serviceName,
+        serviceName: this.ruleForm.serviceName,
         colNames: ["*"],
         condition: condition,
         page: {
@@ -543,7 +647,7 @@ export default {
       //选择服务名称列表
       this.allService = [];
       this.allColum.list = [];
-      this.serviceName = "";
+      this.ruleForm.serviceName = "";
       this.columnsList = [];
       //清楚endData中得数据
       this.endData.condition = [];
@@ -578,7 +682,7 @@ export default {
           }
         ]
       };
-      let url = this.getServiceUrl("select", req.serviceName, this.appName);
+      let url = this.getServiceUrl("select", req.serviceName, this.ruleForm.appName);
       this.axios
         .post(url, req)
         .then(res => {
@@ -591,7 +695,7 @@ export default {
               }
             });
           }
-          // console.log("res.data.data:>>>>>", res.data.data);
+          this.getColumns()
           this.deleteListData();
           this.allService = selectServiceList;
           this.colNameOption = selectServiceList;
@@ -621,17 +725,16 @@ export default {
           this.previewInfo.rowNum = pageData.rownumber
           this.previewInfo.totalPage = pageData.total
           this.tableData = res.data.data;
-          // this.app_no = res.data.data;
           //点击后出先表格
           //表头数组
           let tableAllTitleData = self.reqData.group;
           if (tableAllTitleData.length === 0) {
             self.tableTitle = self.columnsOption;
-            // console.log("self.tableTitle----------", self.tableTitle);
           } else {
             tableAllTitleData.forEach(item => {
               if (item.type) {
                 self.columnsOption.forEach(col => {
+                  // debugger
                   if (item.colName === col.columns) {
                     self.tableTitle.push(col);
                   }
@@ -652,60 +755,65 @@ export default {
             self.tableTitle = newArr;
           }
           //表格内容数据
-
         })
         .catch(err => {
           console.log(err);
         });
     },
-    getModelConfig (modelId) {
-      if (modelId) {
-        this.modelId = modelId
-        let serviceName = "srvanalyze_model_select"
+    getChartConfig () {
+      this.chartNumber = this.$route.params.chartNumber
+      if (this.chartNumber) {
+        let serviceName = "srvanalyze_chart_select"
         let url = this.getServiceUrl("select", serviceName, "dataanalyze")
         let params = {
-          "serviceName": "srvanalyze_model_select",
+          "serviceName": "srvanalyze_chart_select",
           "colNames": ["*"],
           "condition": [
             {
-              "colName": "model_no",
+              "colName": "chart_no",
               "ruleType": "eq",
-              "value": modelId
+              "value": this.chartNumber
             }
           ]
         }
         this.axios.post(url, params)
           .then(res => {
-            console.log('res.data.data:', res.data.data)
+            console.log('getChartConfig:', res.data.data)
             let data = res.data.data
-            if (data && data.length > 0) {
+            if (data.length > 0) {
               data = data[0]
-              this.appName = data.belong_app
-              this.serviceName = data.service_name
-              this.modelConfig = data.model_config ? JSON.parse(data.model_config) : "暂无数据"
-              this.setModelConfig(this.modelConfig)
+              this.chartNumber = data.chart_no
+              // this.chartName = data.chart_name
+              this.ruleForm.chartName = data.chart_name
+              this.ruleForm.dashBoardId = data.dashboard_no
+              this.dashBoardName = data.dashboard_name
+              this.chartType = data.chart_type
+              this.requestUrl = data.chart_request_url
+              this.chart_id = data.id
+              let reqArr = data.chart_request_url.split('/')
+              if (reqArr.length > 0) {
+                this.ruleForm.appName = reqArr[1]
+                this.getServiceName()
+                this.requestBody = data.chart_request_payload ? JSON.parse(data.chart_request_payload) : null
+                if (data.chart_request_payload) {
+                  // console.log("TCL: getChartConfig -> requestBody\n", JSON.parse(data.chart_request_payload))
+                  this.ruleForm.serviceName = this.requestBody.serviceName
+                  let requestBody = JSON.parse(data.chart_request_payload)
+                  // this.endData.condition = requestBody.condition
+
+                }
+              }
+
+              // this.appName = data.belong_app
+              // this.serviceName = data.service_name
+              // this.modelConfig = data.model_config ? JSON.parse(data.model_config) : "暂无数据"
+              // this.setModelConfig(this.modelConfig)
             }
             console.log('this.modelConfig-----', this.modelConfig)
           })
           .catch(err => {
             console.error(err);
           })
-      }
-    },
-    setModelConfig (modelConfig) {
-      if (modelConfig) {
-        this.allApp = modelConfig.allApp;
-        this.allColum = modelConfig.allColum;
-        this.allService = modelConfig.allService;
-        this.columnsOption = modelConfig.columnsOption;
-        this.checkedReqOptions = modelConfig.checkedReqOptions;
-        this.endData = modelConfig.endData;
-        this.listData = modelConfig.listData;
-        // this.modelName = modelConfig.model_name
-        this.ruleForm.modelName = modelConfig.model_name
-        this.appName = modelConfig.appName;
-        this.serviceName = modelConfig.serviceName;
-        console.log("this.listData", this.listData)
       }
     },
     addModel (saveData) { // 增加模型
@@ -716,9 +824,9 @@ export default {
         serviceName: serviceName,
         data: [
           {
-            "model_name": this.modelName,
-            "belong_app": this.appName,
-            "service_name": this.serviceName,
+            "model_name": this.chartName,
+            "belong_app": this.ruleForm.appName,
+            "service_name": this.ruleForm.serviceName,
             "model_config": JSON.stringify(saveData),
             "where_json": saveData.endData.condition.length > 0 ? JSON.stringify(saveData.endData.condition) : "",
             "group_json": saveData.endData.group.length > 0 ? JSON.stringify(saveData.endData.group) : "",
@@ -746,22 +854,13 @@ export default {
         })
     },
     updateModel (saveData) { // 编辑模型
-      let serviceName = "srvanalyze_model_update"
+      let serviceName = "srvanalyze_chart_update"
       let url = this.getServiceUrl("operate", serviceName, "dataanalyze");
       let params = [{
-        condition: [{ colName: "model_no", ruleType: "eq", value: this.modelId }],
+        condition: [{ colName: "id", ruleType: "eq", value: this.chart_id }],
         serviceName: serviceName,
         data: [
-          {
-            "model_name": this.modelName,
-            "belong_app": this.appName,
-            "service_name": this.serviceName,
-            "model_config": JSON.stringify(this.saveConfigData),
-            "where_json": saveData.endData.condition.length > 0 ? JSON.stringify(saveData.endData.condition) : "",
-            "group_json": saveData.endData.group.length > 0 ? JSON.stringify(saveData.endData.group) : "",
-            "aggregate_json": saveData.endData.aggregation.length > 0 ? JSON.stringify(saveData.endData.aggregation) : "",
-            "order_json": saveData.endData.order.length > 0 ? JSON.stringify(saveData.endData.order) : ""
-          }
+          saveData
         ]
       }]
       this.axios.post(url, params)
@@ -800,33 +899,48 @@ export default {
     }
   },
   computed: {
-    modelName () {
-      return this.ruleForm.modelName
+    chartName () {
+      return this.ruleForm.chartName
+    },
+    appName () {
+      return this.ruleForm.appName
+    },
+    serviceName () {
+      return this.ruleForm.serviceName
+    },
+    dashBoardId () {
+      return this.ruleForm.dashBoardId
+    }
+  },
+  watch: {
+    columnsOption: {
+      deep: true,
+      handler (newValue, oldValue) {
+        this.columnsOption = newValue
+      }
     }
   },
   created () {
-    // console.log("this.allColum,this.listData", this.allColum, this.listData)
-    let self = this;
+    this.getDashBoardId()
+    this.getChartConfig()
     this.changeReqOption();
-    let appName = this.$route.params.app
-    let serviceName = this.$route.params.serveice
-    let operate = this.$route.params.modelId
-    if (operate == 'add') {
-      // this.addModel()
-      // if (appName && serviceName) {
-      this.app = appName
-      this.serveice = serviceName
+    let chartNumber = this.$route.params.chartNumber
+    if (chartNumber) {
       this.getApp();
-      //   this.appName = this.app;
-      //   this.getServiceName(this.appName);
-      //   this.serviceName = this.serveice;
-      //   this.getData();
-      // }
-    } else { // 编辑
-      this.getModelConfig(operate)
     }
+    // let appName = this.$route.params.app
+    // let serviceName = this.$route.params.serveice
+    // let operate = this.$route.params.modelId
+    // if (operate == 'add') {
+    //   this.app = appName
+    //   this.serveice = serviceName
+    //   this.getApp();
+    // } else { // 编辑
+    //   this.getApp();
+    //   // this.serveice = serviceName
+    //   this.getModelConfig(operate)
+    // }
   }
-  // let saveConfigData = JSON.parse(localStorage.getItem("saveConfigData"));
 };
 </script>
 
@@ -874,30 +988,35 @@ export default {
     flex-wrap: wrap;
     justify-content: space-between;
     .column-box {
-      // width: 15%;
       max-width: 15%;
       min-width: 8%;
-      // flex: 1.5;
       margin-right: 1.5rem;
-      height: 300px;
-      max-width: 300px;
+      height: 500px;
+      max-width: 500px;
       font-size: 0.8rem;
       font-weight: 100;
     }
     .condition-box {
-      // max-width: 85%;
-      min-height: 300px;
+      min-height: 500px;
       flex: 1;
       display: flex;
       flex-wrap: wrap;
       align-content: space-between;
       justify-content: space-between;
       .sing_hual {
-        // width: 65%;
-        // height: 235px;
-        height: 100%;
-        flex: 1;
+        // height: 100%;
+        // flex: 1;
+        width: 49%;
+        max-height: 49%;
         display: flex;
+        box-sizing: border-box;
+        &:nth-child(2n + 1) {
+          flex: 1;
+          min-width: 49%;
+        }
+        &:nth-child(2n) {
+          flex: 0.6;
+        }
       }
     }
   }
@@ -921,7 +1040,7 @@ export default {
     .preview-content {
       width: 100%;
       // min-height: 250px;
-      border: 1px solid #ebebeb;
+      // border: 1px solid #ebebeb;
       border-radius: 5px;
     }
     .export-button {

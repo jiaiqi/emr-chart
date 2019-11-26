@@ -1,5 +1,6 @@
 <template>
   <div class="content-view">
+    <div v-if="noif">
     <div class="content_top"></div>
     <div class="content_cen">
       <!-- <p>
@@ -94,6 +95,15 @@
         </li>
       </ul>
     </div>
+    </div>
+
+    <div v-else>
+      <div class="contentif">
+        <div class="box-content">
+            暂无服务器资源！
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -109,6 +119,7 @@ export default {
        ReqTimeOut:{
         RunTimeOut:null,
        },
+       noif:false,
       serIcon: serIconPath,
       cpuIcon: cpuIconPath,
       plIcon: plIconPath,
@@ -261,9 +272,17 @@ export default {
       //   )
       // await self.axios.get(path)
        let res =  await self.axios.get(path)
+       console.group(res)
         if(res.status===200 ){
+          
                    this.timer();
         let severdata = res.data.data;
+        if(severdata.length==0){
+            this.noif=false
+        }else{
+            this.noif=true
+        }
+        console.error(severdata.length)
         this.SerResData = res.data.data;
         let cpuCum = 0, //总cpu
           memoryUse = 0, //总内存占用
@@ -364,6 +383,7 @@ export default {
                                         
          return {'isRes':true,'res':res}
       }else{
+         this.noif=false
         return {'isRes':false,'res':res}
       }
       // }).then(res => {
@@ -682,5 +702,19 @@ export default {
       }
     }
   }
+}
+.contentif{
+  // position: relative;
+}
+.box-content{
+  height: 100px;
+  width: 200px;
+  position:absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  color: #fff;
 }
 </style>

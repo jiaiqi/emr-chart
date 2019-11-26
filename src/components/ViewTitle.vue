@@ -6,10 +6,10 @@
           <span>当前用户数:</span>
           <span>{{list_useno}}</span>
         </div>
-        <div>
+        <!-- <div>
           <span>注册用户数:</span>
           <span>{{regNum}}</span>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="title_center">{{titleViewData.title}}</div>
@@ -20,7 +20,7 @@
         <span class="user_no">{{user !== null && user.user_no !== null ? user.user_no:'-'}}</span>
       </div>
       <div class="btn_logout long_btn" @click="toManangerment">管理入口</div>
-      <div @click="toIndex('1')" class="btn_logout">注销</div>
+      <div @click="toIndex('1')" class="btn_logout">退出</div>
       <div @click="toIndex('2')" class="btn_logout">返回</div>
     </div>
   </div>
@@ -59,7 +59,7 @@ export default {
       }
       if (num === "2") {
         if (this.titleViewData.currentPage === "secplat") {
-          this.$router.push({ name: "navs" });
+          this.$router.push({ path: "platform" ,query:{"app_class":"platform"}});
         } else {
           this.$router.push({ name: "navs" });
         }

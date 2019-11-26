@@ -1036,6 +1036,31 @@ function init_util() {
     return service_api;
   }
 
+  Vue.prototype.getIp = function () { // 获取ip
+    let backendIpAddr = null;
+    let pathConfig = sessionStorage.getItem('pathConfig')
+    pathConfig = JSON.parse(pathConfig);
+    if (window.top.pathConfig && window.top.pathConfig.gateway) {
+      // 如果外层有就用外层的路径配置
+      let parentServerPath = window.top.pathConfig.gateway;
+      if (parentServerPath.endsWith("/")) {
+        backendIpAddr = parentServerPath.substring(0, parentServerPath.length - 1)
+      } else {
+        backendIpAddr = parentServerPath
+      }
+    } else if (pathConfig !== null) {
+      let parentServerPath = pathConfig.gateway;
+      if (parentServerPath.endsWith("/")) {
+        backendIpAddr = parentServerPath.substring(0, parentServerPath.length - 1)
+      } else {
+        backendIpAddr = parentServerPath
+      }
+    } else {
+      backendIpAddr = top.backendIpAddr
+    }
+      return backendIpAddr
+  }
+
   /**
    *  格式化日期
    *  @params date: 时间字符串或数字  仅支持String和Number类型

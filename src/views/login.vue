@@ -38,7 +38,7 @@ export default {
       pwd: "1",
       saveAccount: false,
       userNameFocus: false,
-      pwdFocus: false,
+      pwdFocus: false
     };
   },
   mounted() {
@@ -63,23 +63,23 @@ export default {
     }
   },
   methods: {
-    clicklogin() { },
+    clicklogin() {},
     focus(p) {
       if (p == "user") {
-        this.userNameFocus = true
+        this.userNameFocus = true;
       } else if (p == "pwd") {
-        this.pwdFocus = true
+        this.pwdFocus = true;
       }
     },
     blur(p) {
       if (p === "user" && this.userName === "") {
-        this.userNameFocus = false
+        this.userNameFocus = false;
       } else if (p === "pwd" && this.pwd === "") {
-        this.pwdFocus = false
+        this.pwdFocus = false;
       }
     },
     // 保存cookie
-    setCookie: function (cName, value, expiredays) {
+    setCookie: function(cName, value, expiredays) {
       var exdate = new Date();
       exdate.setDate(exdate.getDate() + expiredays);
       document.cookie =
@@ -89,7 +89,7 @@ export default {
         (expiredays == null ? "" : ";expires=" + exdate.toGMTString());
     },
     // 获取cookie
-    getCookie: function (key) {
+    getCookie: function(key) {
       if (document.cookie.length > 0) {
         var start = document.cookie.indexOf(key + "=");
         if (start !== -1) {
@@ -142,22 +142,23 @@ export default {
       function crosAjax(url, method, jsonData, succFun) {
         console.log(jsonData);
         if (sessionStorage.getItem("need_login_flag") != "need_login") {
-          // let bx_auth_ticket = sessionStorage.getItem("bx_auth_ticket");
-          self.axios({
-            // headers: { "bx_auth_ticket": bx_auth_ticket },
-            url,
-            method,
-            data: jsonData,
-            xhrFields: {
-              withCredentials: true
-            }
-          })
+          self
+            .axios({
+              url,
+              method,
+              data: jsonData,
+              xhrFields: {
+                withCredentials: true
+              }
+            })
             .then(res => {
               if (res.data.resultCode === "SUCCESS") {
                 self.saveLoginUser();
                 const resp = res.data.response[0];
                 const { bx_auth_ticket } = res.data.response[0].response;
                 sessionStorage.setItem("bx_auth_ticket", bx_auth_ticket);
+                sessionStorage.setItem("isLogin", "true");
+                sessionStorage.setItem("need_login_flag", "null");
                 const current_login_user = resp.response.login_user_info;
                 sessionStorage.setItem(
                   "current_login_user",
@@ -172,18 +173,22 @@ export default {
                 } else {
                   self.$router.push({ name: "navs" });
                 }
+              } else {
+                sessionStorage.setItem("isLogin", "false");
               }
               console.log(res);
             })
             .catch(err => {
               console.log(err);
+              sessionStorage.setItem("isLogin", "false");
+
               if (err.indexOf("timeout"))
                 // this.$message({
                 //   showClose: true,
                 //   message: '登录超时，连接服务器失败，请稍后再试',
                 //   type: 'warning'
                 // });
-                alert("登录超时，连接服务器失败，请稍后再试")
+                alert("登录超时，连接服务器失败，请稍后再试");
             });
         }
       }
@@ -204,7 +209,7 @@ export default {
     }
   },
   watch: {
-    saveAccount: function (new_v, old_v) {
+    saveAccount: function(new_v, old_v) {
       console.log(new_v, old_v);
     }
   }

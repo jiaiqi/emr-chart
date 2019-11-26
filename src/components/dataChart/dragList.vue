@@ -12,13 +12,13 @@
         @end="onMove($event,singList)"
         @add="add($event,singList)"
       >
-        <div class="content_list" v-for="(item,index) in singList.list" :key="item.id">
+        <div class="content_list" v-for="(item,index) in singList.list" :key="index">
           <div
             v-if="singList.type==='all'"
             class="value"
             :class="{columns:singList.type==='all'}"
           >{{item.label}}</div>
-          <div v-else class="value">{{item.label}}</div>
+          <div v-else class="value" :class="{order_value:singList.type==='order'}">{{item.label}}</div>
           <el-select
             v-model="item._condition.ruleType"
             filterable
@@ -32,7 +32,9 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            ></el-option>
+            >
+              <span style="float: left;font-size: 13px">{{ item.label+'-'+item.value }}</span>
+            </el-option>
           </el-select>
           <el-select
             v-model="item._group.type"
@@ -61,7 +63,9 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            ></el-option>
+            >
+              <span style="float: left;font-size: 13px">{{ item.label+'-'+item.value }}</span>
+            </el-option>
           </el-select>
           <el-select
             v-model="item._aggregation.type"
@@ -76,7 +80,9 @@
               :label="item.label"
               :value="item.value"
               @visible-change="seleteAggregationOperator(item,'click')"
-            ></el-option>
+            >
+              <span style="float: left;font-size: 13px">{{ item.label+'-'+item.value }}</span>
+            </el-option>
           </el-select>
           <el-input
             v-model="item._condition.value"
@@ -90,13 +96,24 @@
             placeholder="请输入别名"
             class="input-value"
           ></el-input>
-          <el-date-picker
+          <!-- <el-date-picker
             class="date-picker"
             v-model="item._condition.value"
             v-if="(item.col_type=='DateTime'||item.col_type=='Date' )&& singList.type ==='condition'"
             type="datetime"
             placeholder="选择日期时间"
             align="right"
+            :picker-options="pickerOptions"
+          ></el-date-picker>-->
+          <el-date-picker
+            v-model="item._condition.value"
+            v-if="(item.col_type=='DateTime'||item.col_type=='Date' )&& singList.type ==='condition'"
+            type="daterange"
+            align="right"
+            unlink-panels
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
             :picker-options="pickerOptions"
           ></el-date-picker>
           <el-button
@@ -243,32 +260,6 @@ export default {
     },
     deleteItem (sign, list, i) {
       this.setEndData(list)
-
-      // if (list.type === "condition") {
-      //   this.condition = [];
-      //   list.list.forEach(item => {
-      //     this.condition.push(item._condition);
-      //   });
-      //   this.endData.condition = this.condition;
-      // } else if (list.type === "group") {
-      //   this.group = [];
-      //   list.list.forEach(item => {
-      //     this.group.push(item._group);
-      //   });
-      //   this.endData.group = this.group;
-      // } else if (list.type === "aggregation") {
-      //   this.aggregation = [];
-      //   list.list.forEach(item => {
-      //     this.aggregation.push(item._aggregation);
-      //   });
-      //   this.endData.aggregation = this.aggregation;
-      // } else if (list.type === "order") {
-      //   this.order = [];
-      //   list.list.forEach(item => {
-      //     this.order.push(item._order);
-      //   });
-      //   this.endData.order = this.order;
-      // }
       sign.aliasName = "";
       sign._condition.value = "";
       sign._condition.ruleType = "";
@@ -301,7 +292,6 @@ export default {
       }
     },
     selectConditionOperator (sign, isClick) {
-      let self = this;
       // 切换condition的操作符
       if (isClick) {
         let dataType = sign.col_type; // 暂定有时间、数字、其它三种
@@ -309,11 +299,7 @@ export default {
           dataType = "date";
         } else if (dataType == "String" || dataType == "string") {
           dataType = "string";
-        } else if (
-          dataType == "Number" ||
-          dataType == "number" ||
-          dataType == "int"
-        ) {
+        } else if (dataType == "Number" || dataType == "number" || dataType == "int") {
           dataType = "number";
         }
         let operator = [];
@@ -337,20 +323,8 @@ export default {
                 value: "in"
               },
               {
-                label: "大于等于",
-                value: "ge"
-              },
-              {
-                label: "小于等于",
-                value: "le"
-              },
-              {
-                label: "大于",
-                value: "gt"
-              },
-              {
-                label: "小于",
-                value: "lt"
+                label: "起止时间",
+                value: "between"
               }
             ];
             break;
@@ -407,7 +381,7 @@ export default {
             ];
             break;
         }
-        self.selectList = operator;
+        this.selectList = operator;
       } else {
         sign.forEach(item => {
           let dataType = item.col_type; // 暂定有时间、数字、其它三种
@@ -443,20 +417,8 @@ export default {
                   value: "in"
                 },
                 {
-                  label: "大于等于",
-                  value: "ge"
-                },
-                {
-                  label: "小于等于",
-                  value: "le"
-                },
-                {
-                  label: "大于",
-                  value: "gt"
-                },
-                {
-                  label: "小于",
-                  value: "lt"
+                  label: "起止时间",
+                  value: "between"
                 }
               ];
               break;
@@ -513,8 +475,8 @@ export default {
               ];
               break;
           }
-          console.log("operator--------------", operator);
-          self.selectList = operator;
+          // console.log("operator--------------", operator);
+          this.selectList = operator;
         });
       }
     },
@@ -693,31 +655,31 @@ export default {
           case "number":
             operator = [
               {
-                label: "字段值之和(sum)",
+                label: "字段值之和",
                 value: "sum"
               },
               {
-                label: "最小值(min)",
+                label: "最小值",
                 value: "min"
               },
               {
-                label: "最大值(max)",
+                label: "最大值",
                 value: "max"
               },
               {
-                label: "平均值(avg)",
+                label: "平均值",
                 value: "avg"
               },
               {
-                label: "非空数据条数(count)",
+                label: "非空数据条数",
                 value: "count"
               },
               {
-                label: "数据总条数(count_all)",
+                label: "数据总条数",
                 value: "count_all"
               },
               {
-                label: "去重后的数据条数(distinct_count)",
+                label: "去重后的数据条数",
                 value: "distinct_count"
               }
             ];
@@ -725,15 +687,15 @@ export default {
           default:
             operator = [
               {
-                label: "非空数据条数(count)",
+                label: "非空数据条数",
                 value: "count"
               },
               {
-                label: "数据总条数(count_all)",
+                label: "数据总条数",
                 value: "count_all"
               },
               {
-                label: "去重后的数据条数(distinct_count)",
+                label: "去重后的数据条数",
                 value: "distinct_count"
               }
             ];
@@ -754,11 +716,7 @@ export default {
             dataType = "date";
           } else if (dataType == "String" || dataType == "string") {
             dataType = "string";
-          } else if (
-            dataType == "Number" ||
-            dataType == "number" ||
-            dataType == "int"
-          ) {
+          } else if (dataType == "Number" || dataType == "number" || dataType == "int") {
             dataType = "number";
           }
           let operator = [];
@@ -766,31 +724,31 @@ export default {
             case "number":
               operator = [
                 {
-                  label: "字段值之和(sum)",
+                  label: "和",
                   value: "sum"
                 },
                 {
-                  label: "最小值(min)",
+                  label: "最小值",
                   value: "min"
                 },
                 {
-                  label: "最大值(max)",
+                  label: "最大值",
                   value: "max"
                 },
                 {
-                  label: "平均值(avg)",
+                  label: "平均值",
                   value: "avg"
                 },
                 {
-                  label: "非空数据条数(count)",
+                  label: "非空条数",
                   value: "count"
                 },
                 {
-                  label: "数据总条数(count_all)",
+                  label: "总条数",
                   value: "count_all"
                 },
                 {
-                  label: "去重后的数据条数(distinct_count)",
+                  label: "去重后条数",
                   value: "distinct_count"
                 }
               ];
@@ -798,15 +756,15 @@ export default {
             default:
               operator = [
                 {
-                  label: "非空数据条数(count)",
+                  label: "非空数据条数",
                   value: "count"
                 },
                 {
-                  label: "数据总条数(count_all)",
+                  label: "数据总条数",
                   value: "count_all"
                 },
                 {
-                  label: "去重后的数据条数(distinct_count)",
+                  label: "去重后的数据条数",
                   value: "distinct_count"
                 }
               ];
@@ -826,7 +784,6 @@ export default {
   },
   created () {
     console.log("子组件created", this.singList, this.selectList);
-    // this.selectConditionOperator(this.singList.list);
     let val = this.singList;
     let deploy = {};
     if (val.type === "all") {
@@ -851,23 +808,19 @@ export default {
       };
     }
     this.deploy = deploy;
-    console.log("---val---------------", val);
+    console.log("---val------------", val);
     if (this.singList.type === "order") {
       this.selectList = this.orderList;
     }
   },
   mounted () {
     console.log(
-      "singList-------++++++-----------》",
-      this.singList,
-      this.selectList
-    );
+      "singList---------------", this.singList, this.selectList);
   },
 
   watch: {
     singList: {
       handler (newVal, oldVal) {
-        console.log("---------watch--------");
         if (newVal.type === "condition") {
           this.selectConditionOperator(newVal.list);
         }
@@ -885,9 +838,6 @@ export default {
       immediate: true
     }
   }
-  // beforeCreate() {
-  //   console.log("before", this.singList);
-  // }
 };
 </script>
 
@@ -964,7 +914,6 @@ export default {
       }
       .value {
         min-width: 35%;
-        flex: 1;
         font-size: 14px;
         background-color: #fff;
         color: #606266;
@@ -973,6 +922,9 @@ export default {
         line-height: 38px;
         border-radius: 0;
         text-align: center;
+      }
+      .order_value {
+        flex: 1;
       }
       .columns {
         text-indent: 0.5rem;
@@ -983,16 +935,18 @@ export default {
       }
       .el-select {
         border-radius: 0;
-        max-width: 25%;
+        max-width: 18%;
       }
       .date-picker {
         width: 100%;
         border-radius: 0;
         max-width: 25%;
+        // flex: 1;
       }
       .input-value {
-        max-width: 25%;
+        // max-width: 25%;
         border: none;
+        flex: 1;
         border-radius: 0;
       }
       .input-value /deep/.el-input__inner {

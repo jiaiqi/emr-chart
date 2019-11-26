@@ -140,8 +140,7 @@ export default {
   },
   components: {},
   mounted() {
-    console.log("-------------path", top.backendIpAddr);
-    this.visitPath = top.backendIpAddr;
+    this.visitPath = window.top.pathConfig.gateway;
     this.getData();
     console.log(JSON.stringify(this.param));
   },

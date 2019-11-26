@@ -2,27 +2,27 @@
   <div class="Cont_wrap">
     <div class="Cont_left_bar">
       <dv-border-box-10>
-          <div >
-                 <div class="bar_title">
-                  <span style="margin:8px 0 10px 0;">微服务服务请求次数</span>
-                </div>
-                <div v-if="dataBaseTop" class="bar_content">
-                  <ve-histogram
-                    :data="chartData"
-                    height="60vh"
-                    :legend="legend"
-                    :textStyle="legend.textStyle"
-                    :extend="chartExtendLine"
-                    :settings="chartSettings"
-                    :log="true"
-                  ></ve-histogram>
-                  <!-- :textStyle="legend.textStyle" -->
-                  <!-- :legend="legend" -->
-                </div>
-            </div>
-            <div v-if="dataBaseBar">
-                <p style="text-align:center; line-height:58.3vh">暂无数据！</p>
-            </div>
+        <div>
+          <div class="bar_title">
+            <span style="margin:8px 0 10px 0;">微服务服务请求次数</span>
+          </div>
+          <div v-if="dataBaseTop" class="bar_content">
+            <ve-histogram
+              :data="chartData"
+              height="60vh"
+              :legend="legend"
+              :textStyle="legend.textStyle"
+              :extend="chartExtendLine"
+              :settings="chartSettings"
+              :log="true"
+            ></ve-histogram>
+            <!-- :textStyle="legend.textStyle" -->
+            <!-- :legend="legend" -->
+          </div>
+        </div>
+        <div v-if="dataBaseBar">
+          <p style="text-align:center; line-height:58.3vh">暂无数据！</p>
+        </div>
       </dv-border-box-10>
       <!-- <li
         @click="timeCycle(item.key,index)"
@@ -40,21 +40,22 @@
           <div class="pie_content_top">
             <dv-border-box-8 style>
               <!-- <div class="main_left_cen_right"> -->
-                <div v-if="dataBaseTop">
-                      <ve-pie
+              <div v-if="dataBaseTop">
+                <ve-pie
                   :legend-visible="false"
                   height="32vh"
+                  class="etlPos"
                   :extend="chartExtendPie"
                   width="100%"
                   :data="RigPieData"
                   :textStyle="legend.textStyle"
                   :settings="pieSetting"
                 ></ve-pie>
-                </div>
-            
+              </div>
+
               <!-- </div> -->
               <div>
-                <p  v-if="dataBaseBar" style="text-align:center;line-height:32vh">暂无数据！</p>
+                <p v-if="dataBaseBar" style="text-align:center;line-height:32vh">暂无数据！</p>
               </div>
             </dv-border-box-8>
           </div>
@@ -130,21 +131,58 @@ import BotNorm from "../components/BotNorm";
 export default {
   name: "SecplatContent",
   data() {
-    (this.pieSetting = {}),
+    (this.pieSetting = { limitShowNum: 5 }),
       (this.chartExtendPie = {
-        grid: {
-          top: "10",
-          bottom: "20",
-          height: "200"
+        legend: {
+          type: "scroll",
+          selectedMode: false,
+          textStyle: {
+            color: "#fff"
+          },
+          pageTextStyle: {
+            color: "#fff"
+          },
+          pageIconColor: "#3399ff"
         },
         series: {
-          center: ["50%", "50%"],
-          radius: ["0%", "50%"],
+          type: "pie",
+          center: ["50%", "40%"],
+          radius: [0, "30%"],
+          avoidLabelOverlap: true,
           label: {
             normal: {
               show: true,
-              formatter: "{b}:{c}({d})"
+              // formatter: "{b}:{d}%"
+              formatter: params => {
+                let length = params.name.length;
+                if (length < 6) {
+                  // params.name = params.name.slice(0, 16) + params.name.slice(4)
+                  params.name = params.name;
+                } else if (length > 6) {
+                  params.name = params.name.slice(0, 6) + "...";
+                }
+                return (
+                  "{c|" + params.percent + "%}" + "{b| " + params.name + "}"
+                );
+              },
+              rich: {
+                c: {
+                  color: "rgb(241,246,104)",
+                  fontSize: 10
+                  // fontWeight: 'bold',
+                  // lineHeight: 10
+                },
+                b: {
+                  color: "rgb(98,137,169)",
+                  fontSize: 12
+                  // height: 20
+                }
+              }
             }
+          },
+          labelLine: {
+            length: 8,
+            length2: 4
           }
         }
       });
@@ -159,9 +197,6 @@ export default {
           height: "auto"
         },
         yAxis: {
-          // min: 0,
-          // max: 5000,
-          // splitNumber:5
           interval: 200
         },
         CurrAct: 0,
@@ -180,8 +215,7 @@ export default {
         textStyle: {
           color: "#fff"
         },
-         padding:[15,0,0,0],   //可
-
+        padding: [15, 0, 0, 0] //可
       },
       legendCake: {
         textStyle: {
@@ -207,7 +241,8 @@ export default {
         itemStyle: {
           normal: {
             label: {
-              show: true,
+              show: false,
+
               formatter: function(c) {
                 return JSON.stringify(parseInt(c.value));
               }
@@ -222,8 +257,8 @@ export default {
       },
       appNo: this.$route.query.appNo,
       dateLine: this.secplatdata == "" ? "day" : this.secplatdata,
-      dataBaseBar:false,
-      dataBaseTop:true
+      dataBaseBar: false,
+      dataBaseTop: true
     };
   },
   components: {
@@ -451,16 +486,15 @@ export default {
       this.axios
         .post(path, req)
         .then(res1 => {
-          
           let _this2 = this;
-          
+
           let arr = res1.data.data;
           let currRow = [];
           this.getCountData(arr, type);
           // console.error('arr',arr)
-          if(res1.data.data.length==0){
-              this.dataBaseBar=true    
-              this.dataBaseTop=false        
+          if (res1.data.data.length == 0) {
+            this.dataBaseBar = true;
+            this.dataBaseTop = false;
           }
         })
         .catch(err => {
@@ -823,11 +857,10 @@ export default {
   }
 }
 
-
-@media screen  and (max-width:1367px){
-  .pie_content_top{
-      margin-bottom: 6rem !important;
-  } 
+@media screen and (max-width: 1367px) {
+  .pie_content_top {
+    margin-bottom: 6rem !important;
+  }
 }
 // .wrap {
 //   width: 100%;
@@ -1072,4 +1105,7 @@ export default {
 //     }
 //   }
 // }
+.etlPos {
+  top: 40px;
+}
 </style>

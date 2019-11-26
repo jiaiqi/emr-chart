@@ -130,10 +130,9 @@ export default {
   background-color: white;
   color: #333;
   height: 100%;
-  overflow: hidden;
+  // overflow: hidden;
   .wrap_title {
-    width: 95%;
-    margin: 1rem auto;
+    padding: 0 8px;
     .el-pagination {
       width: 20%;
       margin: 2rem auto;

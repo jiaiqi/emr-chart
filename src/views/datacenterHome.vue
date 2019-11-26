@@ -166,9 +166,9 @@ export default {
             timeData.map(dataItem => {
               if (
                 hospital == "总共享次数" &&
-                dataItem.create_time.slice(11, 13) == hour
+                dataItem.create_time == hour
               ) {
-                count += dataItem.invoke_success_count;
+                count += dataItem.share_row_count;
                 // console.log("count",count)
                 dataMap[hospital] = count;
               }
@@ -542,7 +542,7 @@ export default {
         group: [
           {
             colName: "ok_records_count",
-            type: "count"
+            type: "sum"
           }
         ]
       };
@@ -574,7 +574,7 @@ export default {
       let time = moment().format("YYYY-MM-DD");
       // console.log("time",time)
       let req = {
-        serviceName: "srvdc_share_serve_summary_select",
+        serviceName: "srvdc_share_serve_summary_record_select",
         colNames: ["*"],
         condition: [
           {
@@ -594,24 +594,24 @@ export default {
         ],
         group: [
           {
-            colName: "invoke_success_count",
-            type: "sum"
+            colName: "share_row_count",
+            type: "count"
           },
           {
             colName: "create_time",
-            type: "by"
+            type: "by_hour"
           }
         ]
       };
       let path = this.getServiceUrl(
         "select",
-        "srvdc_share_serve_summary_select",
+        "srvdc_share_serve_summary_record_select",
         "datashare"
       );
       // axios.post(
       //     path, req,
       let res = await self.axios.post(path, req);
-
+      console.log("----------------------",res)
       if (res.status === 200) {
         this.chartData.rows = this.getCollectData(res.data.data, "day");
         return { isRes: true, res: res };

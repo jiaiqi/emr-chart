@@ -32,6 +32,9 @@
             <div class="databox-col">{{item.row_count?item.row_count:'0'}}</div>
             <div class="databox-col">{{item.storage_size?ConvertStor(item.storage_size):0 }}</div>
           </div>
+          <div v-if="databox3list1.length == 0" class="noData">
+            <span>~暂无数据~</span>
+          </div>
         </div>
       </div>
       <el-pagination
@@ -105,7 +108,13 @@ export default {
         //   pageNo: 1,
         //   rownumber: 5
         // },
-        condition: []
+        condition: [],
+        order: [
+          {
+            colName: "id",
+            orderType: "asc"
+          }
+        ]
       };
       let path = this.getServiceUrl(
         "select",
@@ -220,6 +229,11 @@ $text-color: #47acff;
         border-right: 0;
       }
     }
+  }
+  .noData {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .databox-three-contentdata-view:first-child {

@@ -124,11 +124,11 @@ export default {
       chartData: {
         columns: ["时间", "门诊人数", "住院人数"],
         rows: [
-          {
-            住院人数: 100,
-            时间: "17点",
-            门诊人数: 10
-          }
+          // {
+          //   住院人数: 100,
+          //   时间: "17点",
+          //   门诊人数: 10
+          // }
         ]
       }
     };
@@ -193,7 +193,7 @@ export default {
       );
 
       let res = await self.axios.post(path, req2);
-
+        // console.error(res)
       if (res.status === 200) {
         let timeData = res.data.data;
         let hours = [];
@@ -225,7 +225,9 @@ export default {
             let countData = [];
             datas.map(res => {
               let dateHour = res.ywfssj.slice(11, 13);
-              if (dateHour == hour && types[i].indexOf(res.cmd) !== -1) {
+              // console.error(dateHour)
+              if (dateHour == hour ) {
+                // && types[i].indexOf(res.cmd) !== -1
                 countData.push(res);
               }
             });
@@ -617,7 +619,7 @@ export default {
          sum+= res.data.data[i].amount
       }
           // if (res.data.data[0].VER > 0) {
-              console.error(sum)
+              // console.error(sum)
             this.lineTwo[3].value =sum;
           // }
           // console.log('666',res.data.data[0].VER)
@@ -694,7 +696,7 @@ export default {
       // axios.post(
       //   path, req8,
       let res = await self.axios.post(path, req8);
-        console.error(res)
+        // console.error(res)
       // if (res.status === 200) {
       //   if (res.data.data.length > 0) {
       //     this.lineTwodif_three = res.data.data.length;

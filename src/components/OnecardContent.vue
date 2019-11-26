@@ -10,9 +10,12 @@
             :extend="chartExtendLine"
             :textStyle="legend.textStyle"
             :legend="legend"
-            width="40vw"
             height="calc(100% - 50px)"
+            v-if="contentData.firstBar.data.rows && contentData.firstBar.data.rows.length > 0"
           ></ve-histogram>
+          <div v-else class="mask">
+            <span>~暂无数据~</span>
+          </div>
         </div>
         <div class="content_left_right">
           <div class="content_left_right_item">
@@ -20,33 +23,40 @@
               <dv-border-box-8>{{contentData.firstPie.title}}</dv-border-box-8>
             </div>
             <ve-pie
-              height="28vh"
+              v-if="contentData.firstPie.data.rows && contentData.firstPie.data.rows.length > 0"
               :data="contentData.firstPie.data"
-              :legend-visible="false"
-              :class="{'etlPos':contentData.currentPage==='ETL'}"
+              class="etlPos"
+              height="28vh"
               :extend="chartExtendPie"
+              :settings="chartPieSetting"
             ></ve-pie>
+            <div v-else class="mask">
+              <span>~暂无数据~</span>
+            </div>
           </div>
           <div class="content_left_right_item">
             <div class="item_title">
               <dv-border-box-8>{{contentData.secondPie.title}}</dv-border-box-8>
             </div>
             <ve-pie
+              class="etlPos"
               :data="contentData.secondPie.data"
-              height="28vh"
-              :legend-visible="false"
               :extend="chartExtendPie"
-              v-if="contentData.currentPage==='emrCollect'"
+              :settings="chartPieSetting"
+              height="28vh"
+              v-if="(contentData.currentPage==='emrCollect'||contentData.currentPage==='emrShare'||contentData.currentPage==='oneCard') && contentData.secondPie.data.rows && contentData.secondPie.data.rows.length > 0"
             ></ve-pie>
             <ve-pie
               :data="contentData.secondPie.data"
-              height="28vh"
-              :class="{'etlPos':contentData.currentPage==='ETL'}"
+              class="etlPos"
               :settings="chartPieSetting"
-              :legend-visible="false"
-              :extend="chartExtendPieL"
-              v-else
+              :extend="chartExtendPie"
+              height="28vh"
+              v-if="(contentData.currentPage==='ETL' || contentData.currentPage==='dataShare') && contentData.secondPie.data.rows && contentData.secondPie.data.rows.length > 0"
             ></ve-pie>
+            <div v-if="contentData.secondPie.data.rows.length === 0" class="mask">
+              <span>~暂无数据~</span>
+            </div>
           </div>
         </div>
       </div>
@@ -75,7 +85,11 @@
                 :textStyle="legend.textStyle"
                 :legend="legend"
                 :data="contentData.secondBar.data[currentHospital]"
+                v-if="contentData.secondBar.data[currentHospital]&&contentData.secondBar.data[currentHospital].rows&&contentData.secondBar.data[currentHospital].rows.length>0"
               ></ve-histogram>
+              <div v-else class="mask">
+                <span>~暂无数据~</span>
+              </div>
             </div>
           </div>
         </div>
@@ -123,22 +137,20 @@
               </div>
               <ve-pie
                 :data="contentData.thirdPie.data[currentHospital]"
-                height="28vh"
                 :extend="chartExtendPie"
-                :legend-visible="false"
-                v-if="contentData.currentPage==='emrShare'||contentData.currentPage==='oneCard'"
-              ></ve-pie>
-              <ve-pie
-                :data="contentData.thirdPie.data[currentHospital]"
                 height="28vh"
-                :extend="chartExtendPieS"
-                :legend-visible="false"
-                v-if="contentData.currentPage==='emrCollect'"
+                :settings="chartPieSetting"
+                v-if="(contentData.currentPage==='emrShare'||contentData.currentPage==='oneCard' ||contentData.currentPage==='emrCollect')&&contentData.thirdPie.data[currentHospital]"
               ></ve-pie>
-              <!-- <div
-                v-if="!contentData.thirdPie||!contentData.thirdPie.data||contentData.thirdPie.data.length==0"
-                class="nodata"
-              >Loading</div>-->
+              <!-- <ve-pie
+                :data="contentData.thirdPie.data[currentHospital]"
+                :extend="chartExtendPie"
+                :settings="chartPieSetting"
+                v-if="(contentData.currentPage==='emrCollect'||contentData.currentPage==='emrShare'||contentData.currentPage==='oneCard') && contentData.thirdPie.data && contentData.thirdPie.data.length > 0"
+              ></ve-pie>-->
+              <div v-if="!contentData.thirdPie.data[currentHospital]" class="mask">
+                <span>~暂无数据~</span>
+              </div>
             </div>
           </div>
         </div>
@@ -160,8 +172,12 @@
                 :textStyle="legend.textStyle"
                 :legend="legend"
                 :extend="rightChartExtend"
+                v-if="contentData.secondBar.data.rows && contentData.secondBar.data.rows.length > 0"
                 height="70vh"
               ></ve-histogram>
+              <div v-else class="mask">
+                <span>~暂无数据~</span>
+              </div>
             </div>
           </div>
         </div>
@@ -174,34 +190,46 @@
         </div>-->
         <div class="gantt_task">
           <span
-            @click="choose(item)"
+            @click="choose(item,index)"
             v-for="(item,index) in contentData.secondBar.tableData.title"
             :key="index"
+            :class="{hos:Act == index}"
           >{{item.job_name}}</span>
         </div>
         <div class="databox_three_content">
           <div class="databox_three_contentheader">
             <div class="databox-col">开始时间</div>
-            <div class="databox-col">任务名称</div>
-            <div class="databox-col">失败记录数</div>
-            <div class="databox-col">成功记录数</div>
-            <div class="databox-col">输入记录数</div>
-            <div class="databox-col">输出记录数</div>
             <div class="databox-col">结束时间</div>
+            <div class="databox-col">任务名称</div>
+            <div class="databox-col">输入记录数</div>
+            <div class="databox-col">成功记录数</div>
+            <div class="databox-col">失败记录数</div>
+            <div class="databox-col">输出记录数</div>
           </div>
           <div
-            v-show="index < 6"
+            v-show="index < 5"
             class="databox-three-contentdata-view"
             v-for="(item,index) in contentData.secondBar.tableData.GanttData"
             :key="index"
           >
-            <div class="databox-col">{{item.start_time?item.start_time:0}}</div>
-            <div class="databox-col">{{item.processor_name?item.processor_name:0}}</div>
-            <div class="databox-col">{{item.failed_records_count?item.failed_records_count:0}}</div>
-            <div class="databox-col">{{item.ok_records_count?item.ok_records_count:0}}</div>
+            <div v-if="item.start_time" class="databox-col time">
+              <span>{{item.start_time?item.start_time.split(" ")[0]:""}}</span>
+              <br style="display:none" />
+              <span>{{item.start_time?item.start_time.split(" ")[1]:""}}</span>
+              <!-- {{item.start_time?item.start_time.split(" ")[0]:""}} -->
+            </div>
+            <div v-else class="databox-col time">{{item.start_time?item.start_time:""}}</div>
+            <div v-if="item.end_time" class="databox-col time">
+              <span>{{item.end_time?item.end_time.split(" ")[0]:""}}</span>
+              <br style="display:none" />
+              <span>{{item.end_time?item.end_time.split(" ")[1]:""}}</span>
+            </div>
+            <div v-else class="databox-col">{{item.end_time?item.end_time:""}}</div>
+            <div class="databox-col">{{item.processor_name?item.processor_name:""}}</div>
             <div class="databox-col">{{item.input_record_count?item.input_record_count:0}}</div>
+            <div class="databox-col">{{item.ok_records_count?item.ok_records_count:0}}</div>
+            <div class="databox-col">{{item.failed_records_count?item.failed_records_count:0}}</div>
             <div class="databox-col">{{item.output_record_count?item.output_record_count:0}}</div>
-            <div class="databox-col">{{item.end_time?item.end_time:0}}</div>
             <!-- <div class="databox-col">{{item.item08}}</div> -->
           </div>
           <div
@@ -220,6 +248,7 @@ export default {
   data() {
     return {
       data: {},
+      Act: 0,
       loading: true,
       firstBar: {
         title: "",
@@ -245,6 +274,7 @@ export default {
       CurrPage: "datacenter",
       tabCheckItem: [],
       chartSettings: {},
+      chartPieSetting: { limitShowNum: 5 },
       chartExtendLine: {
         grid: {
           top: "10%",
@@ -266,7 +296,7 @@ export default {
           itemStyle: {
             normal: {
               label: {
-                show: true
+                // show: true
               }
             }
           }
@@ -293,55 +323,186 @@ export default {
           itemStyle: {
             normal: {
               label: {
-                show: true
+                // show: true
               }
             }
           }
         }
       },
       chartExtendPie: {
+        legend: {
+          type: "scroll",
+          textStyle: {
+            color: "#fff"
+          },
+          selectedMode: false,
+          pageTextStyle: {
+            color: "#fff"
+          },
+          pageIconColor: "#3399ff"
+        },
         series: {
           type: "pie",
           center: ["50%", "50%"],
-          radius: [0, "35%"],
+          radius: [0, "30%"],
+          avoidLabelOverlap: true,
           label: {
             normal: {
               show: true,
-              formatter: "{b}:{d}%"
+              // formatter: "{b}:{d}%"
+              formatter: params => {
+                let length = params.name.length;
+                if (length < 6) {
+                  // params.name = params.name.slice(0, 16) + params.name.slice(4)
+                  params.name = params.name;
+                } else if (length > 6) {
+                  params.name = params.name.slice(0, 6) + "...";
+                }
+                return (
+                  "{c|" + params.percent + "%}" + "{b| " + params.name + "}"
+                );
+              },
+              rich: {
+                c: {
+                  color: "rgb(241,246,104)",
+                  fontSize: 10
+                  // fontWeight: 'bold',
+                  // lineHeight: 10
+                },
+                b: {
+                  color: "rgb(98,137,169)",
+                  fontSize: 12
+                  // height: 20
+                }
+              }
             }
+          },
+          labelLine: {
+            length: 8,
+            length2: 4
           }
         }
       },
       chartExtendPieL: {
+        legend: {
+          type: "scroll",
+          textStyle: {
+            color: "#fff"
+          },
+          pageTextStyle: {
+            color: "#fff"
+          },
+          pageIconColor: "#3399ff"
+        },
         series: {
           type: "pie",
           center: ["50%", "50%"],
-          radius: [0, "75%"],
+          radius: [0, "30%"],
+          avoidLabelOverlap: true,
           label: {
             normal: {
               show: true,
-              formatter: "{b}:{d}%"
+              // formatter: "{b}:{d}%"
+              formatter: params => {
+                let length = params.name.length;
+                if (length < 6) {
+                  // params.name = params.name.slice(0, 16) + params.name.slice(4)
+                  params.name = params.name;
+                } else if (length > 6) {
+                  params.name = params.name.slice(0, 6) + "...";
+                }
+                return (
+                  "{c|" +
+                  params.percent.toFixed(2) +
+                  "%}" +
+                  "{b| " +
+                  params.name +
+                  "}"
+                );
+              },
+              rich: {
+                c: {
+                  color: "rgb(241,246,104)",
+                  fontSize: 10
+                  // fontWeight: 'bold',
+                  // lineHeight: 10
+                },
+                b: {
+                  color: "rgb(98,137,169)",
+                  fontSize: 12
+                  // height: 20
+                }
+              }
             }
+          },
+          labelLine: {
+            length: 8,
+            length2: 4
           }
         }
       },
-      chartPieSetting: {},
       chartExtendPieS: {
+        legend: {
+          type: "scroll",
+          textStyle: {
+            color: "#fff"
+          },
+          pageTextStyle: {
+            color: "#fff"
+          },
+          pageIconColor: "#3399ff"
+        },
         // 小饼图
         series: {
           type: "pie",
           center: ["50%", "50%"],
-          radius: [0, "20%"],
+          radius: [0, "30%"],
+          avoidLabelOverlap: true,
           label: {
             normal: {
               show: true,
-              formatter: "{b}:{d}%"
+              formatter: ["{d|{d}%}", "{b|{b}}"].join("\n"),
+              formatter: params => {
+                let length = params.name.length;
+                if (length < 6) {
+                  // params.name = params.name.slice(0, 16) + params.name.slice(4)
+                  params.name = params.name;
+                } else if (length > 6) {
+                  params.name = params.name.slice(0, 6) + "...";
+                }
+                return (
+                  "{c|" +
+                  params.percent.toFixed(0) +
+                  "%}" +
+                  "{b| " +
+                  params.name +
+                  "}"
+                );
+              },
+              rich: {
+                c: {
+                  color: "rgb(241,246,104)",
+                  fontSize: 10
+                  // fontWeight: 'bold',
+                  // lineHeight: 10
+                },
+                b: {
+                  color: "rgb(98,137,169)",
+                  fontSize: 12
+                  // height: 20
+                }
+              }
             }
+          },
+          labelLine: {
+            length: 8,
+            length2: 4
           }
         }
       },
       currentHospital: 0,
       legend: {
+        type: "scroll",
         textStyle: {
           color: "#fff"
         }
@@ -377,7 +538,8 @@ export default {
         }
       }, interval);
     },
-    choose(item) {
+    choose(item, index) {
+      this.Act = index;
       this.$emit("checktask", item);
     },
     GoLast() {
@@ -437,8 +599,8 @@ export default {
         if (this.contentData.currentPage === "ETL") {
           let PieSeriesL = {
             type: "pie",
-            center: ["50%", "60%"],
-            radius: [0, "50%"],
+            center: ["50%", "40%"],
+            radius: [0, "30%"],
             label: {
               normal: {
                 show: true,
@@ -448,8 +610,8 @@ export default {
           };
           let PieSeries = {
             type: "pie",
-            center: ["50%", "50%"],
-            radius: [0, "35%"],
+            center: ["50%", "40%"],
+            radius: [0, "30%"],
             label: {
               normal: {
                 show: true,
@@ -458,24 +620,25 @@ export default {
             }
           };
           this.chartPieSetting = { limitShowNum: 5 };
-          this.chartExtendPieL.series = PieSeriesL;
-          this.chartExtendPie.series = PieSeries;
+          // this.chartExtendPieL.series = PieSeriesL;
+          // this.chartExtendPie.series = PieSeries;
 
           this.chartExtendPieL["legend"] = {
             show: true,
-            // type: "scroll",
+            type: "scroll",
             textStyle: { color: "#ffffff" }
           };
           this.chartExtendPie["legend"] = {
             show: true,
-            // type: "scroll",
+            type: "scroll",
+            selectedMode: false,
             textStyle: { color: "#ffffff" }
           };
         } else {
           let series1 = {
             type: "pie",
-            center: ["50%", "50%"],
-            radius: [0, "75%"],
+            center: ["50%", "40%"],
+            radius: [0, "30%"],
             label: {
               normal: {
                 show: true,
@@ -485,8 +648,8 @@ export default {
           };
           let PieSeries1 = {
             type: "pie",
-            center: ["50%", "50%"],
-            radius: [0, "35%"],
+            center: ["50%", "40%"],
+            radius: [0, "30%"],
             label: {
               normal: {
                 show: true,
@@ -494,17 +657,18 @@ export default {
               }
             }
           };
-          this.chartPieSetting = {};
-          this.chartExtendPieL.series = series1;
-          this.chartExtendPie.series = PieSeries1;
+          this.chartPieSetting = { limitShowNum: 5 };
+          // this.chartExtendPieL.series = series1;
+          // this.chartExtendPie.series = PieSeries1;
           this.chartExtendPieL["legend"] = {
-            show: false,
-            // type: "scroll",
+            // show: false,
+            type: "scroll",
             textStyle: { color: "#ffffff" }
           };
           this.chartExtendPie["legend"] = {
-            show: false,
-            // type: "scroll",
+            // show: false,
+            type: "scroll",
+            selectedMode: false,
             textStyle: { color: "#ffffff" }
           };
         }
@@ -527,6 +691,12 @@ export default {
 $br-color: #4b93ff78;
 $bg-color: #ed795a;
 $text-color: #47acff;
+.mask {
+  height: 28vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .nodata {
   width: 100%;
   height: 100%;
@@ -536,6 +706,7 @@ $text-color: #47acff;
   font-size: 20px;
 }
 .onecard_content {
+  overflow: hidden;
   display: flex;
   height: calc(100% - 10rem /* 160/16 */);
   justify-content: space-between;
@@ -543,7 +714,8 @@ $text-color: #47acff;
   box-sizing: border-box;
   .content_left {
     display: flex;
-    flex: 6.5;
+    // flex: 6.5;
+    width: 65%;
     box-sizing: border-box;
     margin-right: 1.25rem /* 20/16 */;
     .content_left_box {
@@ -568,6 +740,12 @@ $text-color: #47acff;
           font-size: 1.2rem;
         }
       }
+      @media screen and (max-width: 1366px) {
+        .content_left_left {
+          min-width: 50%;
+          max-width: 60%;
+        }
+      }
       .content_left_right {
         padding-left: 1rem;
         flex: auto;
@@ -586,7 +764,9 @@ $text-color: #47acff;
             line-height: 2rem;
             text-indent: 1rem;
           }
+
           .etlPos {
+            width: 100%;
             top: 15px;
           }
         }
@@ -594,7 +774,8 @@ $text-color: #47acff;
     }
   }
   .content_right {
-    flex: 3.5;
+    // flex: 3.5;
+    width: 35%;
     .content_right_box {
       height: 100%;
       display: flex;
@@ -607,6 +788,7 @@ $text-color: #47acff;
         width: calc(100% - 3rem);
         margin: 0 auto;
         margin-top: 1rem;
+
         .tab_check {
           display: flex;
           width: 98%;
@@ -628,6 +810,15 @@ $text-color: #47acff;
           }
         }
       }
+      @media screen and (max-width: 1366px) {
+        .tab_content {
+          .item_title {
+            margin: 0 10px !important;
+            height: 35px;
+          }
+        }
+      }
+
       .content_right_content_datacenter {
         width: 100%;
         // border: #007aff 1px solid;
@@ -718,18 +909,26 @@ $text-color: #47acff;
         display: flex;
         margin-bottom: 1rem;
         margin-top: 1rem;
+
         span {
           // margin-left: 1rem;
           padding-right: 1rem;
-          background-color: #47acff;
           padding: 4px;
           text-align: center;
           color: #fff;
-          border-right: 1px solid rgb(17, 44, 194);
+          border-right: 1px solid rgba(27, 40, 228, 0.322);
           &:last-child {
             border-right: 0;
           }
           cursor: pointer;
+        }
+        @media screen and (max-width: 1366px) {
+          span {
+            padding: 2px;
+          }
+        }
+        .hos {
+          background-color: #47acff;
         }
       }
       .databox_three_content {
@@ -774,6 +973,10 @@ $text-color: #47acff;
             border-right: 0;
           }
         }
+      }
+      .time {
+        display: flex;
+        flex-direction: column !important;
       }
 
       .databox-three-contentdata-view:last-child {

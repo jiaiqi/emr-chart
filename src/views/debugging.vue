@@ -3,7 +3,7 @@
     <div class="home_content">
       <div class="box_one  boxs">
         <div class = "box_title">
-          <span>一 . 选择服务应用：</span>
+          <span class><i style="color:red;margin-right:5px"> *</i>选择服务应用：</span>
         </div>
         <select v-model="data_change" @change="adm">
           <option
@@ -14,8 +14,8 @@
         </select>
       </div>
       <div class="box_two boxs">
-        <div class = "box_title">
-          <span>二 . 选择接口列表：</span>
+        <div class = "box_title fontlist-line">
+          <span><i style="color:red;margin-right:5px"> *</i>选择接口列表：</span>
         </div>
         <el-select v-model="value8" filterable placeholder="请选择" @change="serviceChange">
           <el-option
@@ -23,6 +23,7 @@
             :key="index"
             :label="item.service_view_name"
             :value="item.service_view_name"
+            
           ></el-option>
         </el-select>
         <!-- <span class="box_two_method">方法：GET</span> -->
@@ -30,7 +31,7 @@
 
       <div class="box_three boxs">
         <div class = "box_title">
-          <span  >三 .  <i class="importid">appid：</i></span>
+          <span  ><i class="importid" style=""><i style="color:red;margin-right:5px"> *</i>appid：</i></span>
         </div>
         <!-- <input type="text" v-model="appId" /> -->
         <el-select
@@ -38,7 +39,7 @@
           filterable
           placeholder="请选择"
           @change="changeAppId"
-          style="width:400px; margin-left:50px;">
+          style="width:400px; margin-left:20px;">
           <el-option
             v-for="(item,index) in appIdData"
             :key="index"
@@ -59,6 +60,7 @@
           type="text"
           v-model="appSecret"
           class="secret"
+          disabled="disabled"
         />
         <!-- <p class="box_three_foot_p">填写appsecret</p>
         <p class="box_three_foot_p2">校验通过</p> -->
@@ -66,11 +68,11 @@
 
       <div class="box_five boxs">
         <div class = "box_title">
-          <p class = "box_param">四 . 参数列表</p>
+          <p class = "box_param  fotns"></p>
         </div>
         <div class = "cont">
           <div class = "cont_title">
-            <p class="box_pone">接口参数：</p>
+            <p class="box_pone fotns"><i style="color:red;margin-right:5px"> *</i>接口参数：</p>
           </div>
           <div class = "cont_text">
             <textarea id="textTest" cols="130" rows="25" v-model="data_one" @change="paramChange"></textarea>
@@ -78,10 +80,9 @@
           </div>
         </div>
       </div>
-      <div class = "but boxs">
-          <el-button type="primary" @click="debuggs">在线调试</el-button>
-        <!-- <button  class="debugger">在线调试</button> -->
-      </div>
+      <div data-v-457be178="" class="box_one  boxs"><div data-v-457be178="" class="box_title"><span data-v-457be178=""></span></div> 
+         <el-button type="primary btns" @click="debuggs">在线调试</el-button></div>
+      <div style="border:1px solid #f5f5f5;"></div>
       <div class="box_six boxs" v-if="show">
         <!-- <div class="box_four_a">
           <div class="c_title">
@@ -90,20 +91,30 @@
             <span>{{this.value8}}</span>
           </div>
         </div> -->
-        <div class="box_four_b">
-          <div class="req_addr">
-            <span>请求地址：</span>
-            <span>{{requestUrl}}</span>
+
+        <div data-v-457be178="" class="box_one  boxs">
+           <div class="box_title"><span >请求地址：</span>
+           </div>    
+           <span>{{requestUrl}}</span>
+        </div>
+ 
+
+        <div data-v-457be178="" class="box_one  boxs">
+           <div class="box_title"><span class="d_title">返回提示：</span>
+           </div>    
+                    <span  :class="data_state=='SUCCESS'?'box_four_d_color':'box_four_d_color_red'"  >{{data_state}}</span>
+        </div>
+
+
+   <div class = "cont">
+          <div class = "cont_title cont_titletwo">
+            <p class="box_pone fotns"> 返回结果：</p>
+          </div>
+          <div class = "cont_text">
+            <textarea id="texertwo" class="cont" cols="130" rows="25" v-model="data_return" ></textarea>
           </div>
         </div>
-        <div class="box_four_c">
-          <p>返回结果：</p>
-          <textarea id="texertwo" class="cont" cols="130" rows="25" v-model="data_return"></textarea>
-        </div>
-        <div class="box_four_d">
-          <span class="d_title">提示：</span>
-          <span class="box_four_d_color">{{data_state}}</span>
-        </div>
+    
       </div>
     </div>
   </div>
@@ -132,7 +143,8 @@ export default {
       data_state: "",
       requestUrl: "",
       appIdData: [],
-      reqData:[]
+      reqData:[],
+      disfalse:false
     };
   },
   methods: {
@@ -145,7 +157,8 @@ export default {
       let req = {
         colNames: ["*"],
         condition: [],
-        order: [],
+        order: [{colName:"app_seq",
+        orderType:"asc"}],
         page: {},
         serviceName: "srvconfig_app_list_select"
       };
@@ -154,8 +167,8 @@ export default {
       axios.post(url, req).then(res => {
           salf.app_name = res.data.data;
           console.log(salf.app_name);
-          salf.data_change = salf.app_name[4].app_name;
-          salf.api = salf.app_name[4].app_no;
+          salf.data_change = salf.app_name[1].app_name;
+          salf.api = salf.app_name[1].app_no;
         }).catch(err => {
           console.error(err);
         });
@@ -210,7 +223,13 @@ export default {
       let url = this.getServiceUrl("select", req2.serviceName, this.api);
       axios.post(url, req2).then(res => {
           this.app_no = res.data.data;
-          this.value8 = res.data.data[0].service_view_name;
+          this.value8 = res.data.data[13].service_view_name;
+          let serviceName = res.data.data[13].service_name;
+
+            
+
+    this.serviceChange()
+
           // console.log(res.data.data)
         }).catch(err => {
           // console.log(err)
@@ -222,13 +241,6 @@ export default {
     getData_three() {
       // try {
         // let req3 = this.data_one;
-        let req3 =[
-          {
-            "colName": "id",
-            "value": "1",
-            "ruleType": "eq"
-          }
-        ]
         let appNo = this.api;
         let service = this.serviceName;
 
@@ -270,7 +282,6 @@ export default {
             issue.push(res.data.data[0]);
 
             let type = this.serviceType;
-            req3 = JSON.stringify(req3);
             let data1 = [];
             let data2 = [];
             let map = {
@@ -329,7 +340,7 @@ export default {
             }
             data1.push(map);
             data2.push(map1);
-            // salf.reqData = data1;
+            salf.reqData = data1;
             console.error(data1)
             // let salf = this;
             salf.data_one = salf.formatJson(data1);
@@ -365,14 +376,19 @@ export default {
           {
             colName: "proc_status",
             value: "完成",
-            ruleType: "eq"
+            ruleType: "eq",
+          },
+          {
+            colName: "apply_user",
+            value: top.user.user_no,
+            ruleType: "eq",
           }
         ]
       };
 
       let url = this.getServiceUrl("select", req.serviceName, "apprc");
       this.axios.post(url, req).then(res => {
-          console.log("appidData:", res.data.data);
+          console.error("appidData:", res.data.data);
           this.appIdData = res.data.data;
         }).catch(err => {
           console.error();
@@ -394,16 +410,45 @@ export default {
      * 按钮点击事件
      */
     debuggs() {
+
+      this.data_return = "";
+      this.data_state = "";
       let salf = this;
       let cond = salf.reqData;
       let url = this.getServiceUrl("operate", "srvonline_interface_deubg", "apprc");
-      axios.post(url, cond).then(res => {
+      if(salf.reqData[0].data[0].app_Id==""){
+        alert("appid不能为空");
+      }else{
+           let params = {
+        serviceName: "srvapprc_application_apply_select",
+        colNames: ["appid", "secret_key", "proc_status"],
+        condition:
+        [
+            {"colName":"appid","ruleType":"eq","value":salf.reqData[0].data[0].app_Id},
+            {"colName":"secret_key","ruleType":"eq","value":salf.reqData[0].data[0].app_secret},
+            {"colName":"proc_status","ruleType":"eq","value":"完成"}
+        ],
+      };
+      let url2 = this.getServiceUrl("select", params.serviceName, "apprc");
+      axios.post(url2, params).then(res => {
+        if(res.data.data.length==0){
+            alert("appid和app_secret有误，请重试！")
+        }else{
+              axios.post(url, cond).then(res => {
         let response = res.data.response;
-        this.data_return = salf.formatJson(res.data.response);
+        this.data_return = JSON.stringify(res.data.response);
           this.data_state = res.data.state;
         }).catch(err => {
           console.error(err);
         });
+        }
+
+      
+      });
+
+ 
+      }
+     
     },
     formatJson(json, options) {
       
@@ -536,6 +581,7 @@ export default {
 .box_one span{
   display: inline-block;
   font-size: 1.3rem;
+  line-height: 40px;
 }
 .box_two{
   display: flex;
@@ -568,11 +614,11 @@ export default {
 }
 .box_four .secret{
   width: 400px;
-  margin-left: 50px;
+  margin-left: 20px;
 }
 .el-select {
   width: 400px;
-  margin-left: 50px;
+  margin-left: 20px;
 }
 .box_five{
 
@@ -583,19 +629,23 @@ export default {
 .box_five .box_title .box_param{
   font-size: 1.3rem;
 }
-.box_five .cont{
+ .cont{
   display: flex;
 }
-.box_five .cont .cont_title{
+.cont .cont_title{
   width: 12rem;
 }
-.box_five .cont .cont_title .box_pone{
-  font-size: 1.2rem;
-  margin: 1.5rem 2rem;
+.cont_titletwo{
+  width: 13rem !important;
 }
-.box_five .cont .cont_text{
-  margin-top: 2rem;
-  margin-left: 50px;
+ .cont .cont_title .box_pone{
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  text-align: right;
+}
+ .cont .cont_text{
+  margin-top: 1rem;
+  margin-left: 20px;
 }
 .but{
   width: 100%;
@@ -607,7 +657,7 @@ export default {
   width: 10rem;
   font-size: 1.3rem;
   height: 2.5rem;
-  margin-left: 16rem;
+  // margin-left: 16rem;
 }
 .box_six .box_four_a{
   height: 3rem;
@@ -644,9 +694,15 @@ export default {
   font-size: 1.3rem;
   margin-left: 2rem;
 }
-.box_six .box_four_d .box_four_d_color{
+.box_four_d_color{
+  font-size: 1.3rem;
+  color: green;
+  font-weight: 600;
+}
+.box_four_d_color_red{
   font-size: 1.3rem;
   color: red;
+  font-weight: 600;
 }
 
 /* 在线调试按钮以下 */
@@ -673,13 +729,45 @@ input {
 
 @media screen and (min-width:1185px){
  .but button{
-  margin-left: 15rem;
+  // margin-left: 15rem;
 }
 }
 
 @media screen and (min-width:1185px) and (max-width:1191px) {
    .but button{
-  margin-left: 16rem !important;
+  // margin-left: 16rem !important;
 }
+}
+.el-select-dropdown__item{
+  padding: 0 10px !important;
+}
+.importid{
+  font-style: normal;
+}
+.box_one>select{
+  padding: 0 10px;
+  margin-left: 20px;
+}
+span{
+  font-size: 15px !important;
+}
+.fotns{
+   font-size: 15px !important;
+}
+.fntline{
+  border-bottom: solid 0.5px #eee;
+  padding: 15px 0;
+}
+.box_title{
+  text-align: right;
+  line-height: 40px;
+}
+.el-input__inner{
+  position: relative;
+  left: 10px;
+}
+.btns{
+  margin-left: 20px;
+  padding: 10px 20px;
 }
 </style>

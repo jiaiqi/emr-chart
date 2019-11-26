@@ -261,7 +261,7 @@ export default {
       axios
         .post(path, req10)
         .then(res => {
-          // console.log(res.data.data)
+          console.log(res.data.data)
 
           let yVal = "";
           // let rows = []
@@ -489,7 +489,10 @@ export default {
       let res = await self.axios.post(path, req5);
 
       if (res.status === 200) {
-        this.lineTwo[0].value = res.data.data[0].id;
+        console.error(res)
+        if(res.data.state=="SUCCESS"){
+            this.lineTwo[0].value = res.data.data[0].id;
+        }
         return { isRes: true, res: res };
       } else {
         return { isRes: false, res: res };
@@ -517,7 +520,7 @@ export default {
       // axios.post(
       //   path, req6,
       let res = await self.axios.post(path, req6);
-
+  console.group(res)
       if (res.status === 200) {
         this.lineTwo[1].value = res.data.data[0].id;
         return { isRes: true, res: res };
@@ -547,9 +550,10 @@ export default {
       // axios.post(
       //   path, req7,
       let res = await self.axios.post(path, req7);
-
-      if (res.status === 200) {
+    console.group(res,"res")
+        if(res.data.state=="SUCCESS"){
         this.lineTwo[2].value = res.data.data[0].no;
+
         return { isRes: true, res: res };
       } else {
         return { isRes: false, res: res };

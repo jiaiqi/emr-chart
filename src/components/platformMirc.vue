@@ -150,11 +150,11 @@
                   <div>    
                     <div>
                       <span>应用命中率</span>
-                      <span>{{mean==NaN || mean==null || mean=="NaN"?(0+"%"):(mean+"%")}}</span>
+                      <span>{{mean==NaN || mean==null || mean=="NaN"?(0+"%"):(  mean.toFixed(1)  +"%")}}</span>
                     </div>
                     <div>
                       <span>内存使用率</span>
-                      <span>{{memoryMean==NaN ||memoryMean==null || memoryMean=="NaN"?(0+"%"):(memoryMean+"%")}}</span>
+                      <span>{{memoryMean==NaN ||memoryMean==null || memoryMean=="NaN"?(0+"%"):(memoryMean.toFixed(1)+"%")}}</span>
                     </div>
                   </div>
                 </li>
@@ -332,17 +332,60 @@ export default {
     //     });
     // },
     //查询中间微服务
+
+
+
+
+  //  relation_condition: {
+	// 	relation: "OR",
+	// 	data: [{
+	// 		relation: "AND",
+	// 		data: [{
+	// 			colName: "app_class",
+	// 			value: "platform",
+	// 			ruleType: "ne"
+	// 		}]
+	// 	},
+	// 	{
+	// 		relation: "AND",
+	// 		data: [{
+	// 			colName: "app_no",
+	// 			value: "hr",
+	// 			ruleType: "eq"
+	// 		}]
+	// 	}]
+  // },
+  // fhz
+
+
+
+
+
     CenTiny() {
       let req = {
         serviceName: "srvconfig_app_list_select",
         colNames: ["*"],
-        condition: [
-          {
-            colName: "app_class",
-            value: "platform",
-            ruleType: "ne"
-          }
-        ],
+      
+   relation_condition: {
+		relation: "OR",
+		data: [{
+			relation: "AND",
+			data: [{
+				colName: "app_class",
+				value: "platform",
+				ruleType: "ne"
+			}]
+		},
+		{
+			relation: "AND",
+			data: [{
+				colName: "app_no",
+				value: "hr",
+				ruleType: "eq"
+			}]
+		}]
+	},
+
         order: [
           {
             colName: "app_seq",
@@ -364,7 +407,7 @@ export default {
         .then(res => {
           // this.microSer[3].beg = res.data.data[0].num_of_calls;
           let micr = res.data.data;
-
+          console.error("______________",micr)
           // console.log("micr", micr);
           // this.microSer = [];
           //   for( let i=0; i<micr.length;i++){

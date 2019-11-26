@@ -58,7 +58,7 @@ export default {
           isShow: false
         },
         {
-          class_name: "一卡通",
+          class_name: "一卡通就诊",
           app_icon: onecard,
           guide_page: 2,
           class_no: "onecard",
@@ -110,69 +110,6 @@ export default {
           app_no: "task",
           class_no: "platform",
           class_name: "协同平台"
-        },
-        {
-          app_name: "配置监控",
-          app_icon: "images/appicon/xd-icon.png",
-          app_seq: 3,
-          guide_page: "/emr/#/platform",
-          app_no: "config",
-          class_no: "platform",
-          class_name: "协同平台"
-        },
-        {
-          app_name: "电子病历",
-          app_icon: "images/appicon/xd-icon.png",
-          app_seq: 4,
-          guide_page: "/chart/#/onecard",
-          app_no: "emr",
-          class_no: "onecard",
-          class_name: "一卡通"
-        },
-        {
-          app_name: "附件",
-          app_icon: "images/appicon/caiwu.png",
-          app_seq: 5,
-          guide_page: "/emr/#/platform",
-          app_no: "file",
-          class_no: "platform",
-          class_name: "协同平台"
-        },
-        {
-          app_name: "日志",
-          app_icon: "images/appicon/caiwu.png",
-          app_seq: 6,
-          guide_page: "/emr/#/platform",
-          app_no: "log",
-          class_no: "platform",
-          class_name: "协同平台"
-        },
-        {
-          app_name: "应用开发",
-          app_icon: "images/appicon/xd-icon.png",
-          app_seq: 8,
-          guide_page: "/emr/#/platform",
-          app_no: "apprc",
-          class_no: "platform",
-          class_name: "协同平台"
-        },
-        {
-          app_name: "事件",
-          app_icon: "images/appicon/tushu.png",
-          app_seq: 10,
-          guide_page: "/emr/#/platform",
-          app_no: "event",
-          class_no: "datacenter",
-          class_name: "协同平台"
-        },
-        {
-          app_name: "邮件",
-          app_icon: "images/appicon/caiwu.png",
-          app_seq: 11,
-          guide_page: "/emr/#/platform",
-          app_no: "email",
-          class_no: "platform",
-          class_name: "协同平台"
         }
       ]
     };
@@ -180,17 +117,14 @@ export default {
   created() {
     // this.userInfo = top.window.user;
 
-
     this.gopages();
-    let user = sessionStorage.getItem('current_login_user')
-    top.user = JSON.parse(user)
-    console.log('top.user', top.user)
-    this.userInfo = top.user
+    let user = sessionStorage.getItem("current_login_user");
+    top.user = JSON.parse(user);
+    console.log("top.user", top.user);
+    this.userInfo = top.user;
     console.log("top.window.user", top.window.user);
   },
-  updated() {
-
-  },
+  updated() {},
   mounted() {
     let self = this;
     let account = localStorage.getItem("account");
@@ -210,7 +144,7 @@ export default {
     this.updateClock();
   },
   methods: {
-    gopages: function () {
+    gopages: function() {
       var path = this.getServiceUrl(
         "select",
         "srvauth_user_app_menu_select",
@@ -229,8 +163,13 @@ export default {
           this.getMenuData(valData);
         } else {
           // this.getMenuData(this.menuData)
-          alert("无权限访问");
-          this.$router.push({ name: 'login' })
+          // alert("无权限访问");
+          if (top.pathConfig) {
+            window.location.href = "/main/login_pages/login-fw.html";
+          }
+          // else {
+          //   this.$router.push({ name: 'login' })
+          // }
         }
       });
       // 	TODO: 添加 bx_auth_ticket header
@@ -240,28 +179,44 @@ export default {
     },
     getMenuData(e) {
       let data = e;
-
       console.log(data);
       let cl = this.classObject;
       for (let i = 0; i < cl.length; i++) {
-        for (let j = 0; j < data.length; j++)
+        let menuList = [];
+        for (let j = 0; j < data.length; j++) {
           if (cl[i].class_no === data[j].class_no) {
-            cl[i].isShow = true;
+            menuList.push(data[j]);
             cl[i].url = data[j].guide_page;
           } else {
           }
+        }
+        if (menuList.length > 0) {
+          cl[i].isShow = true;
+        } else {
+          cl[i].isShow = false;
+          cl[i].class_name = "无权限";
+        }
       }
       this.classObject = cl;
       console.log(cl);
       sessionStorage.setItem("app_menu_class", cl);
       return this.classObject;
     },
+
     mainforward(appclass, guide_page, isShow) {
-      if (isShow || !isShow) {
-        window.location.href = guide_page + "?app_class=" + appclass;
+      let login_flag = sessionStorage.getItem("need_login_flag");
+      if (login_flag === "need_login") {
+        window.location.href = "/main/login_pages/login-fw.html";
       } else {
-        alert("App未启动");
+        if (isShow) {
+          window.location.href = guide_page + "?app_class=" + appclass;
+        } else {
+          alert("您无权访问");
+        }
       }
+    },
+    getClassAuth(classNo) {
+      let list = this.menuData;
     },
     updateTime() {
       function zeroPadding(num, digit) {
@@ -296,7 +251,7 @@ export default {
         " " +
         week[cd.getDay()];
     },
-    updateClock() { }
+    updateClock() {}
   }
 };
 </script>

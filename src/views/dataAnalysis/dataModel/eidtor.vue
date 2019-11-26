@@ -120,7 +120,7 @@
 </template>
 
 <script>
-import listhaul from "../components/listhaul";
+import listhaul from "@/components/listhaul";
 import moment from "moment";
 import FileSaver from "file-saver";
 import XLSX from "xlsx";
@@ -129,21 +129,21 @@ export default {
   components: {
     listhaul
   },
-  data () {
+  data() {
     return {
       dialogTableVisible: false,
       app: this.$route.params.app,
       serveice: this.$route.params.serveice,
       // modelName: this.ruleForm.modelName,
       modelId: this.$route.params.modelId,
-      modelConfig: "",// 模型配置信息
+      modelConfig: "", // 模型配置信息
       ruleForm: {
-        modelName: "",
+        modelName: ""
       },
       rules: {
         model_name: [
-          { required: true, message: '请输入模型名称', trigger: 'blur' }
-        ],
+          { required: true, message: "请输入模型名称", trigger: "blur" }
+        ]
       },
       // app: "cvs",
       // serveice: "srvcvs_medical_records_select",
@@ -214,12 +214,14 @@ export default {
       serviceName: "",
       requestUrl: "",
       saveConfigData: {},
-      dialogInfo: { // dialog详情分页配置信息
+      dialogInfo: {
+        // dialog详情分页配置信息
         currentPage: 1,
         rowNum: 1,
         totalPage: 1
       },
-      previewInfo: { // previewTable分页配置信息
+      previewInfo: {
+        // previewTable分页配置信息
         currentPage: 1,
         rowNum: 0,
         totalPage: 0
@@ -228,7 +230,7 @@ export default {
     };
   },
   methods: {
-    getData () {
+    getData() {
       this.columnsList = [];
       this.allColum.list = [];
       let req = {
@@ -289,8 +291,8 @@ export default {
           console.log(err);
         });
     },
-    requestData (endList, endData) {
-      console.log('endData++++++:', endData)
+    requestData(endList, endData) {
+      console.log("endData++++++:", endData);
       if (endList.type === "condition") {
         this.endData["condition"] = endData.condition;
       } else if (endList.type === "group") {
@@ -302,17 +304,17 @@ export default {
       }
       this.endList = endList;
     },
-    previewData () {
+    previewData() {
       // 根据组装的条件 发送请求 预览数据
       this.reqData = {
         group:
           this.endData.aggregation && this.endData.group
             ? this.endData.group.concat(this.endData.aggregation)
             : this.endData.aggregation && !this.endData.group
-              ? this.endData.aggregation
-              : !this.endData.aggregation && this.endData.group
-                ? this.endData.group
-                : undefined,
+            ? this.endData.aggregation
+            : !this.endData.aggregation && this.endData.group
+            ? this.endData.group
+            : undefined,
         condition: this.endData.condition,
         order: this.endData.order
       };
@@ -356,7 +358,8 @@ export default {
       this.reqData = reqData;
       this.getPreviewTableData(reqData);
     },
-    saveConfig () { // 保存配置到服务器
+    saveConfig() {
+      // 保存配置到服务器
       let saveData = {};
       saveData["allApp"] = this.allApp;
       saveData["allService"] = this.allService;
@@ -366,31 +369,34 @@ export default {
       saveData["serviceName"] = this.serviceName;
       saveData["columnsOption"] = this.columnsOption;
       saveData["listData"] = this.listData;
-      saveData["model_name"] = this.modelName
-      saveData["checkedReqOptions"] = this.checkedReqOptions //请求多选框
+      saveData["model_name"] = this.modelName;
+      saveData["checkedReqOptions"] = this.checkedReqOptions; //请求多选框
       this.saveConfigData = saveData;
-      if (this.$route.params.modelId == 'add' || this.$route.params.modelId == undefined) {
-        this.addModel(saveData)
-      } else if (typeof this.$route.params.modelId == 'string') {
-        this.updateModel(saveData)
+      if (
+        this.$route.params.modelId == "add" ||
+        this.$route.params.modelId == undefined
+      ) {
+        this.addModel(saveData);
+      } else if (typeof this.$route.params.modelId == "string") {
+        this.updateModel(saveData);
       } else {
-        this.addModel(saveData)
+        this.addModel(saveData);
       }
       // let str = JSON.stringify(this.saveConfigData);
       // localStorage.setItem("saveConfigData", str);
       console.log("saveData", saveData);
     },
-    exportExcel () {
-      this.tableExportStatus = true
+    exportExcel() {
+      this.tableExportStatus = true;
       // this.previewInfo.rowNum = this.previewInfo.total
       setTimeout(() => {
-        this.getExcel()
+        this.getExcel();
       }, 500);
       setTimeout(() => {
-        this.tableExportStatus = false
+        this.tableExportStatus = false;
       }, 1000);
     },
-    getExcel () {
+    getExcel() {
       if (!this.tableData) {
         alert("表格数据为空");
         return;
@@ -415,15 +421,14 @@ export default {
             //设置导出文件名称
             fileName
           );
-          this.tableExportStatus = true
-
+          this.tableExportStatus = true;
         } catch (e) {
           if (typeof console !== "undefined") console.log(e, wbout);
         }
         return wbout;
       }
     },
-    getApp () {
+    getApp() {
       //获取应用列表
       let req = {
         colNames: ["*"],
@@ -447,68 +452,67 @@ export default {
           console.error(err);
         });
     },
-    changeReqOption () {
+    changeReqOption() {
       // 选择显示那四个框中的哪个
-      let self = this
+      let self = this;
       let options = this.checkedReqOptions;
-      console.log("TCL: changeReqOption -> options", options)
-      console.log("TCL: changeReqOption ->  listData", this.listData)
+      console.log("TCL: changeReqOption -> options", options);
+      console.log("TCL: changeReqOption ->  listData", this.listData);
       if (options) {
-        if (options.indexOf('条件') >= 0) {
-          self.listData[0].show = true
+        if (options.indexOf("条件") >= 0) {
+          self.listData[0].show = true;
         } else {
-          self.listData[0].show = false
+          self.listData[0].show = false;
           // self.listData[0].list = []
-
         }
-        if (options.indexOf('分组') >= 0) {
-          self.listData[1].show = true
+        if (options.indexOf("分组") >= 0) {
+          self.listData[1].show = true;
         } else {
-          self.listData[1].show = false
+          self.listData[1].show = false;
           // self.listData[1].list = []
           // this.reqData.group = []
         }
-        if (options.indexOf('聚合') >= 0) {
-          self.listData[2].show = true
+        if (options.indexOf("聚合") >= 0) {
+          self.listData[2].show = true;
         } else {
-          self.listData[2].show = false
+          self.listData[2].show = false;
           // self.listData[2].list = []
         }
-        if (options.indexOf('排序') >= 0) {
-          self.listData[3].show = true
+        if (options.indexOf("排序") >= 0) {
+          self.listData[3].show = true;
         } else {
-          self.listData[3].show = false
+          self.listData[3].show = false;
           // self.listData[3].list = []
         }
       }
     },
-    getDetailData () {
-      let condition = this.detailCondition
+    getDetailData() {
+      let condition = this.detailCondition;
       let url = this.getServiceUrl("select", this.serviceName, this.appName);
       let req = {
         serviceName: this.serviceName,
         colNames: ["*"],
         condition: condition,
         page: {
-          "pageNo": this.dialogInfo.currentPage,
-          "rownumber": 10
+          pageNo: this.dialogInfo.currentPage,
+          rownumber: 10
         }
       };
       this.axios
         .post(url, req)
         .then(res => {
           let resData = res.data.data;
-          let pageData = res.data.page
-          this.dialogInfo.currentPage = pageData.pageNo
-          this.dialogInfo.rowNum = pageData.rownumber
-          this.dialogInfo.totalPage = pageData.total
+          let pageData = res.data.page;
+          this.dialogInfo.currentPage = pageData.pageNo;
+          this.dialogInfo.rowNum = pageData.rownumber;
+          this.dialogInfo.totalPage = pageData.total;
           this.detailTableData = resData;
         })
         .catch(err => {
           console.error(err);
         });
     },
-    toDetail (rowData) {
+    toDetail(rowData) {
       let colnumns = Object.keys(rowData);
       console.log("TCL: toDetail -> colnumns", colnumns);
       this.detailTableTitle = this.columnsOption;
@@ -532,14 +536,14 @@ export default {
             });
           }
         });
-        this.detailCondition = condition
-        this.getDetailData()
+        this.detailCondition = condition;
+        this.getDetailData();
       } else {
         console.log("TCL: toDetail -> rowData", rowData);
         this.detailTableData = [rowData];
       }
     },
-    getServiceName (appno) {
+    getServiceName(appno) {
       //选择服务名称列表
       this.allService = [];
       this.allColum.list = [];
@@ -600,26 +604,26 @@ export default {
           console.log(err);
         });
     },
-    deleteListData () {
+    deleteListData() {
       for (let index = 0; index < this.listData.length; index++) {
         this.listData[index].list = [];
       }
     },
-    getPreviewTableData (req) {
+    getPreviewTableData(req) {
       // 获取预览数据
       let self = this;
       self.tableTitle = [];
       req.page = {
-        "pageNo": this.previewInfo.currentPage,
-        "rownumber": this.previewInfo.rowNum || 10
-      }
+        pageNo: this.previewInfo.currentPage,
+        rownumber: this.previewInfo.rowNum || 10
+      };
       this.axios
         .post(this.requestUrl, req)
         .then(res => {
-          let pageData = res.data.page //获取分页信息
-          this.previewInfo.currentPage = pageData.pageNo
-          this.previewInfo.rowNum = pageData.rownumber
-          this.previewInfo.totalPage = pageData.total
+          let pageData = res.data.page; //获取分页信息
+          this.previewInfo.currentPage = pageData.pageNo;
+          this.previewInfo.rowNum = pageData.rownumber;
+          this.previewInfo.totalPage = pageData.total;
           this.tableData = res.data.data;
           // this.app_no = res.data.data;
           //点击后出先表格
@@ -652,47 +656,49 @@ export default {
             self.tableTitle = newArr;
           }
           //表格内容数据
-
         })
         .catch(err => {
           console.log(err);
         });
     },
-    getModelConfig (modelId) {
+    getModelConfig(modelId) {
       if (modelId) {
-        this.modelId = modelId
-        let serviceName = "srvanalyze_model_select"
-        let url = this.getServiceUrl("select", serviceName, "dataanalyze")
+        this.modelId = modelId;
+        let serviceName = "srvanalyze_model_select";
+        let url = this.getServiceUrl("select", serviceName, "dataanalyze");
         let params = {
-          "serviceName": "srvanalyze_model_select",
-          "colNames": ["*"],
-          "condition": [
+          serviceName: "srvanalyze_model_select",
+          colNames: ["*"],
+          condition: [
             {
-              "colName": "model_no",
-              "ruleType": "eq",
-              "value": modelId
+              colName: "model_no",
+              ruleType: "eq",
+              value: modelId
             }
           ]
-        }
-        this.axios.post(url, params)
+        };
+        this.axios
+          .post(url, params)
           .then(res => {
-            console.log('res.data.data:', res.data.data)
-            let data = res.data.data
+            console.log("res.data.data:", res.data.data);
+            let data = res.data.data;
             if (data && data.length > 0) {
-              data = data[0]
-              this.appName = data.belong_app
-              this.serviceName = data.service_name
-              this.modelConfig = data.model_config ? JSON.parse(data.model_config) : "暂无数据"
-              this.setModelConfig(this.modelConfig)
+              data = data[0];
+              this.appName = data.belong_app;
+              this.serviceName = data.service_name;
+              this.modelConfig = data.model_config
+                ? JSON.parse(data.model_config)
+                : "暂无数据";
+              this.setModelConfig(this.modelConfig);
             }
-            console.log('this.modelConfig-----', this.modelConfig)
+            console.log("this.modelConfig-----", this.modelConfig);
           })
           .catch(err => {
             console.error(err);
-          })
+          });
       }
     },
-    setModelConfig (modelConfig) {
+    setModelConfig(modelConfig) {
       if (modelConfig) {
         this.allApp = modelConfig.allApp;
         this.allColum = modelConfig.allColum;
@@ -702,128 +708,160 @@ export default {
         this.endData = modelConfig.endData;
         this.listData = modelConfig.listData;
         // this.modelName = modelConfig.model_name
-        this.ruleForm.modelName = modelConfig.model_name
+        this.ruleForm.modelName = modelConfig.model_name;
         this.appName = modelConfig.appName;
         this.serviceName = modelConfig.serviceName;
-        console.log("this.listData", this.listData)
+        console.log("this.listData", this.listData);
       }
     },
-    addModel (saveData) { // 增加模型
-      let serviceName = "srvanalyze_model_add"
+    addModel(saveData) {
+      // 增加模型
+      let serviceName = "srvanalyze_model_add";
       let url = this.getServiceUrl("operate", serviceName, "dataanalyze");
-      let params = [{
-        condition: [],
-        serviceName: serviceName,
-        data: [
-          {
-            "model_name": this.modelName,
-            "belong_app": this.appName,
-            "service_name": this.serviceName,
-            "model_config": JSON.stringify(saveData),
-            "where_json": saveData.endData.condition.length > 0 ? JSON.stringify(saveData.endData.condition) : "",
-            "group_json": saveData.endData.group.length > 0 ? JSON.stringify(saveData.endData.group) : "",
-            "aggregate_json": saveData.endData.aggregation.length > 0 ? JSON.stringify(saveData.endData.aggregation) : "",
-            "order_json": saveData.endData.order.length > 0 ? JSON.stringify(saveData.endData.order) : ""
-          }
-        ]
-      }]
-      this.axios.post(url, params)
+      let params = [
+        {
+          condition: [],
+          serviceName: serviceName,
+          data: [
+            {
+              model_name: this.modelName,
+              belong_app: this.appName,
+              service_name: this.serviceName,
+              model_config: JSON.stringify(saveData),
+              where_json:
+                saveData.endData.condition.length > 0
+                  ? JSON.stringify(saveData.endData.condition)
+                  : "",
+              group_json:
+                saveData.endData.group.length > 0
+                  ? JSON.stringify(saveData.endData.group)
+                  : "",
+              aggregate_json:
+                saveData.endData.aggregation.length > 0
+                  ? JSON.stringify(saveData.endData.aggregation)
+                  : "",
+              order_json:
+                saveData.endData.order.length > 0
+                  ? JSON.stringify(saveData.endData.order)
+                  : ""
+            }
+          ]
+        }
+      ];
+      this.axios
+        .post(url, params)
         .then(res => {
           if (res.data.resultCode === "SUCCESS") {
-            this.$alert('添加成功', 'SUCCESS', {
-              confirmButtonText: '确定',
-              callback: action => {
-              }
+            this.$alert("添加成功", "SUCCESS", {
+              confirmButtonText: "确定",
+              callback: action => {}
             });
           } else if (res.data.resultCode === "FAILURE") {
           }
 
-          console.log("添加-保存按钮返回信息： ---->    ", res)
-
+          console.log("添加-保存按钮返回信息： ---->    ", res);
         })
         .catch(err => {
           console.error("保存错误信息:", err);
-        })
+        });
     },
-    updateModel (saveData) { // 编辑模型
-      let serviceName = "srvanalyze_model_update"
+    updateModel(saveData) {
+      // 编辑模型
+      let serviceName = "srvanalyze_model_update";
       let url = this.getServiceUrl("operate", serviceName, "dataanalyze");
-      let params = [{
-        condition: [{ colName: "model_no", ruleType: "eq", value: this.modelId }],
-        serviceName: serviceName,
-        data: [
-          {
-            "model_name": this.modelName,
-            "belong_app": this.appName,
-            "service_name": this.serviceName,
-            "model_config": JSON.stringify(this.saveConfigData),
-            "where_json": saveData.endData.condition.length > 0 ? JSON.stringify(saveData.endData.condition) : "",
-            "group_json": saveData.endData.group.length > 0 ? JSON.stringify(saveData.endData.group) : "",
-            "aggregate_json": saveData.endData.aggregation.length > 0 ? JSON.stringify(saveData.endData.aggregation) : "",
-            "order_json": saveData.endData.order.length > 0 ? JSON.stringify(saveData.endData.order) : ""
-          }
-        ]
-      }]
-      this.axios.post(url, params)
+      let params = [
+        {
+          condition: [
+            { colName: "model_no", ruleType: "eq", value: this.modelId }
+          ],
+          serviceName: serviceName,
+          data: [
+            {
+              model_name: this.modelName,
+              belong_app: this.appName,
+              service_name: this.serviceName,
+              model_config: JSON.stringify(this.saveConfigData),
+              where_json:
+                saveData.endData.condition.length > 0
+                  ? JSON.stringify(saveData.endData.condition)
+                  : "",
+              group_json:
+                saveData.endData.group.length > 0
+                  ? JSON.stringify(saveData.endData.group)
+                  : "",
+              aggregate_json:
+                saveData.endData.aggregation.length > 0
+                  ? JSON.stringify(saveData.endData.aggregation)
+                  : "",
+              order_json:
+                saveData.endData.order.length > 0
+                  ? JSON.stringify(saveData.endData.order)
+                  : ""
+            }
+          ]
+        }
+      ];
+      this.axios
+        .post(url, params)
         .then(res => {
           if (res.data.resultCode === "SUCCESS") {
-            this.$alert('保存成功', 'SUCCESS', {
-              confirmButtonText: '确定',
-              callback: action => {
-              }
+            this.$alert("保存成功", "SUCCESS", {
+              confirmButtonText: "确定",
+              callback: action => {}
             });
           } else if (res.data.resultCode === "FAILURE") {
           }
-          console.log("编辑-保存返回信息： ----> ", res)
+          console.log("编辑-保存返回信息： ----> ", res);
         })
         .catch(err => {
           console.error("保存错误信息:", err);
-        })
+        });
     },
-    handleSizeChange (val) {
+    handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
     },
-    handleCurrentChange (val) {
+    handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
-      this.dialogInfo.currentPage = val
-      this.getDetailData()
+      this.dialogInfo.currentPage = val;
+      this.getDetailData();
     },
-    previewDataSizeChange (val) {
-      this.previewInfo.rowNum = val
-      this.getPreviewTableData(this.reqData)
+    previewDataSizeChange(val) {
+      this.previewInfo.rowNum = val;
+      this.getPreviewTableData(this.reqData);
       console.log(`每页 ${val} 条`);
     },
-    previewDataCurrentChange (val) {
+    previewDataCurrentChange(val) {
       console.log(`当前页: ${val}`);
-      this.previewInfo.currentPage = val
-      this.getPreviewTableData(this.reqData)
+      this.previewInfo.currentPage = val;
+      this.getPreviewTableData(this.reqData);
     }
   },
   computed: {
-    modelName () {
-      return this.ruleForm.modelName
+    modelName() {
+      return this.ruleForm.modelName;
     }
   },
-  created () {
+  created() {
     // console.log("this.allColum,this.listData", this.allColum, this.listData)
     let self = this;
     this.changeReqOption();
-    let appName = this.$route.params.app
-    let serviceName = this.$route.params.serveice
-    let operate = this.$route.params.modelId
-    if (operate == 'add') {
+    let appName = this.$route.params.app;
+    let serviceName = this.$route.params.serveice;
+    let operate = this.$route.params.modelId;
+    if (operate == "add") {
       // this.addModel()
       // if (appName && serviceName) {
-      this.app = appName
-      this.serveice = serviceName
+      this.app = appName;
+      this.serveice = serviceName;
       this.getApp();
       //   this.appName = this.app;
       //   this.getServiceName(this.appName);
       //   this.serviceName = this.serveice;
       //   this.getData();
       // }
-    } else { // 编辑
-      this.getModelConfig(operate)
+    } else {
+      // 编辑
+      this.getModelConfig(operate);
     }
   }
   // let saveConfigData = JSON.parse(localStorage.getItem("saveConfigData"));
