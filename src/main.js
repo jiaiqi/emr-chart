@@ -56,7 +56,12 @@ axios.interceptors.response.use(
       if (response.data.resultCode == "0011") {
         sessionStorage.setItem("need_login_flag", "need_login");
         sessionStorage.setItem("isLogin", "false");
-
+        if(top.pathConfig){ 
+          // 如果在主框架里
+          window.location.href = "/main/login_pages/login-fw.html";
+        }else{
+          router.push({name:'login'})
+        }
         // 需要登录访问
         // if (sessionStorage.getItem("need_login_flag") != "need_login") {
         //   sessionStorage.setItem("need_login_flag", "need_login");
@@ -68,7 +73,6 @@ axios.interceptors.response.use(
         //   });
         //   // 跳转到登录页面
         // }
-        window.location.href = "/main/login_pages/login-fw.html";
       } else if (response.data.resultCode == "0000") {
         if (sessionStorage.getItem("need_login_flag") != "need_login") {
           this.$message({

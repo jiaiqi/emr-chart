@@ -3,7 +3,7 @@
     <dv-border-box-10 class="content_left">
       <div class="content_left_box">
         <div class="content_left_left">
-          <div class="big-title">{{contentData.firstBar.title}}</div>
+          <div class="big-title">{{ contentData.firstBar.title }}</div>
           <ve-histogram
             :data="contentData.firstBar.data"
             :settings="chartSetting"
@@ -11,7 +11,10 @@
             :textStyle="legend.textStyle"
             :legend="legend"
             height="calc(100% - 50px)"
-            v-if="contentData.firstBar.data.rows && contentData.firstBar.data.rows.length > 0"
+            v-if="
+              contentData.firstBar.data.rows &&
+                contentData.firstBar.data.rows.length > 0
+            "
           ></ve-histogram>
           <div v-else class="mask">
             <span>~暂无数据~</span>
@@ -20,10 +23,15 @@
         <div class="content_left_right">
           <div class="content_left_right_item">
             <div class="item_title">
-              <dv-border-box-8>{{contentData.firstPie.title}}</dv-border-box-8>
+              <dv-border-box-8>{{
+                contentData.firstPie.title
+              }}</dv-border-box-8>
             </div>
             <ve-pie
-              v-if="contentData.firstPie.data.rows && contentData.firstPie.data.rows.length > 0"
+              v-if="
+                contentData.firstPie.data.rows &&
+                  contentData.firstPie.data.rows.length > 0
+              "
               :data="contentData.firstPie.data"
               class="etlPos"
               height="28vh"
@@ -36,7 +44,9 @@
           </div>
           <div class="content_left_right_item">
             <div class="item_title">
-              <dv-border-box-8>{{contentData.secondPie.title}}</dv-border-box-8>
+              <dv-border-box-8>{{
+                contentData.secondPie.title
+              }}</dv-border-box-8>
             </div>
             <ve-pie
               class="etlPos"
@@ -44,7 +54,13 @@
               :extend="chartExtendPie"
               :settings="chartPieSetting"
               height="28vh"
-              v-if="(contentData.currentPage==='emrCollect'||contentData.currentPage==='emrShare'||contentData.currentPage==='oneCard') && contentData.secondPie.data.rows && contentData.secondPie.data.rows.length > 0"
+              v-if="
+                (contentData.currentPage === 'emrCollect' ||
+                  contentData.currentPage === 'emrShare' ||
+                  contentData.currentPage === 'oneCard') &&
+                  contentData.secondPie.data.rows &&
+                  contentData.secondPie.data.rows.length > 0
+              "
             ></ve-pie>
             <ve-pie
               :data="contentData.secondPie.data"
@@ -52,9 +68,17 @@
               :settings="chartPieSetting"
               :extend="chartExtendPie"
               height="28vh"
-              v-if="(contentData.currentPage==='ETL' || contentData.currentPage==='dataShare') && contentData.secondPie.data.rows && contentData.secondPie.data.rows.length > 0"
+              v-if="
+                (contentData.currentPage === 'ETL' ||
+                  contentData.currentPage === 'dataShare') &&
+                  contentData.secondPie.data.rows &&
+                  contentData.secondPie.data.rows.length > 0
+              "
             ></ve-pie>
-            <div v-if="contentData.secondPie.data.rows.length === 0" class="mask">
+            <div
+              v-if="contentData.secondPie.data.rows.length === 0"
+              class="mask"
+            >
               <span>~暂无数据~</span>
             </div>
           </div>
@@ -64,17 +88,23 @@
     <dv-border-box-10 class="content_right">
       <div
         class="content_right_box"
-        v-if="contentData.currentPage == 'oneCard'||contentData.currentPage == 'emrShare'||contentData.currentPage == 'emrCollect'"
+        v-if="
+          contentData.currentPage == 'oneCard' ||
+            contentData.currentPage == 'emrShare' ||
+            contentData.currentPage == 'emrCollect'
+        "
       >
         <div class="content_right_content">
           <div class="tab_check">
             <div
               class="check_item"
-              v-for="(item,index) in contentData.secondBar.tabCheckItem"
+              v-for="(item, index) in contentData.secondBar.tabCheckItem"
               :key="index"
-              :class="{current_hospital:currentHospital==index}"
+              :class="{ current_hospital: currentHospital == index }"
               @click="selectHospital(index)"
-            >{{item}}</div>
+            >
+              {{ item }}
+            </div>
           </div>
           <div class="tab_content">
             <div class="content_item">
@@ -85,7 +115,11 @@
                 :textStyle="legend.textStyle"
                 :legend="legend"
                 :data="contentData.secondBar.data[currentHospital]"
-                v-if="contentData.secondBar.data[currentHospital]&&contentData.secondBar.data[currentHospital].rows&&contentData.secondBar.data[currentHospital].rows.length>0"
+                v-if="
+                  contentData.secondBar.data[currentHospital] &&
+                    contentData.secondBar.data[currentHospital].rows &&
+                    contentData.secondBar.data[currentHospital].rows.length > 0
+                "
               ></ve-histogram>
               <div v-else class="mask">
                 <span>~暂无数据~</span>
@@ -96,51 +130,102 @@
         <div class="content_right_bottom">
           <div class="content_right_bottom_item">
             <div class="count">
-              <div class="label" v-if="contentData.currentPage === 'oneCard'">门诊次数</div>
-              <div class="label" v-if="contentData.currentPage === 'emrShare'">总查询次数</div>
-              <div class="label" v-if="contentData.currentPage === 'emrCollect'">门诊总数</div>
+              <div class="label" v-if="contentData.currentPage === 'oneCard'">
+                门诊次数
+              </div>
+              <div class="label" v-if="contentData.currentPage === 'emrShare'">
+                总查询次数
+              </div>
+              <div
+                class="label"
+                v-if="contentData.currentPage === 'emrCollect'"
+              >
+                门诊总数
+              </div>
               <div
                 class="text-val"
-                v-if="countData.length>0&&contentData.currentPage === 'oneCard'"
-              >{{countData[currentHospital].门诊}}</div>
+                v-if="
+                  countData.length > 0 && contentData.currentPage === 'oneCard'
+                "
+              >
+                {{ countData[currentHospital].门诊 }}
+              </div>
               <div
                 class="text-val"
-                v-if="countData.length>0&&contentData.currentPage === 'emrShare'"
-              >{{countData[currentHospital].select}}</div>
+                v-if="
+                  countData.length > 0 && contentData.currentPage === 'emrShare'
+                "
+              >
+                {{ countData[currentHospital].select }}
+              </div>
               <div
                 class="text-val"
-                v-if="countData.length>0&&contentData.currentPage === 'emrCollect'"
-              >{{countData[currentHospital].门诊}}</div>
+                v-if="
+                  countData.length > 0 &&
+                    contentData.currentPage === 'emrCollect'
+                "
+              >
+                {{ countData[currentHospital].门诊 }}
+              </div>
             </div>
             <div class="count">
-              <div class="label" v-if="contentData.currentPage === 'oneCard'">住院次数</div>
-              <div class="label" v-if="contentData.currentPage === 'emrShare'">总验证次数</div>
-              <div class="label" v-if="contentData.currentPage === 'emrCollect'">住院总数</div>
+              <div class="label" v-if="contentData.currentPage === 'oneCard'">
+                住院次数
+              </div>
+              <div class="label" v-if="contentData.currentPage === 'emrShare'">
+                总验证次数
+              </div>
+              <div
+                class="label"
+                v-if="contentData.currentPage === 'emrCollect'"
+              >
+                住院总数
+              </div>
               <div
                 class="text-val"
-                v-if="countData.length>0&&contentData.currentPage === 'oneCard'"
-              >{{countData[currentHospital].住院}}</div>
+                v-if="
+                  countData.length > 0 && contentData.currentPage === 'oneCard'
+                "
+              >
+                {{ countData[currentHospital].住院 }}
+              </div>
               <div
                 class="text-val"
-                v-if="countData.length>0&&contentData.currentPage === 'emrShare'"
-              >{{countData[currentHospital].verify}}</div>
+                v-if="
+                  countData.length > 0 && contentData.currentPage === 'emrShare'
+                "
+              >
+                {{ countData[currentHospital].verify }}
+              </div>
               <div
                 class="text-val"
-                v-if="countData.length>0&&contentData.currentPage === 'emrCollect'"
-              >{{countData[currentHospital].住院}}</div>
+                v-if="
+                  countData.length > 0 &&
+                    contentData.currentPage === 'emrCollect'
+                "
+              >
+                {{ countData[currentHospital].住院 }}
+              </div>
             </div>
           </div>
           <div class="content_right_bottom_item">
             <div class="content_left_right_item">
               <div class="item_title">
-                <dv-border-box-8>{{contentData.thirdPie.title}}</dv-border-box-8>
+                <dv-border-box-8>{{
+                  contentData.thirdPie.title
+                }}</dv-border-box-8>
               </div>
               <ve-pie
                 :data="contentData.thirdPie.data[currentHospital]"
                 :extend="chartExtendPie"
                 height="28vh"
                 :settings="chartPieSetting"
-                v-if="(contentData.currentPage==='emrShare'||contentData.currentPage==='oneCard' ||contentData.currentPage==='emrCollect')&&contentData.thirdPie.data[currentHospital]"
+                v-if="
+                  (contentData.currentPage === 'emrShare' ||
+                    contentData.currentPage === 'oneCard' ||
+                    contentData.currentPage === 'emrCollect') &&
+                    contentData.thirdPie.data[currentHospital]
+                "
               ></ve-pie>
               <!-- <ve-pie
                 :data="contentData.thirdPie.data[currentHospital]"
@@ -148,23 +233,31 @@
                 :settings="chartPieSetting"
                 v-if="(contentData.currentPage==='emrCollect'||contentData.currentPage==='emrShare'||contentData.currentPage==='oneCard') && contentData.thirdPie.data && contentData.thirdPie.data.length > 0"
               ></ve-pie>-->
-              <div v-if="!contentData.thirdPie.data[currentHospital]" class="mask">
+              <div
+                v-if="!contentData.thirdPie.data[currentHospital]"
+                class="mask"
+              >
                 <span>~暂无数据~</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="content_right_box" v-else-if="contentData.currentPage=='dataShare'">
+      <div
+        class="content_right_box"
+        v-else-if="contentData.currentPage == 'dataShare'"
+      >
         <div
           class="content_right_content"
-          :class="{content_right_content_datacenter:contentData.currentPage==='dataShare'}"
+          :class="{
+            content_right_content_datacenter:
+              contentData.currentPage === 'dataShare'
+          }"
         >
           <div class="tab_content">
-            <div
-              style="text-align:center;margin:10px;"
-              class="item_title"
-            >{{contentData.secondBar.title}}</div>
+            <div style="text-align:center;margin:10px;" class="item_title">
+              {{ contentData.secondBar.title }}
+            </div>
             <div class="content_item">
               <ve-histogram
                 :settings="contentData.secondBar.set"
@@ -172,7 +265,10 @@
                 :textStyle="legend.textStyle"
                 :legend="legend"
                 :extend="rightChartExtend"
-                v-if="contentData.secondBar.data.rows && contentData.secondBar.data.rows.length > 0"
+                v-if="
+                  contentData.secondBar.data.rows &&
+                    contentData.secondBar.data.rows.length > 0
+                "
                 height="70vh"
               ></ve-histogram>
               <div v-else class="mask">
@@ -190,11 +286,12 @@
         </div>-->
         <div class="gantt_task">
           <span
-            @click="choose(item,index)"
-            v-for="(item,index) in contentData.secondBar.tableData.title"
+            @click="choose(item, index)"
+            v-for="(item, index) in contentData.secondBar.tableData.title"
             :key="index"
-            :class="{hos:Act == index}"
-          >{{item.job_name}}</span>
+            :class="{ hos: Act == index }"
+            >{{ item.job_name }}</span
+          >
         </div>
         <div class="databox_three_content">
           <div class="databox_three_contentheader">
@@ -209,33 +306,57 @@
           <div
             v-show="index < 5"
             class="databox-three-contentdata-view"
-            v-for="(item,index) in contentData.secondBar.tableData.GanttData"
+            v-for="(item, index) in contentData.secondBar.tableData.GanttData"
             :key="index"
           >
             <div v-if="item.start_time" class="databox-col time">
-              <span>{{item.start_time?item.start_time.split(" ")[0]:""}}</span>
+              <span>{{
+                item.start_time ? item.start_time.split(" ")[0] : ""
+              }}</span>
               <br style="display:none" />
-              <span>{{item.start_time?item.start_time.split(" ")[1]:""}}</span>
+              <span>{{
+                item.start_time ? item.start_time.split(" ")[1] : ""
+              }}</span>
               <!-- {{item.start_time?item.start_time.split(" ")[0]:""}} -->
             </div>
-            <div v-else class="databox-col time">{{item.start_time?item.start_time:""}}</div>
-            <div v-if="item.end_time" class="databox-col time">
-              <span>{{item.end_time?item.end_time.split(" ")[0]:""}}</span>
-              <br style="display:none" />
-              <span>{{item.end_time?item.end_time.split(" ")[1]:""}}</span>
+            <div v-else class="databox-col time">
+              {{ item.start_time ? item.start_time : "" }}
             </div>
-            <div v-else class="databox-col">{{item.end_time?item.end_time:""}}</div>
-            <div class="databox-col">{{item.processor_name?item.processor_name:""}}</div>
-            <div class="databox-col">{{item.input_record_count?item.input_record_count:0}}</div>
-            <div class="databox-col">{{item.ok_records_count?item.ok_records_count:0}}</div>
-            <div class="databox-col">{{item.failed_records_count?item.failed_records_count:0}}</div>
-            <div class="databox-col">{{item.output_record_count?item.output_record_count:0}}</div>
+            <div v-if="item.end_time" class="databox-col time">
+              <span>{{
+                item.end_time ? item.end_time.split(" ")[0] : ""
+              }}</span>
+              <br style="display:none" />
+              <span>{{
+                item.end_time ? item.end_time.split(" ")[1] : ""
+              }}</span>
+            </div>
+            <div v-else class="databox-col">
+              {{ item.end_time ? item.end_time : "" }}
+            </div>
+            <div class="databox-col">
+              {{ item.processor_name ? item.processor_name : "" }}
+            </div>
+            <div class="databox-col">
+              {{ item.input_record_count ? item.input_record_count : 0 }}
+            </div>
+            <div class="databox-col">
+              {{ item.ok_records_count ? item.ok_records_count : 0 }}
+            </div>
+            <div class="databox-col">
+              {{ item.failed_records_count ? item.failed_records_count : 0 }}
+            </div>
+            <div class="databox-col">
+              {{ item.output_record_count ? item.output_record_count : 0 }}
+            </div>
             <!-- <div class="databox-col">{{item.item08}}</div> -->
           </div>
           <div
             style="text-align:center;padding:5rem 0;"
             v-if="!contentData.secondBar.tableData.GanttData.length"
-          >~ 暂无数据 ~</div>
+          >
+            ~ 暂无数据 ~
+          </div>
         </div>
       </div>
     </dv-border-box-10>

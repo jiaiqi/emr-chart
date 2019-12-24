@@ -2,27 +2,43 @@
   <div class="nav">
     <div class="header">
       <div class="left"></div>
-      <div
-        class="right"
-      >欢迎您:{{userInfo !== null && userInfo !== undefined && userInfo.user_disp !== undefined && userInfo.user_disp !== null ? userInfo.user_disp:'未登录'}}</div>
+      <div class="right">
+        欢迎您:{{
+          userInfo !== null &&
+          userInfo !== undefined &&
+          userInfo.user_disp !== undefined &&
+          userInfo.user_disp !== null
+            ? userInfo.user_disp
+            : "未登录"
+        }}
+      </div>
     </div>
-    <div class="header-title">延安市社保医疗一体化服务平台</div>
+    <div class="header-title" v-if="classObjects.length > 0">
+      延安市社保医疗一体化服务平台
+    </div>
 
     <div class="carousel-view">
       <div class="slide-view">
         <div
-          :class="item.isShow ? 'carousel-3d-slide  none-show' :'carousel-3d-slide none-show'"
-          v-for="(item,index) in classObject"
+          :class="
+            item.isShow
+              ? 'carousel-3d-slide  none-show'
+              : 'carousel-3d-slide none-show'
+          "
+          v-for="(item, index) in classObjects"
           :key="index"
-          @click.stop="mainforward(item.class_no,item.url,item.isShow)"
+          @click.stop="mainforward(item.class_no, item.url, item.isShow)"
         >
           <!-- <dv-loading v-if="!item.isShow">加载中...</dv-loading> -->
           <img class="app-icon" :src="item.app_icon" alt />
-          <div class="title-text">{{ item.class_name}}</div>
+          <div class="title-text">{{ item.class_name }}</div>
         </div>
       </div>
 
-      <dv-decoration-9 style="width:100%;height:100px;z-index:1;"></dv-decoration-9>
+      <dv-decoration-9
+        style="width:100%;height:100px;z-index:1;"
+        v-if="classObjects.length > 0"
+      ></dv-decoration-9>
     </div>
     <div class="footer">
       <div id="clock">
@@ -74,6 +90,7 @@ export default {
           isShow: false
         }
       ],
+      classObjects: [],
       menuData: [
         {
           app_name: "用户中心",
@@ -115,8 +132,6 @@ export default {
     };
   },
   created() {
-    // this.userInfo = top.window.user;
-
     this.gopages();
     let user = sessionStorage.getItem("current_login_user");
     top.user = JSON.parse(user);
@@ -136,10 +151,6 @@ export default {
         this.pwd = account.pwd;
       }
     }
-    // if (top.pathConfig) {
-    // } else {
-    // this.getMenuData(this.menuData)
-    // }
     self.clock = setInterval(self.updateTime, 1000);
     this.updateClock();
   },
@@ -150,8 +161,6 @@ export default {
         "srvauth_user_app_menu_select",
         "auth"
       );
-      // var path = top.pathConfig.gateway + "/auth/select/srvauth_user_app_menu_select";
-      // var path = "/auth/select/srvauth_user_app_menu_select";
       var bxReq = {};
       bxReq.serviceName = "srvauth_user_app_menu_select";
       bxReq.colNames = ["*"];
@@ -159,7 +168,7 @@ export default {
         console.log(res);
         if (res.data.data != undefined && res.data.data.length > 0) {
           let valData = res.data.data;
-          console.log(valData);
+          console.log("console: updated -> valData", valData);
           this.getMenuData(valData);
         } else {
           // this.getMenuData(this.menuData)
@@ -197,7 +206,8 @@ export default {
           cl[i].class_name = "无权限";
         }
       }
-      this.classObject = cl;
+      this.classObjects = cl;
+      // this.classObject = cl;
       console.log(cl);
       sessionStorage.setItem("app_menu_class", cl);
       return this.classObject;
@@ -205,7 +215,7 @@ export default {
 
     mainforward(appclass, guide_page, isShow) {
       let login_flag = sessionStorage.getItem("need_login_flag");
-      if (login_flag === "need_login") {
+      if (login_flag === "need_login" && top.pathConfig) {
         window.location.href = "/main/login_pages/login-fw.html";
       } else {
         if (isShow) {
